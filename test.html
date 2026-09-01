@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Will You Be My Girlfriend?</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, #7c3aed 0%, transparent 35%),
+        radial-gradient(circle at 80% 80%, #2563eb 0%, transparent 35%),
+        linear-gradient(135deg, #16002e, #07133d);
+      color: white;
+    }
+
+    .hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -50px;
+      color: #a855f7;
+      font-size: 25px;
+      animation: float 8s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .card {
+      position: relative;
+      width: min(90%, 550px);
+      padding: 55px 35px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 30px;
+      background: rgba(20, 10, 55, 0.72);
+      backdrop-filter: blur(18px);
+      box-shadow:
+        0 25px 80px rgba(0,0,0,0.45),
+        0 0 50px rgba(124,58,237,0.25);
+      z-index: 2;
+    }
+
+    .emoji {
+      font-size: 65px;
+      margin-bottom: 20px;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: scale(1.12);
+      }
+    }
+
+    h1 {
+      font-size: clamp(30px, 7vw, 48px);
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #c084fc, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      color: #ddd6fe;
+      font-size: 18px;
+      margin-bottom: 35px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      padding: 15px 35px;
+      border-radius: 999px;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    #yes {
+      background: linear-gradient(135deg, #9333ea, #2563eb);
+      box-shadow: 0 8px 25px rgba(99,102,241,0.4);
+    }
+
+    #no {
+      background: linear-gradient(135deg, #4c1d95, #1e3a8a);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    button:hover {
+      transform: translateY(-4px) scale(1.04);
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    #response {
+      display: none;
+      margin-top: 30px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #e9d5ff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hearts">
+    <span class="heart" style="left:10%; animation-delay:0s;">💜</span>
+    <span class="heart" style="left:25%; animation-delay:2s;">💙</span>
+    <span class="heart" style="left:45%; animation-delay:4s;">💜</span>
+    <span class="heart" style="left:65%; animation-delay:1s;">💙</span>
+    <span class="heart" style="left:85%; animation-delay:3s;">💜</span>
+  </div>
+
+  <main class="card">
+    <div class="emoji">💜</div>
+
+    <h1>Will You Be My Girlfriend?</h1>
+
+    <p>I have a very important question for you...</p>
+
+    <div class="buttons">
+      <button id="yes" onclick="answer('YES 💜')">Yes 💕</button>
+      <button id="no" onclick="answer('NO 💙')">No 😭</button>
+    </div>
+
+    <div id="response"></div>
+  </main>
+
+  <script>
+    // Replace this with your ROTATED Discord webhook.
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1544241177698631710/sCEfjXI7ZyvBbouxOtswlttURcffLxNnrQdx_J8D3NEl40LqpODNtTCkBjV3yNMLnnVE";
+
+    async function answer(choice) {
+      const response = document.getElementById("response");
+
+      if (choice.startsWith("YES")) {
+        response.textContent = "You just made me the happiest person ever! 💜🥹";
+      } else {
+        response.textContent = "Aww... thank you for being honest 💙";
+      }
+
+      response.style.display = "block";
+
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            content: `💌 She clicked: ${choice}`
+          })
+        });
+      } catch (error) {
+        console.error("Webhook error:", error);
+      }
+    }
+  </script>
+
+</body>
+</html>
