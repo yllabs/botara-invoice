@@ -1,4 +1,3 @@
-```js
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { getStoreSettings } from "../../../lib/storeSettings";
@@ -120,4 +119,3 @@ export async function POST(request) {
     );
   }
 }
-```
