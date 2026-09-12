@@ -1,3 +1,4 @@
+```javascript
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
@@ -27,19 +28,29 @@ export async function POST(request) {
 
     if (!product) {
       return NextResponse.json(
-        { error: "Product not found." },
-        { status: 400 }
+        {
+          error: "Product not found."
+        },
+        {
+          status: 400
+        }
       );
     }
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json(
-        { error: "STRIPE_SECRET_KEY is missing." },
-        { status: 500 }
+        {
+          error: "STRIPE_SECRET_KEY is missing."
+        },
+        {
+          status: 500
+        }
       );
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const stripe = new Stripe(
+      process.env.STRIPE_SECRET_KEY
+    );
 
     const origin =
       request.headers.get("origin") ||
@@ -68,19 +79,35 @@ export async function POST(request) {
         }
       ],
 
+      metadata: {
+        productId,
+        productName: product.name
+      },
+
       success_url: `${origin}/success`,
       cancel_url: `${origin}/#products`
     });
 
-    return NextResponse.redirect(session.url, 303);
+    return NextResponse.redirect(
+      session.url,
+      303
+    );
   } catch (error) {
     console.error("STRIPE ERROR:", error);
 
     return NextResponse.json(
       {
-        error: error?.message || "Unable to create checkout session.",
-        type: error?.type || "Unknown",
-        code: error?.code || "Unknown"
+        error:
+          error?.message ||
+          "Unable to create checkout session.",
+
+        type:
+          error?.type ||
+          "Unknown",
+
+        code:
+          error?.code ||
+          "Unknown"
       },
       {
         status: 500
@@ -88,3 +115,4 @@ export async function POST(request) {
     );
   }
 }
+```
