@@ -1,3 +1,4 @@
+```js
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import { getStoreSettings } from "../../../lib/storeSettings";
@@ -9,7 +10,7 @@ const products = {
   },
   "modded-account": {
     name: "Modded Account",
-    amount: 3999
+    amount: 3500
   },
   "premium-drop": {
     name: "Premium Drop",
@@ -119,3 +120,4 @@ export async function POST(request) {
     );
   }
 }
+```
