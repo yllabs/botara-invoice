@@ -2,24 +2,20 @@
 export default function SuccessPage() {
   return (
     <main className="successPage">
-      <div className="successCard">
+      <section className="successCard">
         <div className="successIcon">✓</div>
 
-        <div className="eyebrow">PAYMENT CONFIRMED</div>
+        <p className="eyebrow">PAYMENT CONFIRMED</p>
 
         <h1>You&apos;re all set.</h1>
 
         <p>
-          Your payment was successfully completed. To receive your
-          purchase, contact DropFits through text message or join our
-          Discord.
+          Your payment was successfully completed.
+          Contact DropFits to receive your purchase.
         </p>
 
         <div className="successActions">
-          <a
-            href="sms:+17472632720"
-            className="successPrimary"
-          >
+          <a href="sms:+17472632720" className="successPrimary">
             Message DropFits
           </a>
 
@@ -33,16 +29,16 @@ export default function SuccessPage() {
           </a>
         </div>
 
-        <div className="successDivider" />
+        <div className="successDivider"></div>
 
-        <span className="successNote">
+        <p className="successNote">
           Please have your order information ready when contacting us.
-        </span>
+        </p>
 
         <a href="/" className="successHome">
           Return to DropFits
         </a>
-      </div>
+      </section>
     </main>
   );
 }
