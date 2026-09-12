@@ -1279,5 +1279,229 @@ footer p {
 
   .dashboardHeader h1 {
     font-size: 32px;
+    .controlList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 0;
+}
+
+.controlRow > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.controlRow strong {
+  font-size: 15px;
+}
+
+.controlRow span {
+  color: #888;
+  font-size: 13px;
+}
+
+.controlDivider {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+}
+
+.controlToggle {
+  min-width: 72px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: #aaa;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.controlToggle:hover {
+  border-color: rgba(160,80,255,.7);
+}
+
+.controlToggle.enabled {
+  background: rgba(150,70,255,.18);
+  border-color: rgba(170,90,255,.7);
+  color: #c99cff;
+}
+
+.controlToggle:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.productContent .buyButton:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  background: rgba(255,255,255,.06);
+  color: #888;
+  border-color: rgba(255,255,255,.08);
+}
+
+.maintenancePage {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(126,54,255,.14),
+      transparent 38%
+    ),
+    #050507;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.maintenanceGlow {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: .18;
+  pointer-events: none;
+}
+
+.maintenanceGlowOne {
+  background: #7c32ff;
+  top: -180px;
+  left: -150px;
+}
+
+.maintenanceGlowTwo {
+  background: #a95cff;
+  right: -180px;
+  bottom: -180px;
+}
+
+.maintenanceCard {
+  width: 100%;
+  max-width: 650px;
+  text-align: center;
+  padding: 65px 40px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 28px;
+  background: rgba(12,12,17,.88);
+  box-shadow: 0 30px 100px rgba(0,0,0,.45);
+  position: relative;
+  z-index: 1;
+}
+
+.maintenanceLogo {
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.maintenanceLogo span {
+  color: #9c5cff;
+}
+
+.maintenanceBadge {
+  display: inline-flex;
+  margin-top: 28px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(150,70,255,.1);
+  border: 1px solid rgba(160,80,255,.3);
+  color: #b987ff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.maintenanceIcon {
+  width: 76px;
+  height: 76px;
+  margin: 30px auto 25px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(150,70,255,.1);
+  border: 1px solid rgba(160,80,255,.25);
+}
+
+.maintenanceIcon div {
+  width: 27px;
+  height: 27px;
+  border: 3px solid #a76aff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: maintenanceSpin 1.2s linear infinite;
+}
+
+@keyframes maintenanceSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.maintenanceCard h1 {
+  font-size: clamp(36px, 7vw, 58px);
+  line-height: 1;
+  letter-spacing: -2px;
+  margin: 0;
+}
+
+.maintenanceCard p {
+  color: #b0b0b8;
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 20px auto 8px;
+  max-width: 470px;
+}
+
+.maintenanceSmall {
+  color: #666;
+  font-size: 13px;
+}
+
+.maintenanceLine {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  margin: 32px auto 22px;
+  max-width: 360px;
+}
+
+.maintenanceStatus {
+  color: #555;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.maintenanceStatus span {
+  color: #8750d8;
+}
+
+.maintenanceStatus b {
+  margin: 0 8px;
+  color: #8750d8;
+}
+
+@media (max-width: 600px) {
+  .maintenanceCard {
+    padding: 48px 24px;
+  }
+
+  .controlRow {
+    align-items: flex-start;
+  }
+}
   }
 }
