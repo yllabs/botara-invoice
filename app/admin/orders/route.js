@@ -1,83 +1,54 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { cookies } from "next/headers";
-import { verifyAdminToken } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/adminAuth";
 
-export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-export async function GET() {
+export async function GET(request) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("dropfits_admin")?.value;
+    const auth = await requireAdmin(request);
 
-    if (!verifyAdminToken(token)) {
+    if (!auth) {
       return NextResponse.json(
-        {
-          error: "Unauthorized"
-        },
-        {
-          status: 401
-        }
+        { error: "Unauthorized" },
+        { status: 401 }
       );
     }
 
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return NextResponse.json(
+        { error: "STRIPE_SECRET_KEY is missing." },
+        { status: 500 }
+      );
+    }
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
     const sessions = await stripe.checkout.sessions.list({
-      limit: 50
+      limit: 100
     });
 
-    const orders = sessions.data.map((session) => {
-      const amount = (session.amount_total || 0) / 100;
-
-      const date = new Date(
-        session.created * 1000
-      ).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      });
-
-      return {
-        id: session.id,
-        customer:
-          session.customer_details?.email ||
-          session.customer_email ||
-          "Unknown",
-        product:
-          session.metadata?.productName ||
-          "DropFits Product",
-        amount,
-        status:
-          session.payment_status || "unknown",
-        date
-      };
-    });
-
-    const paidSessions = sessions.data.filter(
-      (session) => session.payment_status === "paid"
-    );
-
-    const revenue = paidSessions.reduce(
-      (total, session) =>
-        total + (session.amount_total || 0) / 100,
-      0
-    );
+    const orders = sessions.data.map((session) => ({
+      id: session.id,
+      productId: session.metadata?.productId || "unknown",
+      productName: session.metadata?.productName || "Unknown Product",
+      customerEmail: session.customer_details?.email || "No email",
+      amount: session.amount_total || 0,
+      currency: session.currency || "usd",
+      paymentStatus: session.payment_status || "unknown",
+      status: session.status || "unknown",
+      created: session.created
+    }));
 
     return NextResponse.json({
-      orders,
-      stats: {
-        revenue,
-        orders: sessions.data.length,
-        paid: paidSessions.length
-      }
+      orders
     });
   } catch (error) {
-    console.error("Admin orders error:", error);
+    console.error("ADMIN ORDERS ERROR:", error);
 
     return NextResponse.json(
       {
-        error: "Unable to load orders."
+        error: error?.message || "Unable to load orders."
       },
       {
         status: 500
