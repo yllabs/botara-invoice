@@ -813,5 +813,57 @@ footer p {
   .footerRight span {
     display: block;
     margin-top: 7px;
+
+    .successPage {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(174,48,255,.2),
+      transparent 40%
+    ),
+    #06020b;
+}
+
+.successCard {
+  width: min(650px, 100%);
+  padding: 60px 45px;
+  text-align: center;
+  border: 1px solid #382044;
+  border-radius: 30px;
+  background: #100815;
+  box-shadow: 0 30px 100px rgba(143,39,200,.15);
+}
+
+.successIcon {
+  width: 65px;
+  height: 65px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 25px;
+  border-radius: 50%;
+  color: white;
+  background: linear-gradient(135deg,#9c2ce0,#d16cff);
+  font-size: 28px;
+  font-weight: 900;
+  box-shadow: 0 0 40px rgba(187,65,255,.3);
+}
+
+.successCard h1 {
+  margin: 15px 0;
+  font-size: 60px;
+  letter-spacing: -4px;
+}
+
+.successCard p {
+  max-width: 500px;
+  margin: 0 auto 32px;
+  color: #8d7e92;
+  line-height: 1.7;
+  font-size: 14px;
+}
   }
 }
