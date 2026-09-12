@@ -27,29 +27,19 @@ export async function POST(request) {
 
     if (!product) {
       return NextResponse.json(
-        {
-          error: "Product not found."
-        },
-        {
-          status: 400
-        }
+        { error: "Product not found." },
+        { status: 400 }
       );
     }
 
-    const secretKey = process.env.STRIPE_SECRET_KEY;
-
-    if (!secretKey) {
+    if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json(
-        {
-          error: "STRIPE_SECRET_KEY is missing from the Vercel environment."
-        },
-        {
-          status: 500
-        }
+        { error: "STRIPE_SECRET_KEY is missing." },
+        { status: 500 }
       );
     }
 
-    const stripe = new Stripe(secretKey);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     const origin =
       request.headers.get("origin") ||
@@ -57,6 +47,10 @@ export async function POST(request) {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
+
+      managed_payments: {
+        enabled: false
+      },
 
       line_items: [
         {
@@ -84,7 +78,7 @@ export async function POST(request) {
 
     return NextResponse.json(
       {
-        error: error?.message || "Unknown Stripe error.",
+        error: error?.message || "Unable to create checkout session.",
         type: error?.type || "Unknown",
         code: error?.code || "Unknown"
       },
