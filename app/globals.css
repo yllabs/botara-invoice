@@ -1590,5 +1590,51 @@ font-size: 38px;
 
 .maintenanceCard p {
 font-size: 14px;
+.discordBanner {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 28px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #160b1d, #25102f, #160b1d);
+  border-bottom: 1px solid #352040;
+  color: #c9b5d2;
+  font-size: 12px;
+  font-weight: 600;
+  position: relative;
+  z-index: 20;
+}
+
+.discordBannerDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b84dff;
+  box-shadow: 0 0 12px rgba(184, 77, 255, 0.8);
+  flex-shrink: 0;
+}
+
+.discordBanner a {
+  color: #c56cff;
+  font-weight: 800;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.discordBanner a:hover {
+  color: #e0a5ff;
+}
+
+@media (max-width: 600px) {
+  .discordBanner {
+    padding: 10px 16px;
+    gap: 7px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+}
 }
 }
