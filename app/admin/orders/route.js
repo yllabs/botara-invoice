@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { requireAdmin } from "@/lib/adminAuth";
+import { requireAdmin } from "../../../lib/adminAuth";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request) {
+export async function GET() {
   try {
-    const auth = await requireAdmin(request);
+    const authorized = await requireAdmin();
 
-    if (!auth) {
+    if (!authorized) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -31,28 +31,28 @@ export async function GET(request) {
     const orders = sessions.data.map((session) => ({
       id: session.id,
       productId: session.metadata?.productId || "unknown",
-      productName: session.metadata?.productName || "Unknown Product",
-      customerEmail: session.customer_details?.email || "No email",
+      productName:
+        session.metadata?.productName || "Unknown Product",
+      customerEmail:
+        session.customer_details?.email || "No email",
       amount: session.amount_total || 0,
       currency: session.currency || "usd",
-      paymentStatus: session.payment_status || "unknown",
+      paymentStatus:
+        session.payment_status || "unknown",
       status: session.status || "unknown",
       created: session.created
     }));
 
-    return NextResponse.json({
-      orders
-    });
+    return NextResponse.json({ orders });
   } catch (error) {
     console.error("ADMIN ORDERS ERROR:", error);
 
     return NextResponse.json(
       {
-        error: error?.message || "Unable to load orders."
+        error:
+          error?.message || "Unable to load orders."
       },
-      {
-        status: 500
-      }
+      { status: 500 }
     );
   }
 }
