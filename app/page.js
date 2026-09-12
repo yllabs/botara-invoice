@@ -1,3 +1,4 @@
+```jsx
 import { redirect } from "next/navigation";
 import { getStoreSettings } from "../lib/storeSettings";
 
@@ -15,10 +16,22 @@ const products = [
   {
     id: "modded-account",
     name: "Modded Account",
-    price: "$39.99",
+    price: "$35.00",
     description:
-      "A premium GTA V account with upgraded in-game assets.",
-    tag: "PREMIUM"
+      "A fully upgraded GTA V PS5 account packed with modded cars, outfits, cash and premium properties.",
+    tag: "PREMIUM",
+    features: [
+      "20 Modded Cars",
+      "5 Modded Outfits",
+      "$38 Million Cash",
+      "Properties",
+      "Hangar",
+      "Arena",
+      "Mansion",
+      "Bunker",
+      "Facility",
+      "Nightclub"
+    ]
   },
   {
     id: "premium-drop",
@@ -79,17 +92,11 @@ export default async function Home() {
           </p>
 
           <div className="heroActions">
-            <a
-              href="#products"
-              className="primaryButton"
-            >
+            <a href="#products" className="primaryButton">
               Browse Products
             </a>
 
-            <a
-              href="#how"
-              className="outlineButton"
-            >
+            <a href="#how" className="outlineButton">
               How It Works
             </a>
           </div>
@@ -136,9 +143,7 @@ export default async function Home() {
                 <strong>01</strong>
               </div>
 
-              <div className="cardArrow">
-                ↗
-              </div>
+              <div className="cardArrow">↗</div>
             </div>
           </div>
         </div>
@@ -166,16 +171,10 @@ export default async function Home() {
         </div>
       </section>
 
-      <section
-        id="products"
-        className="section productsSection"
-      >
+      <section id="products" className="section productsSection">
         <div className="sectionHeading">
           <div>
-            <span className="eyebrow">
-              THE STORE
-            </span>
-
+            <span className="eyebrow">THE STORE</span>
             <h2>Pick your drop.</h2>
           </div>
 
@@ -187,14 +186,10 @@ export default async function Home() {
 
         <div className="productsGrid">
           {products.map((product) => {
-            const enabled =
-              settings.payments[product.id];
+            const enabled = settings.payments[product.id];
 
             return (
-              <article
-                className="productCard"
-                key={product.id}
-              >
+              <article className="productCard" key={product.id}>
                 <div className="productImage">
                   <div className="productGrid" />
                   <div className="productGlow" />
@@ -213,21 +208,28 @@ export default async function Home() {
                     <div>
                       <h3>{product.name}</h3>
 
-                      <p>
-                        {product.description}
-                      </p>
+                      <p>{product.description}</p>
                     </div>
 
-                    <strong>
-                      {product.price}
-                    </strong>
+                    <strong>{product.price}</strong>
                   </div>
 
+                  {product.features && (
+                    <div className="productFeatures">
+                      {product.features.map((feature) => (
+                        <div
+                          className="productFeature"
+                          key={feature}
+                        >
+                          <span>✓</span>
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   {enabled ? (
-                    <form
-                      action="/api/checkout"
-                      method="POST"
-                    >
+                    <form action="/api/checkout" method="POST">
                       <input
                         type="hidden"
                         name="productId"
@@ -258,20 +260,14 @@ export default async function Home() {
         </div>
       </section>
 
-      <section
-        id="how"
-        className="section howSection"
-      >
+      <section id="how" className="section howSection">
         <div className="sectionHeading centered">
-          <span className="eyebrow">
-            HOW IT WORKS
-          </span>
+          <span className="eyebrow">HOW IT WORKS</span>
 
           <h2>Simple. Fast. Clean.</h2>
 
           <p>
-            Getting your product doesn't need to be
-            complicated.
+            Getting your product doesn't need to be complicated.
           </p>
         </div>
 
@@ -282,8 +278,7 @@ export default async function Home() {
             <h3>Choose</h3>
 
             <p>
-              Pick the GTA V product that fits what
-              you're looking for.
+              Pick the GTA V product that fits what you're looking for.
             </p>
           </div>
 
@@ -293,8 +288,7 @@ export default async function Home() {
             <h3>Checkout</h3>
 
             <p>
-              Complete your purchase through our
-              secure Stripe checkout.
+              Complete your purchase through our secure Stripe checkout.
             </p>
           </div>
 
@@ -304,22 +298,16 @@ export default async function Home() {
             <h3>Receive</h3>
 
             <p>
-              Follow the delivery instructions
-              provided after your purchase.
+              Follow the delivery instructions provided after your purchase.
             </p>
           </div>
         </div>
       </section>
 
-      <section
-        id="faq"
-        className="section faqSection"
-      >
+      <section id="faq" className="section faqSection">
         <div className="sectionHeading">
           <div>
-            <span className="eyebrow">
-              QUESTIONS
-            </span>
+            <span className="eyebrow">QUESTIONS</span>
 
             <h2>Need to know?</h2>
           </div>
@@ -330,33 +318,26 @@ export default async function Home() {
             <h3>Is payment secure?</h3>
 
             <p>
-              Yes. Payments are processed through
-              Stripe. DropFits does not store your
-              complete card information.
+              Yes. Payments are processed through Stripe.
+              DropFits does not store your complete card information.
             </p>
           </div>
 
           <div className="faqItem">
-            <h3>
-              What platform is supported?
-            </h3>
+            <h3>What platform is supported?</h3>
 
             <p>
-              Current products are designed for GTA V
-              on PS5 unless the individual product
-              listing says otherwise.
+              Current products are designed for GTA V on PS5
+              unless the individual product listing says otherwise.
             </p>
           </div>
 
           <div className="faqItem">
-            <h3>
-              Are digital products refundable?
-            </h3>
+            <h3>Are digital products refundable?</h3>
 
             <p>
-              Digital products may have limited refund
-              eligibility. Review the applicable
-              product terms before purchasing.
+              Digital products may have limited refund eligibility.
+              Review the applicable product terms before purchasing.
             </p>
           </div>
 
@@ -364,9 +345,8 @@ export default async function Home() {
             <h3>Need support?</h3>
 
             <p>
-              Contact DropFits support with your order
-              information and we'll help you with your
-              purchase.
+              Contact DropFits support with your order information
+              and we'll help you with your purchase.
             </p>
           </div>
         </div>
@@ -385,6 +365,7 @@ export default async function Home() {
 
         <div className="footerRight">
           <span>© 2026 DropFits</span>
+
           <span>
             Not affiliated with Rockstar Games.
           </span>
@@ -393,3 +374,4 @@ export default async function Home() {
     </main>
   );
 }
+```
