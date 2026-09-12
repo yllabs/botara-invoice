@@ -36,10 +36,12 @@ export async function POST(request) {
       );
     }
 
-    if (!process.env.STRIPE_SECRET_KEY) {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+
+    if (!secretKey) {
       return NextResponse.json(
         {
-          error: "Stripe is not configured."
+          error: "STRIPE_SECRET_KEY is missing from the Vercel environment."
         },
         {
           status: 500
@@ -47,11 +49,11 @@ export async function POST(request) {
       );
     }
 
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const stripe = new Stripe(secretKey);
 
     const origin =
       request.headers.get("origin") ||
-      "http://localhost:3000";
+      "https://dropfits.vercel.app";
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -78,11 +80,13 @@ export async function POST(request) {
 
     return NextResponse.redirect(session.url, 303);
   } catch (error) {
-    console.error("Stripe Checkout Error:", error);
+    console.error("STRIPE ERROR:", error);
 
     return NextResponse.json(
       {
-        error: "Unable to create checkout session."
+        error: error?.message || "Unknown Stripe error.",
+        type: error?.type || "Unknown",
+        code: error?.code || "Unknown"
       },
       {
         status: 500
