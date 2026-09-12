@@ -1,30 +1,50 @@
 export default function SuccessPage() {
-  return (
-    <main className="successPage">
-      <div className="successCard">
-        <div className="successIcon">
-          ✓
-        </div>
+return ( <main className="successPage"> <div className="successCard"> <div className="successIcon">✓</div>
 
-        <span className="eyebrow">
-          PAYMENT COMPLETE
-        </span>
+```
+    <div className="eyebrow">
+      PAYMENT CONFIRMED
+    </div>
 
-        <h1>
-          You're all set.
-        </h1>
+    <h1>You're all set.</h1>
 
-        <p>
-          Your payment was completed successfully.
-          Follow the delivery instructions associated
-          with your purchase or contact DropFits support
-          if you need assistance.
-        </p>
+    <p>
+      Your payment was successfully completed.
+      To receive your purchase, contact DropFits
+      through text message or join our Discord.
+    </p>
 
-        <a href="/" className="primaryButton">
-          Back to DropFits
-        </a>
-      </div>
-    </main>
-  );
+    <div className="successActions">
+      <a
+        href="sms:+17472632720"
+        className="successPrimary"
+      >
+        Message DropFits
+      </a>
+
+      <a
+        href="https://discord.gg/YWQVMKN3Ft"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="successDiscord"
+      >
+        Join Discord
+      </a>
+    </div>
+
+    <div className="successDivider" />
+
+    <span className="successNote">
+      Please have your order information ready when
+      contacting us.
+    </span>
+
+    <a href="/" className="successHome">
+      Return to DropFits
+    </a>
+  </div>
+</main>
+```
+
+);
 }
