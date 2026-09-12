@@ -1,4 +1,3 @@
-```jsx
 export default function SuccessPage() {
   return (
     <main className="successPage">
