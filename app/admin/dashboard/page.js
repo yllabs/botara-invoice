@@ -24,6 +24,15 @@ const products = [
   }
 ];
 
+const defaultSettings = {
+  maintenance: false,
+  payments: {
+    "ps5-car-drop": true,
+    "modded-account": true,
+    "premium-drop": true
+  }
+};
+
 export default function AdminDashboard() {
   const router = useRouter();
 
@@ -34,13 +43,23 @@ export default function AdminDashboard() {
     paid: 0
   });
 
+  const [settings, setSettings] = useState(
+    defaultSettings
+  );
+
   const [loading, setLoading] = useState(true);
+  const [settingsLoading, setSettingsLoading] =
+    useState(true);
+  const [saving, setSaving] = useState("");
 
   async function loadOrders() {
     try {
-      const response = await fetch("/api/admin/orders", {
-        cache: "no-store"
-      });
+      const response = await fetch(
+        "/api/admin/orders",
+        {
+          cache: "no-store"
+        }
+      );
 
       if (response.status === 401) {
         router.push("/admin");
@@ -56,25 +75,178 @@ export default function AdminDashboard() {
       setOrders(data.orders || []);
 
       setStats({
-        revenue: data.stats?.revenue || 0,
-        orders: data.stats?.orders || 0,
-        paid: data.stats?.paid || 0
+        revenue: Number(data.stats?.revenue || 0),
+        orders: Number(data.stats?.orders || 0),
+        paid: Number(data.stats?.paid || 0)
       });
     } catch {
-      console.error("Failed to load admin data.");
+      console.error(
+        "Failed to load admin data."
+      );
     } finally {
       setLoading(false);
     }
   }
 
+  async function loadSettings() {
+    try {
+      const response = await fetch(
+        "/api/admin/settings",
+        {
+          cache: "no-store"
+        }
+      );
+
+      if (response.status === 401) {
+        router.push("/admin");
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return;
+      }
+
+      setSettings({
+        maintenance: Boolean(
+          data.maintenance
+        ),
+        payments: {
+          "ps5-car-drop":
+            data.payments?.[
+              "ps5-car-drop"
+            ] !== false,
+
+          "modded-account":
+            data.payments?.[
+              "modded-account"
+            ] !== false,
+
+          "premium-drop":
+            data.payments?.[
+              "premium-drop"
+            ] !== false
+        }
+      });
+    } catch {
+      console.error(
+        "Failed to load store settings."
+      );
+    } finally {
+      setSettingsLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadOrders();
+    loadSettings();
   }, []);
 
+  async function updateSettings(
+    updates,
+    savingKey
+  ) {
+    setSaving(savingKey);
+
+    try {
+      const response = await fetch(
+        "/api/admin/settings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(updates)
+        }
+      );
+
+      if (response.status === 401) {
+        router.push("/admin");
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(
+          data.error ||
+            "Unable to update settings."
+        );
+        return;
+      }
+
+      setSettings({
+        maintenance: Boolean(
+          data.maintenance
+        ),
+        payments: {
+          "ps5-car-drop":
+            data.payments?.[
+              "ps5-car-drop"
+            ] !== false,
+
+          "modded-account":
+            data.payments?.[
+              "modded-account"
+            ] !== false,
+
+          "premium-drop":
+            data.payments?.[
+              "premium-drop"
+            ] !== false
+        }
+      });
+    } catch {
+      alert(
+        "Unable to update settings."
+      );
+    } finally {
+      setSaving("");
+    }
+  }
+
+  function toggleMaintenance() {
+    updateSettings(
+      {
+        maintenance:
+          !settings.maintenance
+      },
+      "maintenance"
+    );
+  }
+
+  function toggleProduct(productId) {
+    updateSettings(
+      {
+        payments: {
+          [productId]:
+            !settings.payments[
+              productId
+            ]
+        }
+      },
+      productId
+    );
+  }
+
+  async function refreshDashboard() {
+    setLoading(true);
+    setSettingsLoading(true);
+
+    await Promise.all([
+      loadOrders(),
+      loadSettings()
+    ]);
+  }
+
   async function logout() {
-    await fetch("/api/admin/logout", {
-      method: "POST"
-    });
+    await fetch(
+      "/api/admin/logout",
+      {
+        method: "POST"
+      }
+    );
 
     router.push("/admin");
   }
@@ -92,7 +264,10 @@ export default function AdminDashboard() {
           </div>
 
           <nav className="adminNav">
-            <a href="#overview" className="active">
+            <a
+              href="#overview"
+              className="active"
+            >
               Overview
             </a>
 
@@ -103,11 +278,19 @@ export default function AdminDashboard() {
             <a href="#products">
               Products
             </a>
+
+            <a href="#controls">
+              Site Controls
+            </a>
           </nav>
         </div>
 
         <div className="sidebarBottom">
-          <a href="/" target="_blank">
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+          >
             View Store
           </a>
 
@@ -127,21 +310,26 @@ export default function AdminDashboard() {
             <h1>Dashboard</h1>
 
             <p>
-              Manage your marketplace and monitor your orders.
+              Manage your marketplace and
+              monitor your orders.
             </p>
           </div>
 
           <button
             className="refreshButton"
-            onClick={loadOrders}
+            onClick={refreshDashboard}
           >
             Refresh
           </button>
         </header>
 
-        <section id="overview" className="statGrid">
+        <section
+          id="overview"
+          className="statGrid"
+        >
           <div className="dashboardStat">
             <span>Total Revenue</span>
+
             <strong>
               ${stats.revenue.toFixed(2)}
             </strong>
@@ -149,6 +337,7 @@ export default function AdminDashboard() {
 
           <div className="dashboardStat">
             <span>Total Orders</span>
+
             <strong>
               {stats.orders}
             </strong>
@@ -156,6 +345,7 @@ export default function AdminDashboard() {
 
           <div className="dashboardStat">
             <span>Paid Orders</span>
+
             <strong>
               {stats.paid}
             </strong>
@@ -163,16 +353,167 @@ export default function AdminDashboard() {
 
           <div className="dashboardStat">
             <span>Products</span>
+
             <strong>
               {products.length}
             </strong>
           </div>
         </section>
 
-        <section id="orders" className="dashboardPanel">
+        <section
+          id="controls"
+          className="dashboardPanel"
+        >
           <div className="panelHeader">
             <div>
-              <span>RECENT ACTIVITY</span>
+              <span>
+                STORE CONTROL
+              </span>
+
+              <h2>
+                Site Controls
+              </h2>
+            </div>
+
+            <span
+              className={
+                settings.maintenance
+                  ? "statusOther"
+                  : "statusPaid"
+              }
+            >
+              {settings.maintenance
+                ? "MAINTENANCE"
+                : "ONLINE"}
+            </span>
+          </div>
+
+          {settingsLoading ? (
+            <div className="emptyState">
+              Loading controls...
+            </div>
+          ) : (
+            <div className="controlList">
+              <div className="controlRow">
+                <div>
+                  <strong>
+                    Site Maintenance
+                  </strong>
+
+                  <span>
+                    Take the public
+                    marketplace offline
+                    while staff performs
+                    maintenance.
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  className={
+                    settings.maintenance
+                      ? "controlToggle enabled"
+                      : "controlToggle"
+                  }
+                  disabled={
+                    saving ===
+                    "maintenance"
+                  }
+                  onClick={
+                    toggleMaintenance
+                  }
+                >
+                  {saving ===
+                  "maintenance"
+                    ? "Saving..."
+                    : settings.maintenance
+                    ? "ON"
+                    : "OFF"}
+                </button>
+              </div>
+
+              <div className="controlDivider" />
+
+              <div className="controlSectionTitle">
+                <span>
+                  PAYMENT CONTROLS
+                </span>
+
+                <p>
+                  Disable individual
+                  products without
+                  taking the entire
+                  store offline.
+                </p>
+              </div>
+
+              {products.map(
+                (product) => {
+                  const enabled =
+                    settings
+                      .payments[
+                      product.id
+                    ];
+
+                  return (
+                    <div
+                      className="controlRow"
+                      key={product.id}
+                    >
+                      <div>
+                        <strong>
+                          {product.name}
+                        </strong>
+
+                        <span>
+                          {enabled
+                            ? "Customers can purchase this product."
+                            : "Purchases are currently disabled."}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className={
+                          enabled
+                            ? "controlToggle enabled"
+                            : "controlToggle"
+                        }
+                        disabled={
+                          saving ===
+                          product.id
+                        }
+                        onClick={() =>
+                          toggleProduct(
+                            product.id
+                          )
+                        }
+                      >
+                        {saving ===
+                        product.id
+                          ? "Saving..."
+                          : enabled
+                          ? "ON"
+                          : "OFF"}
+                      </button>
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          )}
+        </section>
+
+        <section
+          id="orders"
+          className="dashboardPanel"
+        >
+          <div className="panelHeader">
+            <div>
+              <span>
+                RECENT ACTIVITY
+              </span>
+
               <h2>Orders</h2>
             </div>
 
@@ -187,89 +528,138 @@ export default function AdminDashboard() {
             </div>
           ) : orders.length === 0 ? (
             <div className="emptyState">
-              No orders have been placed yet.
+              No orders have been
+              placed yet.
             </div>
           ) : (
             <div className="ordersTable">
               <div className="tableHeader">
-                <span>Customer</span>
-                <span>Product</span>
-                <span>Amount</span>
-                <span>Status</span>
-                <span>Date</span>
+                <span>
+                  Customer
+                </span>
+
+                <span>
+                  Product
+                </span>
+
+                <span>
+                  Amount
+                </span>
+
+                <span>
+                  Status
+                </span>
+
+                <span>
+                  Date
+                </span>
               </div>
 
-              {orders.map((order) => (
-                <div
-                  className="orderRow"
-                  key={order.id}
-                >
-                  <span>
-                    {order.customer || "Unknown"}
-                  </span>
+              {orders.map(
+                (order) => (
+                  <div
+                    className="orderRow"
+                    key={order.id}
+                  >
+                    <span>
+                      {order.customer ||
+                        "Unknown"}
+                    </span>
 
-                  <span>
-                    {order.product || "DropFits Product"}
-                  </span>
+                    <span>
+                      {order.product ||
+                        "DropFits Product"}
+                    </span>
 
-                  <span>
-                    ${Number(order.amount || 0).toFixed(2)}
-                  </span>
+                    <span>
+                      $
+                      {Number(
+                        order.amount ||
+                          0
+                      ).toFixed(2)}
+                    </span>
 
-                  <span>
-                    <b
-                      className={
-                        order.status === "paid"
-                          ? "statusPaid"
-                          : "statusOther"
-                      }
-                    >
-                      {order.status}
-                    </b>
-                  </span>
+                    <span>
+                      <b
+                        className={
+                          order.status ===
+                          "paid"
+                            ? "statusPaid"
+                            : "statusOther"
+                        }
+                      >
+                        {
+                          order.status
+                        }
+                      </b>
+                    </span>
 
-                  <span>
-                    {order.date}
-                  </span>
-                </div>
-              ))}
+                    <span>
+                      {order.date}
+                    </span>
+                  </div>
+                )
+              )}
             </div>
           )}
         </section>
 
-        <section id="products" className="dashboardPanel">
+        <section
+          id="products"
+          className="dashboardPanel"
+        >
           <div className="panelHeader">
             <div>
-              <span>STORE INVENTORY</span>
-              <h2>Products</h2>
+              <span>
+                STORE INVENTORY
+              </span>
+
+              <h2>
+                Products
+              </h2>
             </div>
           </div>
 
           <div className="adminProducts">
-            {products.map((product) => (
-              <div
-                className="adminProduct"
-                key={product.id}
-              >
-                <div className="adminProductIcon">
-                  DF
-                </div>
+            {products.map(
+              (product) => {
+                const enabled =
+                  settings
+                    .payments[
+                    product.id
+                  ];
 
-                <div className="adminProductInfo">
-                  <strong>
-                    {product.name}
-                  </strong>
+                return (
+                  <div
+                    className="adminProduct"
+                    key={product.id}
+                  >
+                    <div className="adminProductIcon">
+                      DF
+                    </div>
 
-                  <span>
-                    {product.tag}
-                  </span>
-                </div>
+                    <div className="adminProductInfo">
+                      <strong>
+                        {product.name}
+                      </strong>
 
-                <strong className="adminProductPrice">
-                  ${product.price.toFixed(2)}
-                </strong>
-              </div>
-            ))}
+                      <span>
+                        {enabled
+                          ? "PAYMENTS ENABLED"
+                          : "PAYMENTS DISABLED"}
+                      </span>
+                    </div>
+
+                    <strong className="adminProductPrice">
+                      $
+                      {product.price.toFixed(
+                        2
+                      )}
+                    </strong>
+                  </div>
+                );
+              }
+            )}
           </div>
         </section>
       </section>
