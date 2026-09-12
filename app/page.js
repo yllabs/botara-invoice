@@ -1,4 +1,3 @@
-```jsx
 import { redirect } from "next/navigation";
 import { getStoreSettings } from "../lib/storeSettings";
 
@@ -397,4 +396,3 @@ export default async function Home() {
     </main>
   );
 }
-```
