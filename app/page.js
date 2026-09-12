@@ -1,4 +1,3 @@
-```jsx
 import { redirect } from "next/navigation";
 import { getStoreSettings } from "../lib/storeSettings";
 
@@ -18,7 +17,7 @@ const products = [
     name: "Modded Account",
     price: "$35.00",
     description:
-      "A fully upgraded GTA V PS5 account packed with modded cars, outfits, cash and premium properties.",
+      "A fully upgraded GTA V PS5 account with modded cars, outfits, cash and premium properties.",
     tag: "PREMIUM",
     features: [
       "20 Modded Cars",
@@ -175,6 +174,7 @@ export default async function Home() {
         <div className="sectionHeading">
           <div>
             <span className="eyebrow">THE STORE</span>
+
             <h2>Pick your drop.</h2>
           </div>
 
@@ -228,8 +228,22 @@ export default async function Home() {
                     </div>
                   )}
 
+                  {product.id === "modded-account" && (
+                    <div className="deliveryNotice">
+                      <span className="deliveryDot" />
+
+                      <div>
+                        <strong>Delivery Time</strong>
+                        <span>1–2 Hours</span>
+                      </div>
+                    </div>
+                  )}
+
                   {enabled ? (
-                    <form action="/api/checkout" method="POST">
+                    <form
+                      action="/api/checkout"
+                      method="POST"
+                    >
                       <input
                         type="hidden"
                         name="productId"
@@ -358,9 +372,7 @@ export default async function Home() {
             DROP<span>FITS</span>
           </a>
 
-          <p>
-            Premium GTA V digital marketplace.
-          </p>
+          <p>Premium GTA V digital marketplace.</p>
         </div>
 
         <div className="footerRight">
