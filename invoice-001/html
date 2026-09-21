@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VR.QC | Invoice Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #09090d;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .app {
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .topbar {
+      max-width: 1200px;
+      margin: 0 auto 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .brand {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+    .brand span {
+      color: #8b5cf6;
+    }
+    .subtitle {
+      color: #8f8f9c;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .primary {
+      background: #8b5cf6;
+      color: white;
+    }
+    .secondary {
+      background: #18181f;
+      color: white;
+      border: 1px solid #292933;
+    }
+    .workspace {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 25px;
+    }
+    .panel {
+      background: #111116;
+      border: 1px solid #25252d;
+      border-radius: 16px;
+      padding: 22px;
+      height: fit-content;
+    }
+    .panel h2 {
+      margin: 0 0 20px;
+      font-size: 18px;
+    }
+    .section {
+      margin-bottom: 25px;
+    }
+    .section-title {
+      color: #a78bfa;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      color: #9999a5;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    input,
+    textarea {
+      width: 100%;
+      background: #18181f;
+      border: 1px solid #2a2a34;
+      color: white;
+      border-radius: 9px;
+      padding: 11px 12px;
+      outline: none;
+      font-family: inherit;
+      margin-bottom: 12px;
+    }
+    input:focus,
+    textarea:focus {
+      border-color: #8b5cf6;
+    }
+    textarea {
+      min-height: 75px;
+      resize: vertical;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .items-editor {
+      margin-top: 10px;
+    }
+    .item-editor {
+      background: #18181f;
+      border: 1px solid #292933;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .item-row {
+      display: grid;
+      grid-template-columns: 1fr 70px 90px 35px;
+      gap: 7px;
+      align-items: end;
+    }
+    .item-row input {
+      margin: 0;
+      padding: 9px;
+    }
+    .remove {
+      background: #32171d;
+      color: #ff7b8a;
+      padding: 9px 0;
+    }
+    .add-item {
+      width: 100%;
+      margin-top: 4px;
+    }
+    .preview-wrap {
+      background: #16161d;
+      border-radius: 16px;
+      padding: 25px;
+      overflow: auto;
+    }
+    .invoice {
+      background: white;
+      color: #17171c;
+      width: 100%;
+      max-width: 800px;
+      min-height: 1050px;
+      margin: auto;
+      padding: 55px;
+      box-shadow: 0 15px 50px rgba(0,0,0,.35);
+    }
+    .invoice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 28px;
+      margin-bottom: 30px;
+    }
+    .invoice-logo {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+    .invoice-logo span {
+      color: #7c3aed;
+    }
+    .invoice-label {
+      text-align: right;
+    }
+    .invoice-label h1 {
+      margin: 0;
+      font-size: 35px;
+      letter-spacing: -1px;
+    }
+    .invoice-number {
+      margin-top: 7px;
+      color: #777;
+      font-size: 13px;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      margin-bottom: 40px;
+    }
+    .info-title {
+      color: #888;
+      text-transform: uppercase;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .info-name {
+      font-weight: bold;
+      font-size: 15px;
+      white-space: pre-line;
+    }
+    .info-text {
+      color: #555;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+    .dates {
+      text-align: right;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .dates strong {
+      display: inline-block;
+      width: 90px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th {
+      background: #f5f5f7;
+      padding: 12px;
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #666;
+    }
+    td {
+      padding: 15px 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 13px;
+    }
+    th:nth-child(n+2),
+    td:nth-child(n+2) {
+      text-align: right;
+    }
+    .totals {
+      width: 280px;
+      margin-left: auto;
+      margin-top: 25px;
+    }
+    .total-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      font-size: 13px;
+    }
+    .grand-total {
+      border-top: 2px solid #17171c;
+      margin-top: 8px;
+      padding-top: 13px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .notes {
+      margin-top: 55px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    .notes-title {
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #777;
+      margin-bottom: 8px;
+    }
+    .notes-text {
+      white-space: pre-line;
+      color: #555;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 950px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .invoice {
+        min-width: 700px;
+      }
+      .preview-wrap {
+        overflow-x: auto;
+      }
+    }
+    @media (max-width: 600px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .actions {
+        width: 100%;
+      }
+      .actions button {
+        flex: 1;
+      }
+      .two {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media print {
+      body {
+        background: white;
+      }
+      .topbar,
+      .panel {
+        display: none !important;
+      }
+      .app {
+        padding: 0;
+      }
+      .workspace {
+        display: block;
+      }
+      .preview-wrap {
+        padding: 0;
+        background: white;
+      }
+      .invoice {
+        box-shadow: none;
+        max-width: none;
+        width: 100%;
+        min-height: auto;
+        margin: 0;
+        padding: 45px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div>
+        <div class="brand">VR<span>.QC</span></div>
+        <div class="subtitle">Professional Invoice Generator</div>
+      </div>
+      <div class="actions">
+        <button class="secondary" onclick="clearInvoice()">Clear</button>
+        <button class="primary" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="workspace">
+      <section class="panel">
+        <h2>Create Invoice</h2>
+        <div class="section">
+          <div class="section-title">Invoice Details</div>
+          <div class="two">
+            <div>
+              <label>Invoice Number</label>
+              <input id="invoiceNumber" value="VRQC-001">
+            </div>
+            <div>
+              <label>Currency</label>
+              <input id="currency" value="$">
+            </div>
+          </div>
+          <div class="two">
+            <div>
+              <label>Issue Date</label>
+              <input id="issueDate" type="date">
+            </div>
+            <div>
+              <label>Due Date</label>
+              <input id="dueDate" type="date">
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title">Your Business</div>
+          <label>Business Name</label>
+          <input id="businessName" value="VR.QC">
+          <label>Business Details</label>
+          <textarea id="businessDetails" placeholder="Address&#10;Email&#10;Phone"></textarea>
+        </div>
+        <div class="section">
+          <div class="section-title">Bill To</div>
+          <label>Customer Name</label>
+          <input id="customerName" placeholder="Customer or Company">
+          <label>Customer Details</label>
+          <textarea id="customerDetails" placeholder="Address&#10;Email&#10;Phone"></textarea>
+        </div>
+        <div class="section">
+          <div class="section-title">Items</div>
+          <div id="itemsEditor" class="items-editor"></div>
+          <button class="secondary add-item" onclick="addItem()">
+            + Add Item
+          </button>
+        </div>
+        <div class="section">
+          <div class="section-title">Totals</div>
+          <label>Tax (%)</label>
+          <input id="tax" type="number" value="0" min="0" step="0.01">
+          <label>Discount</label>
+          <input id="discount" type="number" value="0" min="0" step="0.01">
+        </div>
+        <div class="section">
+          <div class="section-title">Notes</div>
+          <textarea id="notes" placeholder="Payment terms, thank you message, or other information...">Thank you for your business.</textarea>
+        </div>
+      </section>
+      <section class="preview-wrap">
+        <div class="invoice">
+          <div class="invoice-header">
+            <div>
+              <div class="invoice-logo">
+                VR<span>.QC</span>
+              </div>
+            </div>
+            <div class="invoice-label">
+              <h1>INVOICE</h1>
+              <div class="invoice-number">
+                #<span id="previewInvoiceNumber">VRQC-001</span>
+              </div>
+            </div>
+          </div>
+          <div class="info-grid">
+            <div>
+              <div class="info-title">From</div>
+              <div class="info-name" id="previewBusinessName">VR.QC</div>
+              <div class="info-text" id="previewBusinessDetails"></div>
+            </div>
+            <div>
+              <div class="info-title">Bill To</div>
+              <div class="info-name" id="previewCustomerName">Customer Name</div>
+              <div class="info-text" id="previewCustomerDetails"></div>
+            </div>
+          </div>
+          <div class="dates">
+            <div>
+              <strong>Issued:</strong>
+              <span id="previewIssueDate">-</span>
+            </div>
+            <div>
+              <strong>Due:</strong>
+              <span id="previewDueDate">-</span>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody id="invoiceItems"></tbody>
+          </table>
+          <div class="totals">
+            <div class="total-line">
+              <span>Subtotal</span>
+              <span id="previewSubtotal">$0.00</span>
+            </div>
+            <div class="total-line">
+              <span>Discount</span>
+              <span id="previewDiscount">$0.00</span>
+            </div>
+            <div class="total-line">
+              <span>Tax</span>
+              <span id="previewTax">$0.00</span>
+            </div>
+            <div class="total-line grand-total">
+              <span>Total</span>
+              <span id="previewTotal">$0.00</span>
+            </div>
+          </div>
+          <div class="notes">
+            <div class="notes-title">Notes</div>
+            <div class="notes-text" id="previewNotes">
+              Thank you for your business.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    let items = [
+      {
+        description: "",
+        quantity: 1,
+        rate: 0
+      }
+    ];
+    const fields = [
+      "invoiceNumber",
+      "currency",
+      "issueDate",
+      "dueDate",
+      "businessName",
+      "businessDetails",
+      "customerName",
+      "customerDetails",
+      "tax",
+      "discount",
+      "notes"
+    ];
+    function formatMoney(value) {
+      const currency = document.getElementById("currency").value || "$";
+      return currency + Number(value || 0).toFixed(2);
+    }
+    function formatDate(value) {
+      if (!value) return "-";
+      const date = new Date(value + "T00:00:00");
+      return date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
+    function addItem() {
+      items.push({
+        description: "",
+        quantity: 1,
+        rate: 0
+      });
+      renderEditors();
+      updateInvoice();
+    }
+    function removeItem(index) {
+      items.splice(index, 1);
+      if (items.length === 0) {
+        items.push({
+          description: "",
+          quantity: 1,
+          rate: 0
+        });
+      }
+      renderEditors();
+      updateInvoice();
+    }
+    function renderEditors() {
+      const container = document.getElementById("itemsEditor");
+      container.innerHTML = "";
+      items.forEach((item, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "item-editor";
+        wrapper.innerHTML = `
+          <div class="item-row">
+            <div>
+              <label>Description</label>
+              <input
+                type="text"
+                value="${escapeHtml(item.description)}"
+                oninput="updateItem(${index}, 'description', this.value)"
+                placeholder="Service or product"
+              >
+            </div>
+            <div>
+              <label>Qty</label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value="${item.quantity}"
+                oninput="updateItem(${index}, 'quantity', this.value)"
+              >
+            </div>
+            <div>
+              <label>Rate</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value="${item.rate}"
+                oninput="updateItem(${index}, 'rate', this.value)"
+              >
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button class="remove" onclick="removeItem(${index})">×</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(wrapper);
+      });
+    }
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+    function updateItem(index, field, value) {
+      if (field === "quantity" || field === "rate") {
+        value = Number(value) || 0;
+      }
+      items[index][field] = value;
+      updateInvoice();
+    }
+    function updateInvoice() {
+      const invoiceNumber = document.getElementById("invoiceNumber").value;
+      const businessName = document.getElementById("businessName").value;
+      const businessDetails = document.getElementById("businessDetails").value;
+      const customerName = document.getElementById("customerName").value;
+      const customerDetails = document.getElementById("customerDetails").value;
+      const issueDate = document.getElementById("issueDate").value;
+      const dueDate = document.getElementById("dueDate").value;
+      const notes = document.getElementById("notes").value;
+      const taxRate = Number(document.getElementById("tax").value) || 0;
+      const discount = Number(document.getElementById("discount").value) || 0;
+      document.getElementById("previewInvoiceNumber").textContent =
+        invoiceNumber || "VRQC-001";
+      document.getElementById("previewBusinessName").textContent =
+        businessName || "VR.QC";
+      document.getElementById("previewBusinessDetails").textContent =
+        businessDetails;
+      document.getElementById("previewCustomerName").textContent =
+        customerName || "Customer Name";
+      document.getElementById("previewCustomerDetails").textContent =
+        customerDetails;
+      document.getElementById("previewIssueDate").textContent =
+        formatDate(issueDate);
+      document.getElementById("previewDueDate").textContent =
+        formatDate(dueDate);
+      document.getElementById("previewNotes").textContent =
+        notes;
+      const tbody = document.getElementById("invoiceItems");
+      tbody.innerHTML = "";
+      let subtotal = 0;
+      items.forEach(item => {
+        const amount = Number(item.quantity || 0) * Number(item.rate || 0);
+        subtotal += amount;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${escapeHtml(item.description || "Item")}</td>
+          <td>${item.quantity || 0}</td>
+          <td>${formatMoney(item.rate)}</td>
+          <td>${formatMoney(amount)}</td>
+        `;
+        tbody.appendChild(row);
+      });
+      const taxableAmount = Math.max(0, subtotal - discount);
+      const taxAmount = taxableAmount * (taxRate / 100);
+      const total = taxableAmount + taxAmount;
+      document.getElementById("previewSubtotal").textContent =
+        formatMoney(subtotal);
+      document.getElementById("previewDiscount").textContent =
+        formatMoney(discount);
+      document.getElementById("previewTax").textContent =
+        formatMoney(taxAmount);
+      document.getElementById("previewTotal").textContent =
+        formatMoney(total);
+    }
+    function clearInvoice() {
+      document.getElementById("invoiceNumber").value = "VRQC-001";
+      document.getElementById("currency").value = "$";
+      document.getElementById("businessName").value = "VR.QC";
+      document.getElementById("businessDetails").value = "";
+      document.getElementById("customerName").value = "";
+      document.getElementById("customerDetails").value = "";
+      document.getElementById("tax").value = "0";
+      document.getElementById("discount").value = "0";
+      document.getElementById("notes").value =
+        "Thank you for your business.";
+      items = [
+        {
+          description: "",
+          quantity: 1,
+          rate: 0
+        }
+      ];
+      renderEditors();
+      updateInvoice();
+    }
+    fields.forEach(id => {
+      document.getElementById(id).addEventListener("input", updateInvoice);
+      document.getElementById(id).addEventListener("change", updateInvoice);
+    });
+    const today = new Date();
+    const due = new Date();
+    due.setDate(today.getDate() + 30);
+    document.getElementById("issueDate").value =
+      today.toISOString().split("T")[0];
+    document.getElementById("dueDate").value =
+      due.toISOString().split("T")[0];
+    renderEditors();
+    updateInvoice();
+  </script>
+</body>
+</html>
