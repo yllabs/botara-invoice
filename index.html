@@ -22,8 +22,8 @@
       min-height: 100vh;
       overflow: hidden;
       font-family: Arial, Helvetica, sans-serif;
-      color: #fff;
-      background: #07030d;
+      color: #ffffff;
+      background: #06030b;
     }
 
     .background {
@@ -33,57 +33,68 @@
       background:
         radial-gradient(
           circle at 50% 42%,
-          rgba(137, 65, 255, 0.20),
+          rgba(119, 58, 255, 0.18),
           transparent 34%
         ),
         radial-gradient(
-          circle at 10% 10%,
-          rgba(91, 35, 180, 0.10),
+          circle at 15% 15%,
+          rgba(95, 39, 190, 0.10),
           transparent 28%
         ),
         radial-gradient(
-          circle at 90% 90%,
-          rgba(115, 45, 220, 0.08),
+          circle at 85% 85%,
+          rgba(122, 52, 230, 0.09),
           transparent 30%
         ),
-        #07030d;
+        #06030b;
     }
 
     .glow {
       position: absolute;
-      width: 520px;
-      height: 520px;
+      width: 550px;
+      height: 550px;
       left: 50%;
-      top: 48%;
+      top: 45%;
       transform: translate(-50%, -50%);
       border-radius: 50%;
       background: rgba(126, 62, 255, 0.08);
-      filter: blur(110px);
-      animation: pulse 6s ease-in-out infinite;
+      filter: blur(120px);
+      animation: glowPulse 6s ease-in-out infinite;
     }
 
-    .glow-small {
+    .glowTwo {
       position: absolute;
-      width: 240px;
-      height: 240px;
+      width: 260px;
+      height: 260px;
       left: 50%;
-      top: 43%;
+      top: 42%;
       transform: translate(-50%, -50%);
       border-radius: 50%;
-      background: rgba(171, 106, 255, 0.08);
-      filter: blur(75px);
-      animation: pulseSmall 4s ease-in-out infinite;
+      background: rgba(170, 105, 255, 0.08);
+      filter: blur(80px);
+      animation: glowSmall 4s ease-in-out infinite;
     }
 
     .grid {
       position: absolute;
       inset: 0;
-      opacity: 0.12;
+      opacity: 0.11;
       background-image:
-        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+        linear-gradient(
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px
+        );
       background-size: 55px 55px;
-      mask-image: linear-gradient(to bottom, black, transparent);
+      mask-image: linear-gradient(
+        to bottom,
+        black,
+        transparent
+      );
     }
 
     .container {
@@ -99,37 +110,21 @@
 
     .content {
       width: 100%;
-      max-width: 700px;
+      max-width: 720px;
       text-align: center;
       animation: appear 1s ease forwards;
     }
 
-    .logo-wrapper {
-      width: 150px;
-      height: 150px;
-      margin: 0 auto 28px;
-      padding: 25px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 38px;
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      box-shadow:
-        0 0 80px rgba(126, 63, 255, 0.20),
-        inset 0 0 40px rgba(126, 63, 255, 0.06);
-      backdrop-filter: blur(18px);
-    }
-
     .logo {
       display: block;
-      width: 100%;
-      height: 100%;
+      width: 310px;
+      max-width: 75vw;
+      height: auto;
+      margin: 0 auto 26px;
       object-fit: contain;
-      object-position: center;
-      filter: drop-shadow(
-        0 0 25px rgba(145, 85, 255, 0.45)
-      );
+      filter:
+        drop-shadow(0 0 20px rgba(137, 71, 255, 0.40))
+        drop-shadow(0 0 45px rgba(112, 48, 255, 0.16));
     }
 
     .status {
@@ -137,30 +132,30 @@
       align-items: center;
       gap: 9px;
       padding: 8px 15px;
-      margin-bottom: 22px;
+      margin-bottom: 23px;
       border-radius: 999px;
       background: rgba(128, 64, 255, 0.10);
       border: 1px solid rgba(151, 103, 255, 0.20);
-      color: #c7aaff;
+      color: #c8adff;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.7px;
       text-transform: uppercase;
     }
 
-    .status-dot {
+    .statusDot {
       width: 7px;
       height: 7px;
       flex-shrink: 0;
       border-radius: 50%;
       background: #9a63ff;
-      box-shadow: 0 0 12px #9a63ff;
+      box-shadow: 0 0 13px #9a63ff;
       animation: blink 2s ease-in-out infinite;
     }
 
     h1 {
       margin: 0;
-      font-size: clamp(48px, 8vw, 78px);
+      font-size: clamp(46px, 8vw, 78px);
       line-height: 0.98;
       letter-spacing: -4px;
       font-weight: 800;
@@ -172,7 +167,7 @@
       background: linear-gradient(
         90deg,
         #ffffff,
-        #c09aff,
+        #c29cff,
         #8c4cff
       );
       -webkit-background-clip: text;
@@ -188,7 +183,7 @@
     }
 
     .divider {
-      width: 85px;
+      width: 90px;
       height: 1px;
       margin: 34px auto 24px;
       background: linear-gradient(
@@ -199,7 +194,7 @@
       );
     }
 
-    .small-text {
+    .smallText {
       margin: 0;
       color: #625b6d;
       font-size: 13px;
@@ -228,10 +223,10 @@
       }
     }
 
-    @keyframes pulse {
+    @keyframes glowPulse {
       0%,
       100% {
-        opacity: 0.5;
+        opacity: 0.45;
         transform: translate(-50%, -50%) scale(0.9);
       }
 
@@ -241,7 +236,7 @@
       }
     }
 
-    @keyframes pulseSmall {
+    @keyframes glowSmall {
       0%,
       100% {
         opacity: 0.3;
@@ -270,12 +265,10 @@
         padding: 24px;
       }
 
-      .logo-wrapper {
-        width: 115px;
-        height: 115px;
-        padding: 19px;
-        border-radius: 30px;
-        margin-bottom: 24px;
+      .logo {
+        width: 230px;
+        max-width: 72vw;
+        margin-bottom: 22px;
       }
 
       h1 {
@@ -300,23 +293,21 @@
 
   <div class="background">
     <div class="glow"></div>
-    <div class="glow-small"></div>
+    <div class="glowTwo"></div>
     <div class="grid"></div>
   </div>
 
   <div class="container">
     <main class="content">
 
-      <div class="logo-wrapper">
-        <img
-          src="biofyit.png"
-          alt="Biofyit"
-          class="logo"
-        >
-      </div>
+      <img
+        src="biofyit-logo.png"
+        alt="Biofy"
+        class="logo"
+      >
 
       <div class="status">
-        <span class="status-dot"></span>
+        <span class="statusDot"></span>
         Under Maintenance
       </div>
 
@@ -327,13 +318,13 @@
 
       <p class="description">
         Biofyit is currently being worked on while we build and improve
-        the platform. We're creating a free place where anyone can make
+        the platform. We're creating a free place where anyone can create
         and share their own personal bio page.
       </p>
 
       <div class="divider"></div>
 
-      <p class="small-text">
+      <p class="smallText">
         The site will be back soon.
       </p>
 
