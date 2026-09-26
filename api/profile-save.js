@@ -1,301 +1,235 @@
 const { getFile, saveFile, github } = require("./github");
 
-function getCookie(req, name) {
-  const cookies = req.headers.cookie || "";
-  const match = cookies
-    .split(";")
-    .map(x => x.trim())
-    .find(x => x.startsWith(`${name}=`));
-
-  if (!match) return null;
-
-  return decodeURIComponent(match.substring(name.length + 1));
+function getCookie(req,name){
+const cookies=req.headers.cookie||"";
+const match=cookies.split(";").map(x=>x.trim()).find(x=>x.startsWith(`${name}=`));
+if(!match)return null;
+return decodeURIComponent(match.substring(name.length+1));
 }
 
-function cleanString(value, max) {
-  return String(value || "").trim().slice(0, max);
+function cleanString(value,max=500){
+return String(value||"").trim().slice(0,max);
 }
 
-const allowedPlatforms = [
-  "discord",
-  "instagram",
-  "tiktok",
-  "youtube",
-  "x",
-  "facebook",
-  "snapchat",
-  "twitch",
-  "kick",
-  "github",
-  "reddit",
-  "spotify",
-  "soundcloud",
-  "steam",
-  "roblox",
-  "xbox",
-  "playstation",
-  "linkedin",
-  "threads",
-  "bluesky",
-  "telegram",
-  "pinterest",
-  "tumblr",
-  "gitlab",
-  "codepen",
-  "patreon",
-  "kofi",
-  "cashapp",
-  "venmo",
-  "paypal",
-  "custom"
+const allowedPlatforms=[
+"discord","instagram","tiktok","youtube","x","facebook","snapchat","twitch","kick",
+"github","reddit","spotify","soundcloud","steam","roblox","xbox","playstation",
+"linkedin","threads","bluesky","telegram","pinterest","tumblr","gitlab","codepen",
+"patreon","kofi","cashapp","venmo","paypal","custom"
 ];
 
-function getExtension(file, fallback) {
-  const extension = String(file?.extension || fallback)
-    .replace(/[^a-z0-9]/gi, "")
-    .toLowerCase();
+function getExtension(value,fallback){
+const extension=String(value||fallback)
+.toLowerCase()
+.replace(/[^a-z0-9]/g,"");
 
-  return extension || fallback;
+const allowed=["png","jpg","jpeg","webp","gif","mp3","wav","ogg"];
+
+return allowed.includes(extension)?extension:fallback;
 }
 
-function decodeBase64(data) {
-  const value = String(data || "");
+async function uploadMedia(path,data,username){
+const base64=String(data||"").replace(/^data:[^;]+;base64,/,"");
 
-  if (!value.includes("base64,")) {
-    throw new Error("Invalid uploaded file.");
-  }
-
-  return value.split("base64,")[1];
+if(!base64){
+throw new Error("The uploaded file is empty.");
 }
 
-async function uploadMedia(path, data, username) {
-  const base64 = decodeBase64(data);
+const existing=await github(path);
 
-  if (!base64) {
-    throw new Error("Uploaded file is empty.");
-  }
+let sha=null;
 
-  const existing = await github(path);
-
-  let sha = null;
-
-  if (existing.status === 200) {
-    const existingData = await existing.json();
-    sha = existingData.sha;
-  } else if (existing.status !== 404) {
-    const text = await existing.text();
-
-    let error;
-
-    try {
-      error = JSON.parse(text);
-    } catch {
-      throw new Error("Unable to access GitHub media storage.");
-    }
-
-    throw new Error(error.message || "Unable to access GitHub media storage.");
-  }
-
-  const body = {
-    message: `Update Biofyit media: ${username}`,
-    content: base64
-  };
-
-  if (sha) {
-    body.sha = sha;
-  }
-
-  const response = await github(path, {
-    method: "PUT",
-    body: JSON.stringify(body)
-  });
-
-  const text = await response.text();
-
-  let result;
-
-  try {
-    result = JSON.parse(text);
-  } catch {
-    console.error("GitHub media response:", text);
-    throw new Error("GitHub returned an invalid media response.");
-  }
-
-  if (!response.ok) {
-    console.error("GitHub media upload error:", result);
-    throw new Error(result.message || "Unable to publish photo.");
-  }
-
-  return `/api/media?path=${encodeURIComponent(path)}`;
+if(existing.ok){
+const file=await existing.json();
+sha=file.sha;
+}else if(existing.status!==404){
+const error=await existing.text();
+console.error("MEDIA ACCESS ERROR:",error);
+throw new Error("Unable to access media storage.");
 }
 
-module.exports = async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      success: false,
-      error: "Method not allowed."
-    });
-  }
+const body={
+message:`Update Biofyit media: ${username}`,
+content:base64
+};
 
-  try {
-    const userId = getCookie(req, "biofyit_user");
+if(sha)body.sha=sha;
 
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        error: "You must be signed in."
-      });
-    }
+const response=await github(path,{
+method:"PUT",
+body:JSON.stringify(body)
+});
 
-    const usersResult = await getFile("users.json");
-    const users = usersResult?.content || [];
+if(!response.ok){
+const error=await response.text();
+console.error("MEDIA UPLOAD ERROR:",error);
+throw new Error("Unable to publish photo.");
+}
 
-    const user = users.find(item => item.id === userId);
+return `/api/media?path=${encodeURIComponent(path)}`;
+}
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: "Your session has expired."
-      });
-    }
+module.exports=async function handler(req,res){
+if(req.method!=="POST"){
+return res.status(405).json({
+success:false,
+error:"Method not allowed."
+});
+}
 
-    const username = String(user.username).toLowerCase();
+try{
+const userId=getCookie(req,"biofyit_user");
 
-    let profileResult = await getFile(`profiles/${username}.json`);
+if(!userId){
+return res.status(401).json({
+success:false,
+error:"You must be signed in."
+});
+}
 
-    if (!profileResult) {
-      profileResult = {
-        content: {
-          username,
-          displayName: username,
-          bio: "",
-          profilePicture: "",
-          background: "",
-          music: "",
-          discord: {
-            enabled: false,
-            id: null
-          },
-          links: []
-        },
-        sha: null
-      };
-    }
+const usersResult=await getFile("users.json");
+const users=usersResult?.content||[];
 
-    let body = req.body || {};
+const user=users.find(x=>x.id===userId);
 
-    if (typeof body === "string") {
-      body = JSON.parse(body);
-    }
+if(!user){
+return res.status(401).json({
+success:false,
+error:"Session expired."
+});
+}
 
-    const oldProfile = profileResult.content || {};
+let body=req.body||{};
 
-    const updatedProfile = {
-      ...oldProfile,
-      username,
-      displayName: cleanString(body.displayName, 80) || username,
-      bio: cleanString(body.bio, 500)
-    };
+if(typeof body==="string"){
+try{
+body=JSON.parse(body);
+}catch{
+return res.status(400).json({
+success:false,
+error:"Invalid request data."
+});
+}
+}
 
-    let links = body.links;
+const username=String(user.username).toLowerCase();
+const profilePath=`profiles/${username}.json`;
 
-    if (typeof links === "string") {
-      try {
-        links = JSON.parse(links);
-      } catch {
-        links = [];
-      }
-    }
+let profileResult=await getFile(profilePath);
 
-    if (!Array.isArray(links)) {
-      links = [];
-    }
+if(!profileResult){
+profileResult={
+content:{
+username,
+displayName:username,
+bio:"",
+profilePicture:"",
+background:"",
+music:"",
+discord:{
+enabled:false,
+id:null
+},
+links:[]
+},
+sha:null
+};
+}
 
-    const cleanedLinks = [];
-    const usedPlatforms = new Set();
+const oldProfile=profileResult.content||{};
 
-    for (const link of links.slice(0, 10)) {
-      if (!link || typeof link !== "object") continue;
+const updatedProfile={
+...oldProfile,
+username,
+displayName:cleanString(body.displayName,80)||username,
+bio:cleanString(body.bio,500)
+};
 
-      const platform = String(link.platform || "")
-        .trim()
-        .toLowerCase();
+let links=body.links;
 
-      const url = String(link.url || "").trim();
+if(typeof links==="string"){
+try{
+links=JSON.parse(links);
+}catch{
+links=[];
+}
+}
 
-      if (!allowedPlatforms.includes(platform)) continue;
-      if (!url) continue;
-      if (usedPlatforms.has(platform)) continue;
-      if (!/^https?:\/\//i.test(url)) continue;
+if(!Array.isArray(links))links=[];
 
-      usedPlatforms.add(platform);
+const cleanedLinks=[];
+const usedPlatforms=new Set();
 
-      cleanedLinks.push({
-        platform,
-        url: url.slice(0, 500)
-      });
-    }
+for(const link of links.slice(0,10)){
+if(!link||typeof link!=="object")continue;
 
-    updatedProfile.links = cleanedLinks;
+const platform=String(link.platform||"").trim().toLowerCase();
+const url=String(link.url||"").trim();
 
-    if (body.profilePicture?.data) {
-      const extension = getExtension(
-        body.profilePicture,
-        "png"
-      );
+if(!allowedPlatforms.includes(platform))continue;
+if(!url)continue;
+if(usedPlatforms.has(platform))continue;
+if(!/^https?:\/\//i.test(url))continue;
 
-      updatedProfile.profilePicture = await uploadMedia(
-        `media/profile-pictures/${username}.${extension}`,
-        body.profilePicture.data,
-        username
-      );
-    }
+usedPlatforms.add(platform);
 
-    if (body.background?.data) {
-      const extension = getExtension(
-        body.background,
-        "jpg"
-      );
+cleanedLinks.push({
+platform,
+url:url.slice(0,500)
+});
+}
 
-      updatedProfile.background = await uploadMedia(
-        `media/backgrounds/${username}.${extension}`,
-        body.background.data,
-        username
-      );
-    }
+updatedProfile.links=cleanedLinks;
 
-    if (body.music?.data) {
-      const extension = getExtension(
-        body.music,
-        "mp3"
-      );
+if(body.profilePicture&&body.profilePicture.data){
+const extension=getExtension(body.profilePicture.extension,"png");
 
-      updatedProfile.music = await uploadMedia(
-        `media/music/${username}.${extension}`,
-        body.music.data,
-        username
-      );
-    }
+updatedProfile.profilePicture=await uploadMedia(
+`media/profile-pictures/${username}.${extension}`,
+body.profilePicture.data,
+username
+);
+}
 
-    await saveFile(
-      `profiles/${username}.json`,
-      updatedProfile,
-      profileResult.sha,
-      `Update Biofyit profile: ${username}`
-    );
+if(body.background&&body.background.data){
+const extension=getExtension(body.background.extension,"jpg");
 
-    return res.status(200).json({
-      success: true,
-      message: "Profile published successfully.",
-      profile: updatedProfile
-    });
+updatedProfile.background=await uploadMedia(
+`media/backgrounds/${username}.${extension}`,
+body.background.data,
+username
+);
+}
 
-  } catch (error) {
-    console.error("PROFILE SAVE ERROR:", error);
+if(body.music&&body.music.data){
+const extension=getExtension(body.music.extension,"mp3");
 
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Unable to publish profile."
-    });
-  }
+updatedProfile.music=await uploadMedia(
+`media/music/${username}.${extension}`,
+body.music.data,
+username
+);
+}
+
+const saved=await saveFile(
+profilePath,
+updatedProfile,
+profileResult.sha,
+`Update Biofyit profile: ${username}`
+);
+
+return res.status(200).json({
+success:true,
+message:"Profile published successfully.",
+profile:updatedProfile
+});
+
+}catch(error){
+console.error("PROFILE SAVE ERROR:",error);
+
+return res.status(500).json({
+success:false,
+error:error.message||"Unable to publish profile."
+});
+}
 };
