@@ -1,82 +1,57 @@
-import crypto from "crypto";
+const { getFile } = require("./github");
 
 function getCookie(req, name) {
   const cookies = req.headers.cookie || "";
 
-  const parts = cookies.split(";");
+  const match = cookies
+    .split(";")
+    .map(item => item.trim())
+    .find(item => item.startsWith(`${name}=`));
 
-  for (const part of parts) {
-    const [key, ...value] = part.trim().split("=");
-
-    if (key === name) {
-      return decodeURIComponent(value.join("="));
-    }
-  }
-
-  return null;
-}
-
-function verifyToken(token) {
-  try {
-    const decoded = Buffer.from(token, "base64url").toString();
-
-    const parts = decoded.split("|");
-
-    if (parts.length !== 3) {
-      return null;
-    }
-
-    const email = parts[0];
-    const expires = Number(parts[1]);
-    const signature = parts[2];
-
-    if (!email || !expires || !signature) {
-      return null;
-    }
-
-    if (Date.now() > expires) {
-      return null;
-    }
-
-    const payload = `${email}|${expires}`;
-
-    const expected = crypto
-      .createHmac("sha256", process.env.SESSION_SECRET)
-      .update(payload)
-      .digest("base64url");
-
-    if (!crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expected)
-    )) {
-      return null;
-    }
-
-    return email;
-  } catch {
+  if (!match) {
     return null;
   }
+
+  return decodeURIComponent(
+    match.substring(name.length + 1)
+  );
 }
 
-export default function handler(req, res) {
-  const token = getCookie(req, "biofyit_session");
+module.exports = async function handler(req, res) {
+  try {
+    const userId = getCookie(req, "biofyit_user");
 
-  if (!token) {
-    return res.status(401).json({
+    if (!userId) {
+      return res.status(401).json({
+        authenticated: false
+      });
+    }
+
+    const result = await getFile("users.json");
+    const users = result?.content || [];
+
+    const user = users.find(
+      item => item.id === userId
+    );
+
+    if (!user) {
+      return res.status(401).json({
+        authenticated: false
+      });
+    }
+
+    return res.status(200).json({
+      authenticated: true,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email
+      }
+    });
+
+  } catch {
+    return res.status(500).json({
       authenticated: false
     });
   }
-
-  const email = verifyToken(token);
-
-  if (!email) {
-    return res.status(401).json({
-      authenticated: false
-    });
-  }
-
-  return res.status(200).json({
-    authenticated: true,
-    email
-  });
-}
+};
