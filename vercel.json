@@ -1,16 +1,44 @@
 {
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "continue": true
+      "source": "/api/register",
+      "destination": "/api/auth?action=register"
     },
     {
-      "src": "/(dashboard|login|create-account|profile|index)\\.html",
-      "continue": true
+      "source": "/api/login",
+      "destination": "/api/auth?action=login"
     },
     {
-      "src": "/([a-zA-Z0-9_]+)",
-      "dest": "/profile.html"
+      "source": "/api/session",
+      "destination": "/api/auth?action=session"
+    },
+    {
+      "source": "/api/logout",
+      "destination": "/api/auth?action=logout"
+    },
+    {
+      "source": "/api/username-check",
+      "destination": "/api/auth?action=username"
+    },
+    {
+      "source": "/api/profile-save",
+      "destination": "/api/profile"
+    },
+    {
+      "source": "/api/media-upload",
+      "destination": "/api/media"
+    },
+    {
+      "source": "/api/discord-start",
+      "destination": "/api/discord?action=start"
+    },
+    {
+      "source": "/api/discord-callback",
+      "destination": "/api/discord?action=callback"
+    },
+    {
+      "source": "/:username",
+      "destination": "/profile.html"
     }
   ]
 }
