@@ -1,439 +1,348 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Biofyit</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #050509;
-      color: #ffffff;
-    }
-
-    body {
-      overflow-x: hidden;
-    }
-
-    .background {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(128, 70, 255, 0.22), transparent 42%),
-        #050509;
-      background-size: cover;
-      background-position: center;
-      z-index: -3;
-    }
-
-    .background::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.45);
-    }
-
-    .blur {
-      position: fixed;
-      inset: -30px;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      z-index: -2;
-    }
-
-    .page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 30px 18px;
-    }
-
-    .profile-card {
-      width: 100%;
-      max-width: 620px;
-      padding: 42px 35px 30px;
-      border-radius: 25px;
-      background: rgba(9, 8, 14, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow:
-        0 30px 90px rgba(0, 0, 0, 0.65),
-        0 0 80px rgba(124, 76, 255, 0.08);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      text-align: center;
-      animation: appear 0.5s ease;
-    }
-
-    @keyframes appear {
-      from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.98);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .profile-picture {
-      width: 118px;
-      height: 118px;
-      object-fit: cover;
-      border-radius: 50%;
-      display: block;
-      margin: 0 auto;
-      background: #100c18;
-      border: 3px solid rgba(255, 255, 255, 0.12);
-      box-shadow:
-        0 12px 35px rgba(0, 0, 0, 0.5),
-        0 0 35px rgba(126, 77, 255, 0.12);
-    }
-
-    .display-name {
-      margin-top: 20px;
-      font-size: 28px;
-      line-height: 1.2;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-    }
-
-    .username {
-      margin-top: 7px;
-      color: #9d78ff;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .bio {
-      max-width: 490px;
-      margin: 17px auto 0;
-      color: rgba(255, 255, 255, 0.68);
-      font-size: 15px;
-      line-height: 1.65;
-      white-space: pre-wrap;
-    }
-
-    .discord {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      margin-top: 22px;
-      padding: 10px 15px;
-      border-radius: 12px;
-      background: rgba(88, 101, 242, 0.13);
-      border: 1px solid rgba(88, 101, 242, 0.2);
-      color: rgba(255, 255, 255, 0.82);
-      font-size: 13px;
-    }
-
-    .discord-status {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #7c5cff;
-      box-shadow: 0 0 10px rgba(124, 92, 255, 0.8);
-    }
-
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 9px;
-      margin-top: 24px;
-    }
-
-    .link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 90px;
-      padding: 10px 15px;
-      border-radius: 11px;
-      background: rgba(255, 255, 255, 0.055);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      color: rgba(255, 255, 255, 0.88);
-      text-decoration: none;
-      font-size: 13px;
-      transition: 0.2s ease;
-    }
-
-    .link:hover {
-      transform: translateY(-2px);
-      background: rgba(124, 92, 255, 0.14);
-      border-color: rgba(124, 92, 255, 0.3);
-    }
-
-    .music {
-      margin-top: 25px;
-      width: 100%;
-    }
-
-    .music audio {
-      width: 100%;
-      height: 40px;
-      opacity: 0.85;
-    }
-
-    .footer {
-      margin-top: 28px;
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.27);
-    }
-
-    .footer span {
-      color: #9870ff;
-    }
-
-    .loading {
-      min-height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 14px;
-    }
-
-    .not-found {
-      padding: 25px 0;
-    }
-
-    .not-found h1 {
-      margin: 0;
-      font-size: 30px;
-    }
-
-    .not-found p {
-      margin: 10px 0 0;
-      color: rgba(255, 255, 255, 0.45);
-      font-size: 14px;
-    }
-
-    @media (max-width: 600px) {
-      .page {
-        padding: 18px;
-      }
-
-      .profile-card {
-        padding: 35px 22px 25px;
-        border-radius: 21px;
-      }
-
-      .profile-picture {
-        width: 100px;
-        height: 100px;
-      }
-
-      .display-name {
-        font-size: 25px;
-      }
-    }
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Biofyit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:#050507;color:#fff;font-family:Inter,Arial,sans-serif}
+body{min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+.background{position:fixed;inset:0;background:#050507 center/cover no-repeat;z-index:0;transform:scale(1.03)}
+.background:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,3,6,.48),rgba(4,3,6,.72))}
+.glow{position:fixed;width:550px;height:550px;border-radius:50%;background:rgba(168,85,247,.16);filter:blur(120px);top:-180px;left:50%;transform:translateX(-50%);z-index:0;pointer-events:none}
+.page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:35px 18px}
+.profile{width:100%;max-width:560px;text-align:center}
+.avatar-wrap{position:relative;display:inline-block;margin-bottom:18px}
+.avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;display:block;background:#111015;border:3px solid rgba(255,255,255,.12);box-shadow:0 15px 45px rgba(0,0,0,.45)}
+.status{position:absolute;right:4px;bottom:5px;width:23px;height:23px;background:#050507;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.status:after{content:"";width:12px;height:12px;border-radius:50%;background:#35d978;box-shadow:0 0 12px rgba(53,217,120,.7)}
+.name{font:700 29px "Space Grotesk",sans-serif;letter-spacing:-.03em;text-shadow:0 4px 25px rgba(0,0,0,.5)}
+.username{font-size:10px;color:#a855f7;margin-top:5px}
+.bio{max-width:470px;margin:12px auto 0;color:#c0bac5;font-size:12px;line-height:1.7;white-space:pre-wrap}
+.discord{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:9px 13px;border:1px solid rgba(255,255,255,.09);background:rgba(8,7,11,.55);backdrop-filter:blur(18px);border-radius:9px;font-size:10px;color:#ddd7e1}
+.discord-icon{width:18px;height:18px;border-radius:5px;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.socials{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-top:22px}
+.social{width:38px;height:38px;border-radius:10px;background:rgba(7,6,10,.58);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(15px);transition:.18s}
+.social:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.55);background:rgba(24,15,32,.8);box-shadow:0 10px 25px rgba(0,0,0,.3)}
+.social img{width:18px;height:18px;display:block}
+.music{margin:25px auto 0;max-width:390px;padding:11px 13px;display:flex;align-items:center;gap:11px;background:rgba(7,6,10,.62);border:1px solid rgba(255,255,255,.09);border-radius:11px;backdrop-filter:blur(18px)}
+.music-cover{width:39px;height:39px;border-radius:8px;background:#17121d;display:flex;align-items:center;justify-content:center;color:#c084fc;font-size:16px}
+.music-info{text-align:left;flex:1;min-width:0}
+.music-title{font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.music-sub{font-size:8px;color:#68616e;margin-top:4px}
+.music button{width:34px;height:34px;border:0;border-radius:8px;background:#a855f7;color:#fff;font-size:13px}
+.brand{margin-top:28px;font:600 10px "Space Grotesk";color:rgba(255,255,255,.35);letter-spacing:.05em}
+.brand span{color:#a855f7}
+.loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#050507;z-index:20;font:600 13px "Space Grotesk";color:#a855f7}
+.error{display:none;position:fixed;inset:0;align-items:center;justify-content:center;text-align:center;padding:20px;background:#050507;z-index:19}
+.error.show{display:flex}
+.error-box{max-width:400px}
+.error-box h1{font:700 25px "Space Grotesk";margin:0 0 8px}
+.error-box p{font-size:11px;color:#67616d;line-height:1.6}
+@media(max-width:600px){
+.page{padding:25px 16px}
+.avatar{width:96px;height:96px}
+.name{font-size:25px}
+.bio{font-size:11px}
+}
+</style>
 </head>
-
 <body>
 
-  <div class="background" id="background"></div>
-  <div class="blur"></div>
+<div id="loading" class="loading">Loading profile...</div>
 
-  <main class="page">
-    <section class="profile-card" id="profileCard">
-      <div class="loading">
-        Loading profile...
-      </div>
-    </section>
-  </main>
+<div id="error" class="error">
+<div class="error-box">
+<h1>Profile not found</h1>
+<p>This Biofyit profile doesn't exist or is currently unavailable.</p>
+</div>
+</div>
 
-  <script>
-    const path = window.location.pathname
-      .split("/")
-      .filter(Boolean);
+<div id="background" class="background"></div>
+<div class="glow"></div>
 
-    const username = path[0] || "";
+<main class="page">
+<div class="profile">
 
-    function escapeHTML(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+<div class="avatar-wrap">
+<img id="avatar" class="avatar" src="/biofyit.png" alt="Profile picture">
+<div id="status" class="status" style="display:none"></div>
+</div>
 
-    function escapeURL(value) {
-      return escapeHTML(value);
-    }
+<div id="name" class="name"></div>
+<div id="username" class="username"></div>
+<div id="bio" class="bio"></div>
 
-    function showNotFound() {
-      document.getElementById("profileCard").innerHTML = `
-        <div class="not-found">
-          <h1>Profile not found</h1>
-          <p>This Biofyit profile doesn't exist.</p>
-        </div>
-      `;
+<div id="discord" class="discord" style="display:none">
+<div class="discord-icon">D</div>
+<span id="discordText"></span>
+</div>
 
-      document.title = "Profile Not Found | Biofyit";
-    }
+<div id="socials" class="socials"></div>
 
-    function renderProfile(profile) {
-      const displayName =
-        profile.displayName ||
-        profile.username ||
-        "Biofyit User";
+<div id="music" class="music" style="display:none">
+<div class="music-cover">♫</div>
+<div class="music-info">
+<div id="musicTitle" class="music-title">Profile music</div>
+<div class="music-sub">Biofyit music</div>
+</div>
+<button id="musicButton" type="button">▶</button>
+</div>
 
-      const usernameText =
-        profile.username ||
-        username;
+<div class="brand">POWERED BY <span>BIOFYIT</span></div>
 
-      const profilePicture =
-        profile.profilePicture ||
-        "/biofyit.png";
+<audio id="audio"></audio>
 
-      document.title =
-        `${displayName} | Biofyit`;
+</div>
+</main>
 
-      if (profile.background) {
-        document.getElementById("background").style.backgroundImage =
-          `url("${escapeURL(profile.background)}")`;
-      }
+<script>
+const username=window.location.pathname
+.split("/")
+.filter(Boolean)[0]
+?.toLowerCase()||"";
 
-      let discordHTML = "";
+const $=id=>document.getElementById(id);
 
-      if (
-        profile.discord &&
-        profile.discord.enabled
-      ) {
-        discordHTML = `
-          <div class="discord">
-            <span class="discord-status"></span>
-            Discord Connected
-          </div>
-        `;
-      }
+const platformNames={
+discord:"Discord",
+instagram:"Instagram",
+tiktok:"TikTok",
+youtube:"YouTube",
+x:"X",
+facebook:"Facebook",
+snapchat:"Snapchat",
+twitch:"Twitch",
+kick:"Kick",
+github:"GitHub",
+reddit:"Reddit",
+spotify:"Spotify",
+soundcloud:"SoundCloud",
+steam:"Steam",
+roblox:"Roblox",
+xbox:"Xbox",
+playstation:"PlayStation",
+linkedin:"LinkedIn",
+threads:"Threads",
+bluesky:"Bluesky",
+telegram:"Telegram",
+pinterest:"Pinterest",
+tumblr:"Tumblr",
+gitlab:"GitLab",
+codepen:"CodePen",
+patreon:"Patreon",
+kofi:"Ko-fi",
+cashapp:"Cash App",
+venmo:"Venmo",
+paypal:"PayPal",
+custom:"Link"
+};
 
-      let linksHTML = "";
+function mediaUrl(value){
+if(!value)return"";
 
-      if (
-        Array.isArray(profile.links) &&
-        profile.links.length
-      ) {
-        const links = profile.links
-          .filter(link => link && link.name && link.url)
-          .map(link => `
-            <a
-              class="link"
-              href="${escapeURL(link.url)}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              ${escapeHTML(link.name)}
-            </a>
-          `)
-          .join("");
+if(value.startsWith("/api/media")){
+return value;
+}
 
-        if (links) {
-          linksHTML = `
-            <div class="links">
-              ${links}
-            </div>
-          `;
-        }
-      }
+if(value.startsWith("http://")||value.startsWith("https://")){
+return value;
+}
 
-      let musicHTML = "";
+return value;
+}
 
-      if (profile.music) {
-        musicHTML = `
-          <div class="music">
-            <audio controls preload="none">
-              <source src="${escapeURL(profile.music)}">
-            </audio>
-          </div>
-        `;
-      }
+function setBackground(url){
+if(!url)return;
 
-      document.getElementById("profileCard").innerHTML = `
-        <img
-          class="profile-picture"
-          src="${escapeURL(profilePicture)}"
-          alt="${escapeHTML(displayName)}"
-        >
+const background=$("background");
+const image=new Image();
 
-        <div class="display-name">
-          ${escapeHTML(displayName)}
-        </div>
+image.onload=()=>{
+background.style.backgroundImage=`url("${url}")`;
+background.style.backgroundSize="cover";
+background.style.backgroundPosition="center";
+background.style.backgroundRepeat="no-repeat";
+};
 
-        <div class="username">
-          @${escapeHTML(usernameText)}
-        </div>
+image.onerror=()=>{
+console.error("Background failed to load:",url);
+};
 
-        ${
-          profile.bio
-            ? `
-              <div class="bio">
-                ${escapeHTML(profile.bio)}
-              </div>
-            `
-            : ""
-        }
+image.src=url;
+}
 
-        ${discordHTML}
+function setAvatar(url){
+if(!url)return;
 
-        ${linksHTML}
+const avatar=$("avatar");
+const image=new Image();
 
-        ${musicHTML}
+image.onload=()=>{
+avatar.src=url;
+};
 
-        <div class="footer">
-          Powered by <span>Biofyit</span>
-        </div>
-      `;
-    }
+image.onerror=()=>{
+console.error("Profile picture failed to load:",url);
+};
 
-    async function loadProfile() {
-      if (!username) {
-        showNotFound();
-        return;
-      }
+image.src=url;
+}
 
-      try {
-        const response = await fetch(
-          `/api/profile?username=${encodeURIComponent(username)}`
-        );
+function renderSocials(links){
+const container=$("socials");
+container.innerHTML="";
 
-        if (!response.ok) {
-          showNotFound();
-          return;
-        }
+if(!Array.isArray(links))return;
 
-        const data = await response.json();
+links.slice(0,10).forEach(link=>{
+if(!link||!link.url||!link.platform)return;
 
-        if (!data.success || !data.profile) {
-          showNotFound();
-          return;
-        }
+const platform=String(link.platform).toLowerCase();
 
-        renderProfile(data.profile);
-      } catch {
-        showNotFound();
-      }
-    }
+const a=document.createElement("a");
+a.className="social";
+a.href=link.url;
+a.target="_blank";
+a.rel="noopener noreferrer";
+a.title=platformNames[platform]||platform;
 
-    loadProfile();
-  </script>
+const img=document.createElement("img");
+img.src=`https://cdn.simpleicons.org/${encodeURIComponent(platform)}/ffffff`;
+img.alt=platformNames[platform]||platform;
+
+img.onerror=()=>{
+a.style.display="none";
+};
+
+a.appendChild(img);
+container.appendChild(a);
+});
+}
+
+function renderMusic(url){
+if(!url)return;
+
+const musicUrl=mediaUrl(url);
+
+$("music").style.display="flex";
+$("audio").src=musicUrl;
+
+const filename=decodeURIComponent(
+musicUrl.split("?")[0].split("/").pop()||"Profile music"
+);
+
+$("musicTitle").textContent=filename;
+
+let playing=false;
+
+$("musicButton").addEventListener("click",async()=>{
+const audio=$("audio");
+
+if(audio.paused){
+try{
+await audio.play();
+playing=true;
+$("musicButton").textContent="Ⅱ";
+}catch(error){
+console.error("Music playback failed:",error);
+}
+}else{
+audio.pause();
+playing=false;
+$("musicButton").textContent="▶";
+}
+});
+
+$("audio").addEventListener("ended",()=>{
+playing=false;
+$("musicButton").textContent="▶";
+});
+}
+
+async function loadProfile(){
+if(!username){
+$("loading").style.display="none";
+$("error").classList.add("show");
+return;
+}
+
+try{
+const response=await fetch(
+`/api/profile?username=${encodeURIComponent(username)}`,
+{
+method:"GET",
+cache:"no-store"
+}
+);
+
+if(!response.ok){
+throw new Error("Profile request failed.");
+}
+
+const data=await response.json();
+
+if(!data.success||!data.profile){
+throw new Error("Profile not found.");
+}
+
+const profile=data.profile;
+
+document.title=
+`${profile.displayName||profile.username||username} | Biofyit`;
+
+$("name").textContent=
+profile.displayName||profile.username||username;
+
+$("username").textContent=
+"@"+(profile.username||username);
+
+$("bio").textContent=
+profile.bio||"";
+
+if(!profile.bio){
+$("bio").style.display="none";
+}
+
+if(profile.profilePicture){
+setAvatar(mediaUrl(profile.profilePicture));
+}
+
+if(profile.background){
+setBackground(mediaUrl(profile.background));
+}
+
+if(
+profile.discord&&
+profile.discord.enabled&&
+profile.discord.id
+){
+$("discord").style.display="inline-flex";
+$("discordText").textContent=
+"Discord · "+profile.discord.id;
+}
+
+renderSocials(profile.links);
+renderMusic(profile.music);
+
+$("loading").style.display="none";
+
+}catch(error){
+console.error("PROFILE ERROR:",error);
+$("loading").style.display="none";
+$("error").classList.add("show");
+}
+}
+
+loadProfile();
+</script>
 
 </body>
 </html>
+```
