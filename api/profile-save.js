@@ -2,21 +2,9 @@ const { getFile, saveFile } = require("./github");
 
 function getCookie(req, name) {
   const cookies = req.headers.cookie || "";
-
-  const match = cookies
-    .split(";")
-    .map(item => item.trim())
-    .find(item => item.startsWith(`${name}=`));
-
+  const match = cookies.split(";").map(item => item.trim()).find(item => item.startsWith(`${name}=`));
   if (!match) return null;
-
-  return decodeURIComponent(
-    match.substring(name.length + 1)
-  );
-}
-
-function validUsername(username) {
-  return /^[a-z0-9_]{3,32}$/.test(username);
+  return decodeURIComponent(match.substring(name.length + 1));
 }
 
 function cleanString(value, max = 500) {
@@ -24,45 +12,15 @@ function cleanString(value, max = 500) {
 }
 
 const allowedPlatforms = [
-  "discord",
-  "instagram",
-  "tiktok",
-  "youtube",
-  "x",
-  "facebook",
-  "snapchat",
-  "twitch",
-  "kick",
-  "github",
-  "reddit",
-  "spotify",
-  "soundcloud",
-  "steam",
-  "roblox",
-  "xbox",
-  "playstation",
-  "linkedin",
-  "threads",
-  "bluesky",
-  "telegram",
-  "pinterest",
-  "tumblr",
-  "gitlab",
-  "codepen",
-  "patreon",
-  "kofi",
-  "cashapp",
-  "venmo",
-  "paypal",
-  "custom"
+  "discord","instagram","tiktok","youtube","x","facebook","snapchat","twitch","kick",
+  "github","reddit","spotify","soundcloud","steam","roblox","xbox","playstation",
+  "linkedin","threads","bluesky","telegram","pinterest","tumblr","gitlab","codepen",
+  "patreon","kofi","cashapp","venmo","paypal","custom"
 ];
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      success: false,
-      error: "Method not allowed."
-    });
+    return res.status(405).json({ success: false, error: "Method not allowed." });
   }
 
   try {
@@ -77,7 +35,6 @@ module.exports = async function handler(req, res) {
 
     const usersResult = await getFile("users.json");
     const users = usersResult?.content || [];
-
     const user = users.find(item => item.id === userId);
 
     if (!user) {
@@ -87,80 +44,70 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const username = user.username.toLowerCase();
+    const username = String(user.username).toLowerCase();
+    const profilePath = `profiles/${username}.json`;
 
-    const profileResult = await getFile(
-      `profiles/${username}.json`
-    );
+    let profileResult = await getFile(profilePath);
 
     if (!profileResult) {
-      return res.status(404).json({
-        success: false,
-        error: "Profile not found."
-      });
+      profileResult = {
+        content: {
+          username,
+          displayName: username,
+          bio: "",
+          profilePicture: "",
+          background: "",
+          music: "",
+          discord: {
+            enabled: false,
+            id: null
+          },
+          links: []
+        },
+        sha: null
+      };
     }
 
-    const body = req.body || {};
+    let body = req.body || {};
 
-    const displayName = cleanString(
-      body.displayName,
-      80
-    );
+    if (typeof body === "string") {
+      try {
+        body = JSON.parse(body);
+      } catch {
+        body = {};
+      }
+    }
 
-    const bio = cleanString(
-      body.bio,
-      500
-    );
+    const displayName = cleanString(body.displayName, 80);
+    const bio = cleanString(body.bio, 500);
 
     let links = body.links;
+
+    if (typeof links === "string") {
+      try {
+        links = JSON.parse(links);
+      } catch {
+        links = [];
+      }
+    }
 
     if (!Array.isArray(links)) {
       links = [];
     }
 
-    if (links.length > 10) {
-      return res.status(400).json({
-        success: false,
-        error: "You can only have 10 social links."
-      });
-    }
-
+    const cleanedLinks = [];
     const usedPlatforms = new Set();
 
-    const cleanedLinks = [];
+    for (const link of links.slice(0, 10)) {
+      if (!link || typeof link !== "object") continue;
 
-    for (const link of links) {
-      if (!link || typeof link !== "object") {
-        continue;
-      }
+      const platform = String(link.platform || "").trim().toLowerCase();
+      const url = String(link.url || "").trim();
 
-      const platform = String(
-        link.platform || ""
-      )
-        .trim()
-        .toLowerCase();
-
-      const url = String(
-        link.url || ""
-      ).trim();
-
-      if (!allowedPlatforms.includes(platform)) {
-        continue;
-      }
-
-      if (!url) {
-        continue;
-      }
-
-      if (usedPlatforms.has(platform)) {
-        continue;
-      }
-
-      if (
-        !/^https?:\/\//i.test(url)
-      ) {
-        continue;
-      }
+      if (!allowedPlatforms.includes(platform)) continue;
+      if (!url) continue;
+      if (usedPlatforms.has(platform)) continue;
+      if (!/^https?:\/\//i.test(url)) continue;
 
       usedPlatforms.add(platform);
 
@@ -175,13 +122,32 @@ module.exports = async function handler(req, res) {
     const updatedProfile = {
       ...oldProfile,
       username,
-      displayName,
+      displayName: displayName || username,
       bio,
       links: cleanedLinks
     };
 
+    if (body.discord && typeof body.discord === "object") {
+      updatedProfile.discord = {
+        enabled: Boolean(body.discord.enabled),
+        id: body.discord.id || null
+      };
+    }
+
+    if (typeof body.profilePicture === "string") {
+      updatedProfile.profilePicture = body.profilePicture.slice(0, 1000);
+    }
+
+    if (typeof body.background === "string") {
+      updatedProfile.background = body.background.slice(0, 1000);
+    }
+
+    if (typeof body.music === "string") {
+      updatedProfile.music = body.music.slice(0, 1000);
+    }
+
     await saveFile(
-      `profiles/${username}.json`,
+      profilePath,
       updatedProfile,
       profileResult.sha,
       `Update Biofyit profile: ${username}`
@@ -192,9 +158,8 @@ module.exports = async function handler(req, res) {
       message: "Profile saved successfully.",
       profile: updatedProfile
     });
-
   } catch (error) {
-    console.error(error);
+    console.error("PROFILE SAVE ERROR:", error);
 
     return res.status(500).json({
       success: false,
