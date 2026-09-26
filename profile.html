@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Biofyit</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #050509;
+      color: #ffffff;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    .background {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(128, 70, 255, 0.22), transparent 42%),
+        #050509;
+      background-size: cover;
+      background-position: center;
+      z-index: -3;
+    }
+
+    .background::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .blur {
+      position: fixed;
+      inset: -30px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      z-index: -2;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 18px;
+    }
+
+    .profile-card {
+      width: 100%;
+      max-width: 620px;
+      padding: 42px 35px 30px;
+      border-radius: 25px;
+      background: rgba(9, 8, 14, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.65),
+        0 0 80px rgba(124, 76, 255, 0.08);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      text-align: center;
+      animation: appear 0.5s ease;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .profile-picture {
+      width: 118px;
+      height: 118px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto;
+      background: #100c18;
+      border: 3px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.5),
+        0 0 35px rgba(126, 77, 255, 0.12);
+    }
+
+    .display-name {
+      margin-top: 20px;
+      font-size: 28px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .username {
+      margin-top: 7px;
+      color: #9d78ff;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .bio {
+      max-width: 490px;
+      margin: 17px auto 0;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 15px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .discord {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 22px;
+      padding: 10px 15px;
+      border-radius: 12px;
+      background: rgba(88, 101, 242, 0.13);
+      border: 1px solid rgba(88, 101, 242, 0.2);
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 13px;
+    }
+
+    .discord-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #7c5cff;
+      box-shadow: 0 0 10px rgba(124, 92, 255, 0.8);
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 24px;
+    }
+
+    .link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 90px;
+      padding: 10px 15px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.88);
+      text-decoration: none;
+      font-size: 13px;
+      transition: 0.2s ease;
+    }
+
+    .link:hover {
+      transform: translateY(-2px);
+      background: rgba(124, 92, 255, 0.14);
+      border-color: rgba(124, 92, 255, 0.3);
+    }
+
+    .music {
+      margin-top: 25px;
+      width: 100%;
+    }
+
+    .music audio {
+      width: 100%;
+      height: 40px;
+      opacity: 0.85;
+    }
+
+    .footer {
+      margin-top: 28px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.27);
+    }
+
+    .footer span {
+      color: #9870ff;
+    }
+
+    .loading {
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    .not-found {
+      padding: 25px 0;
+    }
+
+    .not-found h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .not-found p {
+      margin: 10px 0 0;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 18px;
+      }
+
+      .profile-card {
+        padding: 35px 22px 25px;
+        border-radius: 21px;
+      }
+
+      .profile-picture {
+        width: 100px;
+        height: 100px;
+      }
+
+      .display-name {
+        font-size: 25px;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="background" id="background"></div>
+  <div class="blur"></div>
+
+  <main class="page">
+    <section class="profile-card" id="profileCard">
+      <div class="loading">
+        Loading profile...
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const path = window.location.pathname
+      .split("/")
+      .filter(Boolean);
+
+    const username = path[0] || "";
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeURL(value) {
+      return escapeHTML(value);
+    }
+
+    function showNotFound() {
+      document.getElementById("profileCard").innerHTML = `
+        <div class="not-found">
+          <h1>Profile not found</h1>
+          <p>This Biofyit profile doesn't exist.</p>
+        </div>
+      `;
+
+      document.title = "Profile Not Found | Biofyit";
+    }
+
+    function renderProfile(profile) {
+      const displayName =
+        profile.displayName ||
+        profile.username ||
+        "Biofyit User";
+
+      const usernameText =
+        profile.username ||
+        username;
+
+      const profilePicture =
+        profile.profilePicture ||
+        "/biofyit.png";
+
+      document.title =
+        `${displayName} | Biofyit`;
+
+      if (profile.background) {
+        document.getElementById("background").style.backgroundImage =
+          `url("${escapeURL(profile.background)}")`;
+      }
+
+      let discordHTML = "";
+
+      if (
+        profile.discord &&
+        profile.discord.enabled
+      ) {
+        discordHTML = `
+          <div class="discord">
+            <span class="discord-status"></span>
+            Discord Connected
+          </div>
+        `;
+      }
+
+      let linksHTML = "";
+
+      if (
+        Array.isArray(profile.links) &&
+        profile.links.length
+      ) {
+        const links = profile.links
+          .filter(link => link && link.name && link.url)
+          .map(link => `
+            <a
+              class="link"
+              href="${escapeURL(link.url)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ${escapeHTML(link.name)}
+            </a>
+          `)
+          .join("");
+
+        if (links) {
+          linksHTML = `
+            <div class="links">
+              ${links}
+            </div>
+          `;
+        }
+      }
+
+      let musicHTML = "";
+
+      if (profile.music) {
+        musicHTML = `
+          <div class="music">
+            <audio controls preload="none">
+              <source src="${escapeURL(profile.music)}">
+            </audio>
+          </div>
+        `;
+      }
+
+      document.getElementById("profileCard").innerHTML = `
+        <img
+          class="profile-picture"
+          src="${escapeURL(profilePicture)}"
+          alt="${escapeHTML(displayName)}"
+        >
+
+        <div class="display-name">
+          ${escapeHTML(displayName)}
+        </div>
+
+        <div class="username">
+          @${escapeHTML(usernameText)}
+        </div>
+
+        ${
+          profile.bio
+            ? `
+              <div class="bio">
+                ${escapeHTML(profile.bio)}
+              </div>
+            `
+            : ""
+        }
+
+        ${discordHTML}
+
+        ${linksHTML}
+
+        ${musicHTML}
+
+        <div class="footer">
+          Powered by <span>Biofyit</span>
+        </div>
+      `;
+    }
+
+    async function loadProfile() {
+      if (!username) {
+        showNotFound();
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/profile?username=${encodeURIComponent(username)}`
+        );
+
+        if (!response.ok) {
+          showNotFound();
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !data.profile) {
+          showNotFound();
+          return;
+        }
+
+        renderProfile(data.profile);
+      } catch {
+        showNotFound();
+      }
+    }
+
+    loadProfile();
+  </script>
+
+</body>
+</html>
