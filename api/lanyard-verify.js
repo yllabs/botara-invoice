@@ -1,8 +1,8 @@
 const { getFile, saveFile } = require("./github");
 
-const BIOFYIT_GUILD_ID = "1435008832655982614";
-const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
-const LANYARD_API = "https://api.lanyard.rest/v1/users";
+const GUILD_ID = "1435008832655982614";
+const PRESENCE_API_URL = process.env.PRESENCE_API_URL;
+const PRESENCE_API_KEY = process.env.PRESENCE_API_KEY;
 
 function getCookie(req, name) {
   const cookies = req.headers.cookie || "";
@@ -22,14 +22,6 @@ function validDiscordId(id) {
   return /^\d{17,20}$/.test(id);
 }
 
-async function discordRequest(path) {
-  return fetch(`https://discord.com/api/v10${path}`, {
-    headers: {
-      Authorization: `Bot ${DISCORD_BOT_TOKEN}`
-    }
-  });
-}
-
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -39,10 +31,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    if (!DISCORD_BOT_TOKEN) {
+    if (!PRESENCE_API_URL || !PRESENCE_API_KEY) {
       return res.status(500).json({
         success: false,
-        error: "Discord verification is not configured."
+        error: "Presence service is not configured."
       });
     }
 
@@ -80,11 +72,20 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const memberResponse = await discordRequest(
-      `/guilds/${BIOFYIT_GUILD_ID}/members/${discordId}`
+    const baseUrl = PRESENCE_API_URL.replace(/\/+$/, "");
+
+    const response = await fetch(
+      `${baseUrl}/v1/users/${encodeURIComponent(discordId)}`,
+      {
+        headers: {
+          "X-API-Key": PRESENCE_API_KEY
+        }
+      }
     );
 
-    if (memberResponse.status === 404) {
+    const result = await response.json().catch(() => null);
+
+    if (response.status === 404) {
       return res.status(403).json({
         success: false,
         verified: false,
@@ -92,40 +93,27 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    if (!memberResponse.ok) {
-      const error = await memberResponse.text();
-
+    if (!response.ok || !result?.success || !result?.data) {
       console.error(
-        "DISCORD MEMBER ERROR:",
-        memberResponse.status,
-        error
+        "PRESENCE SERVICE ERROR:",
+        response.status,
+        result
       );
 
-      return res.status(500).json({
-        success: false,
-        error: "Unable to verify your Discord membership."
-      });
-    }
-
-    const lanyardResponse = await fetch(
-      `${LANYARD_API}/${discordId}`
-    );
-
-    if (!lanyardResponse.ok) {
       return res.status(403).json({
         success: false,
         verified: false,
-        error: "Your Discord account is not currently being tracked by Lanyard."
+        error: "Your Discord account could not be found by Biofyit."
       });
     }
 
-    const lanyard = await lanyardResponse.json();
+    const data = result.data;
 
-    if (!lanyard.success || !lanyard.data) {
+    if (String(data.guild_id) !== GUILD_ID) {
       return res.status(403).json({
         success: false,
         verified: false,
-        error: "Lanyard could not find your Discord presence."
+        error: "Your Discord account is not connected to Biofyit."
       });
     }
 
@@ -145,14 +133,14 @@ module.exports = async function handler(req, res) {
       enabled: true,
       id: discordId,
       verified: true,
-      guildId: BIOFYIT_GUILD_ID
+      guildId: GUILD_ID
     };
 
     await saveFile(
       profilePath,
       profile,
       profileResult.sha,
-      `Connect Lanyard for ${user.username}`
+      `Connect Discord presence for ${user.username}`
     );
 
     return res.status(200).json({
@@ -161,26 +149,27 @@ module.exports = async function handler(req, res) {
       discord: {
         id: discordId,
         username:
-          lanyard.data.discord_user?.global_name ||
-          lanyard.data.discord_user?.username ||
-          "Discord User"
+          data.discord_user?.global_name ||
+          data.discord_user?.username ||
+          "Discord User",
+        avatar: data.discord_user?.avatar_url || null
       },
       presence: {
-        status: lanyard.data.discord_status || "offline",
-        activities: lanyard.data.activities || [],
-        spotify: lanyard.data.spotify || null
+        status: data.discord_status || "offline",
+        activities: data.activities || [],
+        spotify: data.spotify || null
       }
     });
 
   } catch (error) {
     console.error(
-      "LANYARD VERIFY ERROR:",
+      "PRESENCE VERIFY ERROR:",
       error
     );
 
     return res.status(500).json({
       success: false,
-      error: "Unable to verify your Lanyard connection."
+      error: "Unable to connect to the presence service."
     });
   }
 };
