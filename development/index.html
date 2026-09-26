@@ -12,15 +12,17 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
-      min-height: 100vh;
+      min-height: 100%;
       font-family: Arial, Helvetica, sans-serif;
       color: #fff;
-      background:
-        radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.22), transparent 32%),
-        radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.16), transparent 30%),
-        #050308;
+      background: #050208;
+    }
+
+    body {
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -32,7 +34,17 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      opacity: 0.08;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.25), transparent 30%),
+        radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.18), transparent 32%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.07;
       background-image:
         linear-gradient(rgba(168, 85, 247, 0.5) 1px, transparent 1px),
         linear-gradient(90deg, rgba(168, 85, 247, 0.5) 1px, transparent 1px);
@@ -41,19 +53,19 @@
     }
 
     .container {
-      width: 100%;
-      max-width: 440px;
-      padding: 24px;
       position: relative;
       z-index: 1;
+      width: 100%;
+      max-width: 430px;
+      padding: 24px;
     }
 
     .card {
       padding: 42px;
-      border-radius: 24px;
       border: 1px solid rgba(168, 85, 247, 0.2);
-      background: rgba(12, 7, 18, 0.82);
-      backdrop-filter: blur(22px);
+      border-radius: 24px;
+      background: rgba(12, 7, 18, 0.86);
+      backdrop-filter: blur(24px);
       box-shadow:
         0 30px 100px rgba(0, 0, 0, 0.55),
         0 0 70px rgba(124, 58, 237, 0.08);
@@ -64,15 +76,15 @@
       width: 190px;
       max-width: 75%;
       height: auto;
-      margin: 0 auto 35px;
+      margin: 0 auto 34px;
     }
 
     .badge {
       width: fit-content;
       margin: 0 auto 12px;
-      padding: 7px 11px;
+      padding: 7px 12px;
+      border: 1px solid rgba(168, 85, 247, 0.24);
       border-radius: 999px;
-      border: 1px solid rgba(168, 85, 247, 0.22);
       background: rgba(139, 92, 246, 0.08);
       color: #c084fc;
       font-size: 11px;
@@ -117,7 +129,7 @@
       background: #09060d;
       color: #fff;
       font-size: 14px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: 0.2s ease;
     }
 
     input::placeholder {
@@ -145,6 +157,12 @@
     .signin:hover {
       transform: translateY(-1px);
       box-shadow: 0 12px 30px rgba(124, 58, 237, 0.3);
+    }
+
+    .signin:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      transform: none;
     }
 
     .message {
@@ -226,12 +244,12 @@
           >
         </div>
 
-        <button type="submit" class="signin">
+        <button type="submit" class="signin" id="signinButton">
           Sign In
         </button>
 
         <div class="message" id="message">
-          Please enter your email and password.
+          Invalid email or password.
         </div>
 
       </form>
@@ -247,23 +265,56 @@
   <script>
     const form = document.getElementById("signinForm");
     const message = document.getElementById("message");
+    const button = document.getElementById("signinButton");
 
-    form.addEventListener("submit", function(event) {
+    fetch("/api/session")
+      .then(response => {
+        if (response.ok) {
+          window.location.href = "/development/portal.html";
+        }
+      })
+      .catch(() => {});
+
+    form.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      if (!email || !password) {
-        message.style.display = "block";
-        return;
-      }
-
       message.style.display = "none";
+      button.disabled = true;
+      button.textContent = "Signing In...";
 
-      localStorage.setItem("biofyitSignedIn", "true");
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
-      window.location.href = "portal.html";
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            password
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          message.textContent = data.error || "Invalid email or password.";
+          message.style.display = "block";
+          button.disabled = false;
+          button.textContent = "Sign In";
+          return;
+        }
+
+        window.location.href = "/development/portal.html";
+
+      } catch {
+        message.textContent = "Unable to connect to the authentication service.";
+        message.style.display = "block";
+        button.disabled = false;
+        button.textContent = "Sign In";
+      }
     });
   </script>
 
