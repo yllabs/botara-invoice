@@ -1,296 +1,302 @@
-const crypto = require("crypto");
-const { getFile, saveFile } = require("../github");
+const crypto=require("crypto");
+const {getFile,saveFile}=require("../github");
 
-function hashPassword(password) {
-  const salt = crypto.randomBytes(16).toString("hex");
-  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
-  return `${salt}:${hash}`;
+const COOKIE="biofyit_session";
+const SESSION_SECRET=process.env.GITHUB_TOKEN||"biofyit-session-secret";
+
+function hashPassword(password){
+const salt=crypto.randomBytes(16).toString("hex");
+const hash=crypto.scryptSync(password,salt,64).toString("hex");
+return `${salt}:${hash}`;
 }
 
-function verifyPassword(password, stored) {
-  if (!stored || !stored.includes(":")) return false;
-  const [salt, originalHash] = stored.split(":");
-  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
-
-  try {
-    return crypto.timingSafeEqual(
-      Buffer.from(hash, "hex"),
-      Buffer.from(originalHash, "hex")
-    );
-  } catch {
-    return false;
-  }
+function checkPassword(password,stored){
+if(!stored||!stored.includes(":"))return false;
+const [salt,hash]=stored.split(":");
+const check=crypto.scryptSync(password,salt,64).toString("hex");
+if(check.length!==hash.length)return false;
+return crypto.timingSafeEqual(Buffer.from(check),Buffer.from(hash));
 }
 
-function createSession(username) {
-  const data = `${username}:${Date.now()}:${crypto.randomBytes(32).toString("hex")}`;
-  return Buffer.from(data).toString("base64url");
+function sign(value){
+return crypto.createHmac("sha256",SESSION_SECRET).update(value).digest("hex");
 }
 
-function getSession(req) {
-  const cookie = req.cookies?.biofyit_user;
-  if (!cookie) return null;
-
-  try {
-    const decoded = Buffer.from(cookie, "base64url").toString("utf8");
-    const parts = decoded.split(":");
-
-    if (parts.length < 3) return null;
-
-    return parts[0];
-  } catch {
-    return null;
-  }
+function makeSession(username){
+const payload=Buffer.from(JSON.stringify({
+username,
+createdAt:Date.now()
+})).toString("base64url");
+return `${payload}.${sign(payload)}`;
 }
 
-function setSessionCookie(res, username) {
-  const session = createSession(username);
+function readSession(req){
+const cookie=req.headers.cookie||"";
+const match=cookie.match(new RegExp(`${COOKIE}=([^;]+)`));
+if(!match)return null;
 
-  res.setHeader(
-    "Set-Cookie",
-    `biofyit_user=${session}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
-  );
+const value=match[1];
+const parts=value.split(".");
+if(parts.length!==2)return null;
 
-  return session;
+const [payload,signature]=parts;
+const expected=sign(payload);
+
+if(signature.length!==expected.length)return null;
+
+try{
+if(!crypto.timingSafeEqual(Buffer.from(signature),Buffer.from(expected)))return null;
+
+const data=JSON.parse(Buffer.from(payload,"base64url").toString("utf8"));
+
+if(!data.username)return null;
+if(Date.now()-Number(data.createdAt)>2592000000)return null;
+
+return data.username;
+}catch{
+return null;
+}
 }
 
-function clearSessionCookie(res) {
-  res.setHeader(
-    "Set-Cookie",
-    "biofyit_user=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0"
-  );
+function setCookie(res,username){
+const session=makeSession(username);
+
+res.setHeader(
+"Set-Cookie",
+`${COOKIE}=${session}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000`
+);
 }
 
-module.exports = async function handler(req, res) {
-  const action = String(req.query.action || "").toLowerCase();
+function clearCookie(res){
+res.setHeader(
+"Set-Cookie",
+`${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`
+);
+}
 
-  try {
-    const usersFile = await getFile("users.json");
-    const users = usersFile?.content || [];
+async function users(){
+const file=await getFile("users.json");
+return {
+users:file?.content||[],
+sha:file?.sha||null
+};
+}
 
-    if (action === "register") {
-      if (req.method !== "POST") {
-        return res.status(405).json({ success: false, error: "Method not allowed." });
-      }
+module.exports=async function(req,res){
+const action=String(req.query.action||"").toLowerCase();
 
-      const body = req.body || {};
-      const email = String(body.email || "").trim().toLowerCase();
-      const username = String(body.username || "").trim().toLowerCase();
-      const password = String(body.password || "");
+try{
+if(action==="register"){
+if(req.method!=="POST"){
+return res.status(405).json({success:false,error:"Method not allowed."});
+}
 
-      if (!email || !username || !password) {
-        return res.status(400).json({
-          success: false,
-          error: "All fields are required."
-        });
-      }
+const body=req.body||{};
+const email=String(body.email||"").trim().toLowerCase();
+const username=String(body.username||"").trim().toLowerCase();
+const password=String(body.password||"");
 
-      if (!/^[a-z0-9_]{3,32}$/.test(username)) {
-        return res.status(400).json({
-          success: false,
-          error: "Username must be 3 to 32 characters and use only letters, numbers, and underscores."
-        });
-      }
+if(!email||!username||!password){
+return res.status(400).json({success:false,error:"All fields are required."});
+}
 
-      if (password.length < 8) {
-        return res.status(400).json({
-          success: false,
-          error: "Password must be at least 8 characters."
-        });
-      }
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+return res.status(400).json({success:false,error:"Enter a valid email address."});
+}
 
-      if (users.some(user => user.email === email)) {
-        return res.status(409).json({
-          success: false,
-          error: "An account with that email already exists."
-        });
-      }
+if(!/^[a-z0-9_]{3,32}$/.test(username)){
+return res.status(400).json({
+success:false,
+error:"Username must be 3 to 32 characters and use only letters, numbers, and underscores."
+});
+}
 
-      if (users.some(user => user.username === username)) {
-        return res.status(409).json({
-          success: false,
-          error: "That username is already taken."
-        });
-      }
+if(password.length<8){
+return res.status(400).json({
+success:false,
+error:"Password must be at least 8 characters."
+});
+}
 
-      const user = {
-        id: `user_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`,
-        email,
-        username,
-        passwordHash: hashPassword(password),
-        createdAt: new Date().toISOString()
-      };
+const data=await users();
 
-      users.push(user);
+if(data.users.some(u=>u.email===email)){
+return res.status(409).json({
+success:false,
+error:"That email is already registered."
+});
+}
 
-      await saveFile(
-        "users.json",
-        users,
-        usersFile?.sha,
-        `Create Biofyit user ${username}`
-      );
+if(data.users.some(u=>u.username===username)){
+return res.status(409).json({
+success:false,
+error:"That username is already taken."
+});
+}
 
-      const profilePath = `profiles/${username}.json`;
+const user={
+id:`user_${Date.now()}_${crypto.randomBytes(5).toString("hex")}`,
+email,
+username,
+passwordHash:hashPassword(password),
+createdAt:new Date().toISOString()
+};
 
-      await saveFile(
-        profilePath,
-        {
-          username,
-          displayName: username,
-          bio: "",
-          profilePicture: "",
-          background: "",
-          music: "",
-          lanyard: {
-            enabled: false,
-            id: null
-          },
-          links: []
-        },
-        null,
-        `Create Biofyit profile ${username}`
-      );
+data.users.push(user);
 
-      setSessionCookie(res, username);
+await saveFile(
+"users.json",
+data.users,
+data.sha,
+`Create Biofyit user ${username}`
+);
 
-      return res.status(200).json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username
-        }
-      });
-    }
+await saveFile(
+`profiles/${username}.json`,
+{
+username,
+displayName:username,
+bio:"",
+profilePicture:"",
+background:"",
+music:"",
+lanyard:{
+enabled:false,
+id:null
+},
+links:[]
+},
+null,
+`Create Biofyit profile ${username}`
+);
 
-    if (action === "login") {
-      if (req.method !== "POST") {
-        return res.status(405).json({
-          success: false,
-          error: "Method not allowed."
-        });
-      }
+setCookie(res,username);
 
-      const body = req.body || {};
-      const identifier = String(body.email || body.username || "")
-        .trim()
-        .toLowerCase();
+return res.status(200).json({
+success:true,
+user:{
+id:user.id,
+email:user.email,
+username:user.username
+}
+});
+}
 
-      const password = String(body.password || "");
+if(action==="login"){
+if(req.method!=="POST"){
+return res.status(405).json({success:false,error:"Method not allowed."});
+}
 
-      if (!identifier || !password) {
-        return res.status(400).json({
-          success: false,
-          error: "Email/username and password are required."
-        });
-      }
+const body=req.body||{};
+const identifier=String(body.email||body.username||"").trim().toLowerCase();
+const password=String(body.password||"");
 
-      const user = users.find(
-        item =>
-          item.email === identifier ||
-          item.username === identifier
-      );
+if(!identifier||!password){
+return res.status(400).json({
+success:false,
+error:"Enter your login details."
+});
+}
 
-      if (!user || !verifyPassword(password, user.passwordHash)) {
-        return res.status(401).json({
-          success: false,
-          error: "Invalid login details."
-        });
-      }
+const data=await users();
 
-      setSessionCookie(res, user.username);
+const user=data.users.find(
+u=>u.email===identifier||u.username===identifier
+);
 
-      return res.status(200).json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username
-        }
-      });
-    }
+if(!user||!checkPassword(password,user.passwordHash)){
+return res.status(401).json({
+success:false,
+error:"Incorrect username/email or password."
+});
+}
 
-    if (action === "session") {
-      if (req.method !== "GET") {
-        return res.status(405).json({
-          success: false,
-          error: "Method not allowed."
-        });
-      }
+setCookie(res,user.username);
 
-      const username = getSession(req);
+return res.status(200).json({
+success:true,
+user:{
+id:user.id,
+email:user.email,
+username:user.username
+}
+});
+}
 
-      if (!username) {
-        return res.status(401).json({
-          success: false,
-          error: "Not signed in."
-        });
-      }
+if(action==="session"){
+if(req.method!=="GET"){
+return res.status(405).json({success:false,error:"Method not allowed."});
+}
 
-      const user = users.find(item => item.username === username);
+const username=readSession(req);
 
-      if (!user) {
-        clearSessionCookie(res);
+if(!username){
+return res.status(401).json({
+success:false,
+error:"Not signed in."
+});
+}
 
-        return res.status(401).json({
-          success: false,
-          error: "Session expired."
-        });
-      }
+const data=await users();
 
-      return res.status(200).json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username
-        }
-      });
-    }
+const user=data.users.find(u=>u.username===username);
 
-    if (action === "logout") {
-      clearSessionCookie(res);
+if(!user){
+clearCookie(res);
 
-      return res.status(200).json({
-        success: true
-      });
-    }
+return res.status(401).json({
+success:false,
+error:"Account not found."
+});
+}
 
-    if (action === "username") {
-      if (req.method !== "GET") {
-        return res.status(405).json({
-          success: false,
-          error: "Method not allowed."
-        });
-      }
+return res.status(200).json({
+success:true,
+user:{
+id:user.id,
+email:user.email,
+username:user.username
+}
+});
+}
 
-      const username = String(req.query.username || "")
-        .trim()
-        .toLowerCase();
+if(action==="logout"){
+clearCookie(res);
 
-      if (!/^[a-z0-9_]{3,32}$/.test(username)) {
-        return res.status(200).json({
-          success: true,
-          available: false
-        });
-      }
+return res.status(200).json({
+success:true
+});
+}
 
-      return res.status(200).json({
-        success: true,
-        available: !users.some(user => user.username === username)
-      });
-    }
+if(action==="username"){
+const username=String(req.query.username||"").trim().toLowerCase();
 
-    return res.status(400).json({
-      success: false,
-      error: "Invalid authentication action."
-    });
-  } catch (error) {
-    console.error("AUTH ERROR:", error);
+if(!/^[a-z0-9_]{3,32}$/.test(username)){
+return res.status(200).json({
+success:true,
+available:false
+});
+}
 
-    return res.status(500).json({
-      success: false,
-      error: "Authentication service error."
-    });
-  }
+const data=await users();
+
+return res.status(200).json({
+success:true,
+available:!data.users.some(u=>u.username===username)
+});
+}
+
+return res.status(400).json({
+success:false,
+error:"Invalid authentication action."
+});
+
+}catch(error){
+console.error("BIOFYIT AUTH ERROR:",error);
+
+return res.status(500).json({
+success:false,
+error:"Authentication service error."
+});
+}
 };
