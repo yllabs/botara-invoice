@@ -1,4 +1,4 @@
-const { getFile, saveFile } = require("./github");
+const { getFile, saveFile, github } = require("./github");
 
 function getCookie(req, name) {
   const cookies = req.headers.cookie || "";
@@ -18,9 +18,32 @@ const allowedPlatforms = [
   "patreon","kofi","cashapp","venmo","paypal","custom"
 ];
 
+async function uploadFile(path, base64, contentType, username) {
+  const cleanBase64 = String(base64).replace(/^data:[^;]+;base64,/, "");
+
+  const response = await github(path, {
+    method: "PUT",
+    body: JSON.stringify({
+      message: `Update Biofyit media: ${username}`,
+      content: cleanBase64
+    })
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error("GitHub upload error:", error);
+    throw new Error("Unable to upload media.");
+  }
+
+  return `https://raw.githubusercontent.com/${process.env.BIOFYIT_DATA_REPO}/main/${path}`;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "Method not allowed." });
+    return res.status(405).json({
+      success: false,
+      error: "Method not allowed."
+    });
   }
 
   try {
@@ -78,8 +101,14 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    const displayName = cleanString(body.displayName, 80);
-    const bio = cleanString(body.bio, 500);
+    const oldProfile = profileResult.content || {};
+
+    const updatedProfile = {
+      ...oldProfile,
+      username,
+      displayName: cleanString(body.displayName, 80) || username,
+      bio: cleanString(body.bio, 500)
+    };
 
     let links = body.links;
 
@@ -117,15 +146,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const oldProfile = profileResult.content || {};
-
-    const updatedProfile = {
-      ...oldProfile,
-      username,
-      displayName: displayName || username,
-      bio,
-      links: cleanedLinks
-    };
+    updatedProfile.links = cleanedLinks;
 
     if (body.discord && typeof body.discord === "object") {
       updatedProfile.discord = {
@@ -134,16 +155,40 @@ module.exports = async function handler(req, res) {
       };
     }
 
-    if (typeof body.profilePicture === "string") {
-      updatedProfile.profilePicture = body.profilePicture.slice(0, 1000);
+    if (body.profilePicture && body.profilePicture.data) {
+      const extension = String(body.profilePicture.extension || "png").replace(/[^a-z0-9]/gi, "").toLowerCase() || "png";
+      const path = `media/profile-pictures/${username}.${extension}`;
+
+      updatedProfile.profilePicture = await uploadFile(
+        path,
+        body.profilePicture.data,
+        body.profilePicture.type || "image/png",
+        username
+      );
     }
 
-    if (typeof body.background === "string") {
-      updatedProfile.background = body.background.slice(0, 1000);
+    if (body.background && body.background.data) {
+      const extension = String(body.background.extension || "jpg").replace(/[^a-z0-9]/gi, "").toLowerCase() || "jpg";
+      const path = `media/backgrounds/${username}.${extension}`;
+
+      updatedProfile.background = await uploadFile(
+        path,
+        body.background.data,
+        body.background.type || "image/jpeg",
+        username
+      );
     }
 
-    if (typeof body.music === "string") {
-      updatedProfile.music = body.music.slice(0, 1000);
+    if (body.music && body.music.data) {
+      const extension = String(body.music.extension || "mp3").replace(/[^a-z0-9]/gi, "").toLowerCase() || "mp3";
+      const path = `media/music/${username}.${extension}`;
+
+      updatedProfile.music = await uploadFile(
+        path,
+        body.music.data,
+        body.music.type || "audio/mpeg",
+        username
+      );
     }
 
     await saveFile(
@@ -155,7 +200,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: "Profile saved successfully.",
+      message: "Profile published successfully.",
       profile: updatedProfile
     });
   } catch (error) {
@@ -163,7 +208,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: "Unable to save profile."
+      error: "Unable to publish profile."
     });
   }
 };
