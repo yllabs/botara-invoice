@@ -1,76 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Biofyit | Dashboard</title>
+<style>
+*{box-sizing:border-box}
+html{background:#050507}
+body{margin:0;min-height:100vh;background:#050507;color:#fff;font-family:Inter,Arial,Helvetica,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:7px}
+::-webkit-scrollbar-track{background:#050507}
+::-webkit-scrollbar-thumb{background:#24212d;border-radius:10px}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:235px;background:#09090d;border-right:1px solid #191820;padding:25px 15px;display:flex;flex-direction:column;z-index:10}
+.logo{font-size:25px;font-weight:800;letter-spacing:-1px;padding:3px 12px 30px}
+.logo span{color:#9147ff}
+.label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#555560;font-weight:700;padding:0 12px;margin-bottom:9px}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav a{height:42px;display:flex;align-items:center;gap:12px;padding:0 13px;border-radius:8px;color:#777781;font-size:13px;transition:.18s}
+.nav a:hover{background:#111116;color:#ddd}
+.nav a.active{background:#171020;color:#fff}
+.icon{width:18px;text-align:center;color:#77717f;font-size:14px}
+.active .icon{color:#a768ff}
+.account{margin-top:auto;border-top:1px solid #191920;padding:16px 5px 0}
+.account-title{font-size:10px;text-transform:uppercase;color:#50505b;letter-spacing:.8px;margin:0 7px 10px}
+.user{display:flex;align-items:center;gap:10px;padding:6px 7px}
+.avatar{width:34px;height:34px;border-radius:50%;background:#14141a;border:1px solid #292530;object-fit:cover}
+.user-info{min-width:0}
+.user-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-email{font-size:10px;color:#5e5e68;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.signout{width:100%;margin-top:7px;border:0;background:transparent;color:#666671;text-align:left;padding:9px 7px;font-size:12px}
+.signout:hover{color:#fff}
+.main{margin-left:235px;min-height:100vh;padding:42px 48px 70px;max-width:1500px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:37px}
+.header h1{font-size:21px;margin:0;font-weight:700}
+.header-right{display:flex;gap:9px}
+.header-btn{border:1px solid #24232c;background:#0c0c11;color:#bdbdc7;border-radius:7px;padding:9px 13px;font-size:12px}
+.header-btn:hover{background:#14141a;color:#fff}
+.welcome{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:30px}
+.welcome h2{font-size:31px;letter-spacing:-1px;margin:0 0 7px}
+.welcome h2 span{color:#a15cff}
+.welcome p{font-size:13px;color:#62626c;margin:0}
+.actions{display:flex;gap:8px}
+.btn{border:1px solid #292832;background:#0d0d12;color:#ddd;padding:10px 15px;border-radius:7px;font-size:12px}
+.btn:hover{background:#15151b}
+.btn.primary{background:#8242df;border-color:#8242df;color:#fff}
+.btn.primary:hover{background:#914cf0}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px}
+.card{background:#0a0a0f;border:1px solid #1a1a22;border-radius:10px;overflow:hidden}
+.card-header{height:58px;padding:0 20px;border-bottom:1px solid #19191f;display:flex;align-items:center;justify-content:space-between}
+.card-header h3{font-size:13px;margin:0;font-weight:650}
+.card-header small{font-size:10px;color:#565660}
+.card-body{padding:21px}
+.section{margin-bottom:27px}
+.section:last-child{margin-bottom:0}
+.section-title{font-size:10px;color:#686872;text-transform:uppercase;font-weight:700;letter-spacing:.8px;margin-bottom:12px}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:11px;color:#9696a1;margin-bottom:6px}
+input,textarea,select{width:100%;border:1px solid #24242d;background:#0d0d13;color:#fff;border-radius:7px;outline:none;font-size:12px;padding:10px 11px}
+input{height:40px}
+textarea{min-height:85px;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:#7040a9;box-shadow:0 0 0 2px #7e40db12}
+input:disabled{color:#64646f;cursor:not-allowed}
+.upload{display:flex;align-items:center;gap:13px}
+.upload-preview{width:57px;height:57px;border-radius:9px;background:#101016;border:1px solid #272730;object-fit:cover;flex-shrink:0}
+.upload-info{flex:1}
+.file-input{display:none}
+.file-button{display:inline-block;background:#111118;border:1px solid #292932;color:#bcbcc5;padding:8px 10px;border-radius:6px;font-size:11px;cursor:pointer}
+.file-button:hover{background:#18181f;color:#fff}
+.help{font-size:9px;color:#555560;margin-top:6px}
+.links{display:flex;flex-direction:column;gap:8px}
+.link{display:grid;grid-template-columns:100px 1fr 30px;gap:6px}
+.link button{border:1px solid #282831;background:#101016;color:#777;border-radius:7px}
+.link button:hover{color:#fff}
+.add{width:100%;margin-top:9px;border:1px dashed #292832;background:transparent;color:#656570;border-radius:7px;padding:9px;font-size:11px}
+.add:hover{border-color:#654091;color:#a76cff}
+.check-card{margin-top:20px}
+.check{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #17171d}
+.check:last-child{border:0}
+.circle{width:19px;height:19px;border:1px solid #30303a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
+.circle.done{background:#8142df;border-color:#8142df}
+.check-text{font-size:11px;color:#9999a3}
+.circle.done+.check-text{color:#55555f;text-decoration:line-through}
+.preview-card{position:sticky;top:25px}
+.preview{height:590px;border:1px solid #1d1d25;border-radius:8px;overflow:hidden;position:relative;background:#08080d}
+.preview-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,#241536 0%,#0a080e 55%,#050507 100%);background-size:cover;background-position:center}
+.preview-shade{position:absolute;inset:0;background:rgba(0,0,0,.38)}
+.preview-inner{height:100%;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;padding:25px}
+.preview-profile{text-align:center;width:100%;max-width:300px}
+.preview-avatar{width:82px;height:82px;border-radius:50%;object-fit:cover;border:2px solid #ffffff18;background:#121219}
+.preview-name{font-size:21px;font-weight:700;margin-top:13px}
+.preview-user{font-size:10px;color:#777782;margin-top:4px}
+.preview-bio{font-size:11px;color:#aaaab3;line-height:1.6;margin:13px auto 17px;max-width:260px;word-break:break-word}
+.preview-links{display:flex;flex-direction:column;gap:7px}
+.preview-link{border:1px solid #ffffff10;background:#09090db8;border-radius:7px;padding:9px;font-size:10px;color:#d2d2da}
+.preview-footer{font-size:9px;color:#55555f;margin-top:17px}
+.empty-links{font-size:10px;color:#55555f}
+.notice{border:1px solid #1d1b25;background:#0c0b11;border-radius:7px;padding:10px 11px;color:#60606b;font-size:10px;line-height:1.6;margin-top:10px}
+.toast{position:fixed;right:24px;bottom:24px;background:#121219;border:1px solid #302c39;border-radius:8px;padding:11px 15px;font-size:11px;color:#ddd;box-shadow:0 15px 45px #0009;z-index:50}
+.hidden{display:none!important}
+@media(max-width:1050px){
+.grid{grid-template-columns:1fr}
+.preview-card{position:relative;top:0}
+}
+@media(max-width:700px){
+.sidebar{position:relative;width:100%;height:auto;min-height:0;border-right:0;border-bottom:1px solid #191820}
+body{display:block}
+.main{margin:0;padding:25px 16px 50px}
+.nav{display:grid;grid-template-columns:1fr 1fr}
+.account{margin-top:18px}
+.welcome{display:block}
+.actions{margin-top:18px}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+<div class="logo">Bio<span>fyit</span></div>
+
+<div class="label">Manage</div>
+<nav class="nav">
+<a class="active" href="#overview"><span class="icon">◈</span>Overview</a>
+<a href="#profile"><span class="icon">◉</span>Profile</a>
+<a href="#appearance"><span class="icon">◌</span>Appearance</a>
+<a href="#socials"><span class="icon">◎</span>Socials</a>
+<a href="#music"><span class="icon">♪</span>Music</a>
+</nav>
+
+<div class="account">
+<div class="account-title">Account</div>
+<div class="user">
+<img id="accountAvatar" class="avatar" alt="">
+<div class="user-info">
+<div id="accountName" class="user-name">Loading...</div>
+<div id="accountEmail" class="user-email"></div>
+</div>
+</div>
+<button id="logout" class="signout">Sign out</button>
+</div>
+</aside>
+
+<main class="main" id="overview">
+
+<div class="header">
+<h1>Dashboard</h1>
+<div class="header-right">
+<button class="header-btn" id="viewProfile">View Profile</button>
+</div>
+</div>
+
+<div class="welcome">
+<div>
+<h2>Welcome <span id="welcomeUser">@username</span></h2>
+<p>Manage your Biofyit profile and customize your page.</p>
+</div>
+<div class="actions">
+<button class="btn primary" id="save">Save Changes</button>
+</div>
+</div>
+
+<div class="grid">
+
+<div>
+
+<div class="card" id="profile">
+<div class="card-header">
+<h3>Profile</h3>
+<small>Public information</small>
+</div>
+<div class="card-body">
+
+<div class="section">
+<div class="section-title">Basic information</div>
+
+<div class="field">
+<label>Username</label>
+<input id="username" disabled>
+</div>
+
+<div class="field">
+<label>Display name</label>
+<input id="displayName" maxlength="50" placeholder="Your display name">
+</div>
+
+<div class="field">
+<label>Bio</label>
+<textarea id="bio" maxlength="250" placeholder="Tell people about yourself"></textarea>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">Profile picture</div>
+<div class="upload">
+<img id="profilePicturePreview" class="upload-preview" alt="">
+<div class="upload-info">
+<label class="file-button" for="profilePicture">Choose image</label>
+<input id="profilePicture" class="file-input" type="file" accept="image/png,image/jpeg,image/webp">
+<div class="help">PNG, JPG or WEBP. Maximum 2 MB.</div>
+</div>
+</div>
+</div>
+
+<div class="section" id="appearance">
+<div class="section-title">Appearance</div>
+<div class="upload">
+<div id="backgroundPreview" class="upload-preview"></div>
+<div class="upload-info">
+<label class="file-button" for="background">Choose background</label>
+<input id="background" class="file-input" type="file" accept="image/png,image/jpeg,image/webp">
+<div class="help">PNG, JPG or WEBP. Maximum 2 MB.</div>
+</div>
+</div>
+</div>
+
+<div class="section" id="music">
+<div class="section-title">Music</div>
+<div class="field">
+<label>Profile music</label>
+<label class="file-button" for="music">Choose audio</label>
+<input id="music" class="file-input" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg">
+<div class="help">MP3, WAV or OGG. Maximum 4 MB.</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">Discord presence</div>
+<div class="field">
+<label>Discord User ID</label>
+<input id="discordId" placeholder="Connect your Discord account">
+</div>
+<div class="notice">Your Discord presence can appear on your public Biofyit profile.</div>
+</div>
+
+<div class="section" id="socials">
+<div class="section-title">Social links</div>
+<div id="links" class="links"></div>
+<button class="add" id="addLink">+ Add social link</button>
+<div class="help">You can add up to 10 social links.</div>
+</div>
+
+</div>
+</div>
+
+<div class="card check-card" id="checklistCard">
+<div class="card-header">
+<h3>Setup checklist</h3>
+<small id="progressText">0 / 3</small>
+</div>
+<div class="card-body">
+<div class="check">
+<div id="checkUsername" class="circle"></div>
+<div class="check-text">Choose your username</div>
+</div>
+<div class="check">
+<div id="checkPicture" class="circle"></div>
+<div class="check-text">Add a profile picture</div>
+</div>
+<div class="check">
+<div id="checkBackground" class="circle"></div>
+<div class="check-text">Add a background</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="preview-card">
+<div class="card">
+<div class="card-header">
+<h3>Live Preview</h3>
+<small>biofyit.com/<span id="previewUsername">username</span></small>
+</div>
+<div class="card-body">
+<div class="preview">
+<div id="previewBg" class="preview-bg"></div>
+<div class="preview-shade"></div>
+<div class="preview-inner">
+<div class="preview-profile">
+<img id="previewAvatar" class="preview-avatar" alt="">
+<div id="previewName" class="preview-name">Display Name</div>
+<div id="previewUser" class="preview-user">@username</div>
+<div id="previewBio" class="preview-bio">Your bio will appear here.</div>
+<div id="previewLinks" class="preview-links"></div>
+<div class="preview-footer">Powered by Biofyit</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+</main>
+
+<div id="toast" class="toast hidden"></div>
+
 <script>
-async function getSession(){
-const response=await fetch("/api/auth?action=session",{
-method:"GET",
-credentials:"include",
-cache:"no-store"
-});
+const state={profile:{links:[]},files:{}};
 
+const $=id=>document.getElementById(id);
+
+async function request(url,options={}){
+const response=await fetch(url,{credentials:"include",cache:"no-store",...options});
 const data=await response.json().catch(()=>({}));
-
-if(!response.ok||!data.success){
-window.location.replace("/login.html");
-return null;
+if(!response.ok)throw new Error(data.error||"Request failed.");
+return data;
 }
 
-return data.user;
+function showToast(message){
+$("toast").textContent=message;
+$("toast").classList.remove("hidden");
+clearTimeout(window.toastTimer);
+window.toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),3000);
+}
+
+function updatePreview(){
+const username=$("username").value||"username";
+const name=$("displayName").value.trim()||username;
+const bio=$("bio").value.trim()||"Your bio will appear here.";
+
+$("welcomeUser").textContent="@"+username;
+$("previewUsername").textContent=username;
+$("previewName").textContent=name;
+$("previewUser").textContent="@"+username;
+$("previewBio").textContent=bio;
+
+const container=$("previewLinks");
+container.innerHTML="";
+
+const links=state.profile.links||[];
+
+links.forEach(link=>{
+if(!link.url)return;
+
+const a=document.createElement("a");
+a.className="preview-link";
+a.href=link.url;
+a.target="_blank";
+a.rel="noopener noreferrer";
+a.textContent=link.label||link.platform||"Link";
+container.appendChild(a);
+});
+
+if(!links.some(link=>link.url)){
+container.innerHTML='<div class="empty-links">No social links added</div>';
+}
+}
+
+function renderLinks(){
+const container=$("links");
+container.innerHTML="";
+
+(state.profile.links||[]).forEach((link,index)=>{
+const row=document.createElement("div");
+row.className="link";
+
+const select=document.createElement("select");
+
+const platforms=[
+"discord","instagram","tiktok","youtube","x","facebook",
+"snapchat","twitch","kick","github","reddit","spotify",
+"soundcloud","steam","roblox","xbox","playstation","linkedin",
+"threads","bluesky","telegram","pinterest","tumblr","gitlab",
+"codepen","patreon","kofi","cashapp","venmo","paypal","custom"
+];
+
+platforms.forEach(platform=>{
+const option=document.createElement("option");
+option.value=platform;
+option.textContent=platform==="custom"?"Custom":platform.charAt(0).toUpperCase()+platform.slice(1);
+if(platform===link.platform)option.selected=true;
+select.appendChild(option);
+});
+
+const input=document.createElement("input");
+input.value=link.url||"";
+input.placeholder="https://...";
+
+const remove=document.createElement("button");
+remove.type="button";
+remove.textContent="×";
+
+select.onchange=()=>{
+link.platform=select.value;
+updatePreview();
+};
+
+input.oninput=()=>{
+link.url=input.value.trim();
+updatePreview();
+};
+
+remove.onclick=()=>{
+state.profile.links.splice(index,1);
+renderLinks();
+};
+
+row.appendChild(select);
+row.appendChild(input);
+row.appendChild(remove);
+container.appendChild(row);
+});
+
+updatePreview();
+}
+
+function updateChecklist(){
+const checks=[
+["checkUsername",!!$("username").value],
+["checkPicture",!!state.profile.profilePicture],
+["checkBackground",!!state.profile.background]
+];
+
+let done=0;
+
+checks.forEach(([id,complete])=>{
+$(id).classList.toggle("done",complete);
+$(id).textContent=complete?"✓":"";
+if(complete)done++;
+});
+
+$("progressText").textContent=done+" / 3";
+$("checklistCard").classList.toggle("hidden",done===3);
+}
+
+function readFile(file){
+return new Promise((resolve,reject)=>{
+const reader=new FileReader();
+reader.onload=()=>resolve(reader.result);
+reader.onerror=()=>reject(new Error("Unable to read file."));
+reader.readAsDataURL(file);
+});
+}
+
+async function upload(file,type){
+const max=type==="music"?4*1024*1024:2*1024*1024;
+
+if(file.size>max){
+throw new Error(type==="music"?"Music must be 4 MB or smaller.":"Images must be 2 MB or smaller.");
+}
+
+const data=await readFile(file);
+const extension=(file.name.split(".").pop()||"bin").toLowerCase();
+
+const result=await request("/api/media",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+type,
+data,
+extension
+})
+});
+
+return result.url;
 }
 
 async function loadDashboard(){
-const user=await getSession();
-
-if(!user)return;
-
-document.getElementById("accountName").textContent=user.username;
-document.getElementById("accountEmail").textContent=user.email||"";
-document.getElementById("username").value=user.username;
-document.getElementById("welcomeUser").textContent="@"+user.username;
-
 try{
-const response=await fetch(
-"/api/profile?username="+encodeURIComponent(user.username),
-{
-credentials:"include",
-cache:"no-store"
-}
-);
+const session=await request("/api/auth?action=session");
+const user=session.user;
 
-const data=await response.json();
+$("accountName").textContent=user.username;
+$("accountEmail").textContent=user.email||"";
+$("username").value=user.username;
+$("welcomeUser").textContent="@"+user.username;
 
-if(data.profile){
-state.profile=data.profile;
+const result=await request("/api/profile?username="+encodeURIComponent(user.username));
+
+state.profile=result.profile||{
+username:user.username,
+displayName:user.username,
+bio:"",
+profilePicture:"",
+background:"",
+music:"",
+lanyard:{enabled:false,id:null},
+links:[]
+};
+
 state.profile.links=state.profile.links||[];
 
-document.getElementById("displayName").value=data.profile.displayName||"";
-document.getElementById("bio").value=data.profile.bio||"";
+$("displayName").value=state.profile.displayName||"";
+$("bio").value=state.profile.bio||"";
 
-if(data.profile.profilePicture){
-document.getElementById("profilePicturePreview").src=data.profile.profilePicture;
-document.getElementById("previewAvatar").src=data.profile.profilePicture;
-document.getElementById("accountAvatar").src=data.profile.profilePicture;
+if(state.profile.profilePicture){
+$("profilePicturePreview").src=state.profile.profilePicture;
+$("previewAvatar").src=state.profile.profilePicture;
+$("accountAvatar").src=state.profile.profilePicture;
 }
 
-if(data.profile.background){
-document.getElementById("backgroundPreview").style.backgroundImage=`url("${data.profile.background}")`;
-document.getElementById("backgroundPreview").style.backgroundSize="cover";
-document.getElementById("backgroundPreview").style.backgroundPosition="center";
-document.getElementById("previewBg").style.backgroundImage=`url("${data.profile.background}")`;
+if(state.profile.background){
+$("backgroundPreview").style.backgroundImage=`url("${state.profile.background}")`;
+$("backgroundPreview").style.backgroundSize="cover";
+$("backgroundPreview").style.backgroundPosition="center";
+$("previewBg").style.backgroundImage=`url("${state.profile.background}")`;
 }
 
-if(data.profile.lanyard&&data.profile.lanyard.id){
-document.getElementById("discordId").value=data.profile.lanyard.id;
+if(state.profile.lanyard&&state.profile.lanyard.id){
+$("discordId").value=state.profile.lanyard.id;
 }
 
 renderLinks();
-updatePreview();
 updateChecklist();
-}
+updatePreview();
+
 }catch(error){
-console.error(error);
+window.location.replace("/login.html");
 }
 }
 
-document.getElementById("logout").onclick=async()=>{
+async function saveProfile(){
+try{
+$("save").disabled=true;
+$("save").textContent="Saving...";
+
+const profile={
+username:$("username").value,
+displayName:$("displayName").value.trim(),
+bio:$("bio").value.trim(),
+profilePicture:state.profile.profilePicture||"",
+background:state.profile.background||"",
+music:state.profile.music||"",
+lanyard:state.profile.lanyard||{enabled:false,id:null},
+links:state.profile.links||[]
+};
+
+if($("discordId").value.trim()){
+profile.lanyard={
+enabled:true,
+id:$("discordId").value.trim(),
+verified:false
+};
+}
+
+const result=await request("/api/profile",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(profile)
+});
+
+state.profile=result.profile||profile;
+
+updateChecklist();
+updatePreview();
+
+showToast("Changes saved. They may take a minute or so to appear.");
+
+}catch(error){
+showToast(error.message);
+}finally{
+$("save").disabled=false;
+$("save").textContent="Save Changes";
+}
+}
+
+$("profilePicture").onchange=async event=>{
+const file=event.target.files[0];
+if(!file)return;
+
+try{
+const url=await upload(file,"profilePicture");
+
+state.profile.profilePicture=url;
+
+$("profilePicturePreview").src=url;
+$("previewAvatar").src=url;
+$("accountAvatar").src=url;
+
+updateChecklist();
+showToast("Profile picture uploaded.");
+}catch(error){
+showToast(error.message);
+}
+};
+
+$("background").onchange=async event=>{
+const file=event.target.files[0];
+if(!file)return;
+
+try{
+const url=await upload(file,"background");
+
+state.profile.background=url;
+
+$("backgroundPreview").style.backgroundImage=`url("${url}")`;
+$("backgroundPreview").style.backgroundSize="cover";
+$("backgroundPreview").style.backgroundPosition="center";
+$("previewBg").style.backgroundImage=`url("${url}")`;
+
+updateChecklist();
+showToast("Background uploaded.");
+}catch(error){
+showToast(error.message);
+}
+};
+
+$("music").onchange=async event=>{
+const file=event.target.files[0];
+if(!file)return;
+
+try{
+const url=await upload(file,"music");
+state.profile.music=url;
+showToast("Music uploaded.");
+}catch(error){
+showToast(error.message);
+}
+};
+
+$("displayName").oninput=updatePreview;
+$("bio").oninput=updatePreview;
+
+$("addLink").onclick=()=>{
+if((state.profile.links||[]).length>=10){
+showToast("You can only add 10 links.");
+return;
+}
+
+state.profile.links.push({
+platform:"custom",
+label:"Link",
+url:""
+});
+
+renderLinks();
+};
+
+$("save").onclick=saveProfile;
+
+$("viewProfile").onclick=()=>{
+const username=$("username").value;
+if(username)window.open("/"+encodeURIComponent(username),"_blank");
+};
+
+$("logout").onclick=async()=>{
 try{
 await fetch("/api/auth?action=logout",{
 method:"POST",
@@ -83,3 +653,5 @@ window.location.replace("/login.html");
 
 loadDashboard();
 </script>
+</body>
+</html>
