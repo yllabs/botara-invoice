@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | Biofyit</title>
+  <link rel="icon" href="biofyit.png">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #050507;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .glow {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: #7c3cff;
+      filter: blur(150px);
+      opacity: .16;
+      pointer-events: none;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 440px;
+      padding: 38px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(13,13,18,.88);
+      backdrop-filter: blur(25px);
+      border-radius: 22px;
+      box-shadow: 0 30px 100px rgba(0,0,0,.55);
+      position: relative;
+      z-index: 2;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .logo img {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      border-radius: 15px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 29px;
+      letter-spacing: -.8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #858590;
+      font-size: 14px;
+      margin-top: 9px;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      color: #bdbdc7;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 17px 0 8px;
+    }
+
+    input {
+      width: 100%;
+      height: 48px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 11px;
+      background: rgba(255,255,255,.04);
+      color: #fff;
+      padding: 0 14px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: rgba(139,92,246,.7);
+      box-shadow: 0 0 0 3px rgba(124,58,237,.1);
+    }
+
+    button {
+      width: 100%;
+      height: 49px;
+      margin-top: 23px;
+      border: 0;
+      border-radius: 11px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      box-shadow: 0 15px 35px rgba(124,58,237,.2);
+    }
+
+    .error {
+      display: none;
+      padding: 11px;
+      margin-top: 15px;
+      border-radius: 10px;
+      background: rgba(239,68,68,.08);
+      border: 1px solid rgba(239,68,68,.2);
+      color: #fca5a5;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .bottom {
+      text-align: center;
+      margin-top: 23px;
+      color: #777782;
+      font-size: 13px;
+    }
+
+    .bottom a {
+      color: #a78bfa;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="glow"></div>
+
+  <div class="card">
+
+    <div class="logo">
+      <img src="biofyit.png" alt="Biofyit">
+    </div>
+
+    <h1>Create your account</h1>
+    <p class="subtitle">
+      Start building your Biofyit profile.
+    </p>
+
+    <form id="registerForm">
+
+      <label for="email">Email address</label>
+      <input
+        id="email"
+        type="email"
+        placeholder="you@example.com"
+        required
+      >
+
+      <label for="username">Username</label>
+      <input
+        id="username"
+        type="text"
+        placeholder="yourname"
+        minlength="3"
+        maxlength="24"
+        pattern="[A-Za-z0-9_]+"
+        required
+      >
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        placeholder="Create a password"
+        minlength="8"
+        required
+      >
+
+      <label for="confirmPassword">Confirm password</label>
+      <input
+        id="confirmPassword"
+        type="password"
+        placeholder="Confirm your password"
+        minlength="8"
+        required
+      >
+
+      <button type="submit">Create Account</button>
+
+      <div class="error" id="error"></div>
+
+    </form>
+
+    <div class="bottom">
+      Already have an account?
+      <a href="/login.html">Sign in</a>
+    </div>
+
+  </div>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const error = document.getElementById("error");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      error.style.display = "none";
+
+      if (password !== confirmPassword) {
+        error.textContent = "Your passwords do not match.";
+        error.style.display = "block";
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email,
+            username,
+            password
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Unable to create your account.");
+        }
+
+        window.location.href = "/dashboard.html";
+
+      } catch (err) {
+        error.textContent = err.message;
+        error.style.display = "block";
+      }
+    });
+  </script>
+
+</body>
+</html>
