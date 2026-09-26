@@ -50,11 +50,11 @@ button{cursor:pointer}
 .tab.active{color:#fff;border-bottom-color:var(--purple)}
 .section{display:none}
 .section.active{display:block}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden}
-.card-header{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.055)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;margin-bottom:14px;overflow:hidden}
+.card-header{padding:19px 21px;border-bottom:1px solid rgba(255,255,255,.055)}
 .card-title{font-family:"Space Grotesk";font-size:13px;font-weight:700}
 .card-description{font-size:10px;color:#68616f;margin-top:4px}
-.card-body{padding:20px}
+.card-body{padding:21px}
 .field{margin-bottom:18px}
 .field:last-child{margin-bottom:0}
 .field-label{display:flex;justify-content:space-between;align-items:center;color:#bcb5c1;font-size:10px;font-weight:700;margin-bottom:7px}
@@ -63,16 +63,33 @@ input[type=text],input[type=url],textarea,select{width:100%;border:1px solid rgb
 input:focus,textarea:focus,select:focus{border-color:rgba(168,85,247,.55);box-shadow:0 0 0 3px rgba(168,85,247,.06)}
 input:disabled{color:#625c68;cursor:not-allowed}
 textarea{min-height:115px;resize:vertical;line-height:1.5}
-.media-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.upload-card{height:205px;position:relative;border:1px dashed rgba(255,255,255,.12);border-radius:13px;background:linear-gradient(145deg,#0b090e,#0e0b12);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;transition:.2s}
-.upload-card:hover{border-color:rgba(168,85,247,.55);background:linear-gradient(145deg,#0d0911,#110c16)}
-.upload-card input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
-.upload-preview-pfp{width:72px;height:72px;border-radius:50%;object-fit:cover;background:#18131e;border:2px solid rgba(255,255,255,.1);margin-bottom:12px}
-.upload-preview-bg{width:calc(100% - 32px);height:75px;border-radius:9px;object-fit:cover;background:#18131e;margin-bottom:12px}
-.upload-icon{width:45px;height:45px;border-radius:12px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.14);display:flex;align-items:center;justify-content:center;color:#b66af1;font-size:18px;margin-bottom:11px}
-.upload-title{font-size:11px;font-weight:700}
-.upload-sub{font-size:9px;color:#625c68;margin-top:5px}
-.upload-name{max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:9px;color:#9c73ba;margin-top:5px}
+
+.media-stack{display:flex;flex-direction:column;gap:16px}
+.media-upload{position:relative;min-height:230px;border:1px solid rgba(255,255,255,.075);border-radius:14px;background:#09080c;overflow:hidden;transition:.2s}
+.media-upload:hover{border-color:rgba(168,85,247,.45);transform:translateY(-1px)}
+.media-upload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:10}
+.media-inner{position:absolute;inset:0;padding:18px;display:flex;align-items:center;gap:22px;pointer-events:none}
+.media-visual{width:175px;height:175px;flex:none;border-radius:12px;background:#121016;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media-visual.pfp{border-radius:50%;width:150px;height:150px;margin-left:12px}
+.media-visual img{width:100%;height:100%;object-fit:cover}
+.media-visual.pfp img{border-radius:50%}
+.media-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;color:#6e6677}
+.media-empty-icon{width:45px;height:45px;border-radius:12px;background:rgba(168,85,247,.09);border:1px solid rgba(168,85,247,.15);display:flex;align-items:center;justify-content:center;font-size:18px;color:#b66af1;margin-bottom:10px}
+.media-details{min-width:0;flex:1}
+.media-type{font-size:9px;color:#8c8492;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-bottom:7px}
+.media-title{font-family:"Space Grotesk";font-size:17px;font-weight:700;margin-bottom:7px}
+.media-description{font-size:10px;color:#625c68;line-height:1.5;max-width:330px}
+.media-file{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:#b16ee5;margin-top:12px}
+.media-action{display:inline-flex;margin-top:15px;padding:9px 13px;border-radius:8px;background:rgba(168,85,247,.11);border:1px solid rgba(168,85,247,.18);color:#c17aef;font-size:10px;font-weight:700}
+.media-upload:hover .media-action{background:rgba(168,85,247,.17);color:#fff}
+.background-media{min-height:250px}
+.background-media .media-visual{width:255px;height:185px}
+.background-media .media-visual img{object-fit:cover}
+.media-upload.has-image .media-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,rgba(0,0,0,.2))}
+.media-upload.has-image .media-inner{background:linear-gradient(90deg,rgba(9,8,12,.08),rgba(9,8,12,.65))}
+.media-upload.has-image .media-details{position:relative;z-index:2}
+.media-upload.has-image .media-visual{position:relative}
+
 .social-list{display:flex;flex-direction:column;gap:9px}
 .social-row{display:grid;grid-template-columns:125px minmax(0,1fr) 36px;gap:7px}
 .social-row button{border:1px solid rgba(255,255,255,.07);background:#100d13;color:#817987;border-radius:8px}
@@ -80,9 +97,16 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 .add-social{width:100%;border:1px dashed rgba(168,85,247,.3);background:rgba(168,85,247,.045);color:#ad67e8;border-radius:9px;padding:11px;margin-top:10px;font-size:10px;font-weight:700}
 .add-social:hover{background:rgba(168,85,247,.09)}
 .empty{border:1px dashed rgba(255,255,255,.08);border-radius:9px;text-align:center;padding:25px;color:#5f5965;font-size:10px}
-.music-box{height:205px;position:relative;border:1px dashed rgba(255,255,255,.12);border-radius:13px;background:linear-gradient(145deg,#0b090e,#0e0b12);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.music-box input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
-.music-circle{width:48px;height:48px;border-radius:50%;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.15);display:flex;align-items:center;justify-content:center;color:#b66af1;font-size:19px;margin-bottom:12px}
+
+.music-upload{position:relative;min-height:190px;border:1px solid rgba(255,255,255,.075);border-radius:14px;background:#09080c;overflow:hidden;display:flex;align-items:center;padding:25px;transition:.2s}
+.music-upload:hover{border-color:rgba(168,85,247,.45)}
+.music-upload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.music-icon{width:62px;height:62px;border-radius:15px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.17);display:flex;align-items:center;justify-content:center;color:#bd70f2;font-size:25px;margin-right:20px}
+.music-details{min-width:0}
+.music-title{font-family:"Space Grotesk";font-size:17px;font-weight:700}
+.music-sub{font-size:10px;color:#625c68;margin-top:6px}
+.music-name{font-size:10px;color:#b16ee5;margin-top:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 .preview-column{position:sticky;top:90px}
 .preview-panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .preview-header{height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 17px}
@@ -112,10 +136,38 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 .status.show{display:block}
 .status.success{color:#86efac;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18)}
 .status.error{color:#fca5a5;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18)}
-@media(max-width:1050px){.layout{grid-template-columns:1fr}.preview-column{position:static}}
+
+@media(max-width:1050px){
+.layout{grid-template-columns:1fr}
+.preview-column{position:static}
+}
 @media(max-width:760px){
-.sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}
-.main{margin-left:0}.menu{display:block}.topbar{padding:0 15px}.content{padding:23px 15px 45px}.heading h1{font-size:24px}.top-right{display:none}.media-grid{grid-template-columns:1fr}.social-row{grid-template-columns:100px minmax(0,1fr) 35px}.preview-screen{height:530px}.publish-text{display:none}
+.sidebar{transform:translateX(-100%);transition:.2s}
+.sidebar.open{transform:translateX(0)}
+.main{margin-left:0}
+.menu{display:block}
+.topbar{padding:0 15px}
+.content{padding:23px 15px 45px}
+.heading h1{font-size:24px}
+.top-right{display:none}
+.media-inner{padding:15px;gap:15px}
+.media-visual{width:125px;height:145px}
+.media-visual.pfp{width:115px;height:115px;margin-left:0}
+.background-media .media-visual{width:145px;height:140px}
+.media-title{font-size:14px}
+.media-description{font-size:9px}
+.media-action{margin-top:10px}
+.social-row{grid-template-columns:100px minmax(0,1fr) 35px}
+.preview-screen{height:530px}
+.publish-text{display:none}
+}
+@media(max-width:520px){
+.media-upload,.background-media{min-height:320px}
+.media-inner{flex-direction:column;justify-content:center;text-align:center}
+.media-visual,.media-visual.pfp,.background-media .media-visual{width:130px;height:130px;margin:0}
+.media-details{width:100%}
+.media-description{margin:auto}
+.media-file{max-width:85%}
 }
 </style>
 </head>
@@ -123,7 +175,6 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 
 <aside class="sidebar" id="sidebar">
 <div class="logo">Bio<span>fyit</span></div>
-
 <div class="label">Creator</div>
 <nav class="nav">
 <button class="active" data-tab="profile">Profile</button>
@@ -131,13 +182,11 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 <button data-tab="socials">Socials</button>
 <button data-tab="music">Music</button>
 </nav>
-
 <div class="label" style="margin-top:26px">Account</div>
 <nav class="nav">
 <button onclick="openProfile()">View profile</button>
 <button onclick="logout()">Sign out</button>
 </nav>
-
 <div class="account-wrap">
 <div class="account">
 <img id="accountPfp" src="/biofyit.png">
@@ -162,7 +211,6 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 </header>
 
 <div class="content">
-
 <div class="heading">
 <div>
 <h1>Welcome <strong id="welcomeUser">@username</strong></h1>
@@ -171,7 +219,6 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 </div>
 
 <div class="layout">
-
 <div>
 
 <div class="tabs">
@@ -217,25 +264,45 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 <div class="card">
 <div class="card-header">
 <div class="card-title">Profile media</div>
-<div class="card-description">Upload the images that appear on your public profile.</div>
+<div class="card-description">Upload the images visitors see when they open your profile.</div>
 </div>
 <div class="card-body">
 
-<div class="media-grid">
+<div class="media-stack">
 
-<div class="upload-card">
-<img class="upload-preview-pfp" id="pfpPreview" src="/biofyit.png">
-<div class="upload-title">Profile picture</div>
-<div class="upload-sub">PNG, JPG or WEBP · Maximum 2 MB</div>
-<div class="upload-name" id="pfpName">No new file selected</div>
+<div class="media-upload" id="pfpUpload">
+<div class="media-inner">
+<div class="media-visual pfp">
+<img id="pfpPreview" src="/biofyit.png">
+</div>
+<div class="media-details">
+<div class="media-type">Profile picture</div>
+<div class="media-title">Profile photo</div>
+<div class="media-description">Choose a square image for your profile avatar. PNG, JPG and WEBP are supported.</div>
+<div class="media-file" id="pfpName">No new file selected</div>
+<div class="media-action">Choose image</div>
+</div>
+</div>
 <input id="profilePicture" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
 
-<div class="upload-card">
-<img class="upload-preview-bg" id="backgroundPreview" src="">
-<div class="upload-title">Background image</div>
-<div class="upload-sub">PNG, JPG or WEBP · Maximum 2 MB</div>
-<div class="upload-name" id="backgroundName">No new file selected</div>
+<div class="media-upload background-media" id="backgroundUpload">
+<div class="media-inner">
+<div class="media-visual">
+<div class="media-empty" id="backgroundEmpty">
+<div class="media-empty-icon">▧</div>
+<span>No background</span>
+</div>
+<img id="backgroundPreview" src="" style="display:none">
+</div>
+<div class="media-details">
+<div class="media-type">Background</div>
+<div class="media-title">Background image</div>
+<div class="media-description">Add a large background image to give your public profile its main visual style.</div>
+<div class="media-file" id="backgroundName">No new file selected</div>
+<div class="media-action">Choose image</div>
+</div>
+</div>
 <input id="background" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
 
@@ -247,74 +314,84 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 </section>
 
 <section class="section" id="appearance">
-
 <div class="card">
 <div class="card-header">
 <div class="card-title">Appearance</div>
-<div class="card-description">Replace your profile visuals.</div>
+<div class="card-description">Manage your profile visuals.</div>
 </div>
 <div class="card-body">
+<div class="media-stack">
 
-<div class="media-grid">
-
-<div class="upload-card">
-<img class="upload-preview-pfp" id="appearancePfp" src="/biofyit.png">
-<div class="upload-title">Profile picture</div>
-<div class="upload-sub">PNG, JPG or WEBP · Maximum 2 MB</div>
+<div class="media-upload">
+<div class="media-inner">
+<div class="media-visual pfp">
+<img id="appearancePfp" src="/biofyit.png">
+</div>
+<div class="media-details">
+<div class="media-type">Profile picture</div>
+<div class="media-title">Change profile photo</div>
+<div class="media-description">Upload a new avatar. Your current image will remain until you publish.</div>
+<div class="media-action">Choose image</div>
+</div>
+</div>
 <input id="appearancePicture" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
 
-<div class="upload-card">
-<img class="upload-preview-bg" id="appearanceBg" src="">
-<div class="upload-title">Background image</div>
-<div class="upload-sub">PNG, JPG or WEBP · Maximum 2 MB</div>
+<div class="media-upload background-media">
+<div class="media-inner">
+<div class="media-visual">
+<div class="media-empty" id="appearanceBgEmpty">
+<div class="media-empty-icon">▧</div>
+<span>No background</span>
+</div>
+<img id="appearanceBg" src="" style="display:none">
+</div>
+<div class="media-details">
+<div class="media-type">Background</div>
+<div class="media-title">Change background</div>
+<div class="media-description">Upload a new background image for your public page.</div>
+<div class="media-action">Choose image</div>
+</div>
+</div>
 <input id="appearanceBackground" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
 
 </div>
-
 </div>
 </div>
-
 </section>
 
 <section class="section" id="socials">
-
 <div class="card">
 <div class="card-header">
 <div class="card-title">Social links</div>
 <div class="card-description">Add up to 10 links to your profile.</div>
 </div>
 <div class="card-body">
-
 <div class="social-list" id="socialList"></div>
-
 <button class="add-social" id="addSocial">+ Add social link</button>
-
 </div>
 </div>
-
 </section>
 
 <section class="section" id="music">
-
 <div class="card">
 <div class="card-header">
 <div class="card-title">Profile music</div>
 <div class="card-description">Add music visitors can play from your profile.</div>
 </div>
 <div class="card-body">
-
-<div class="music-box">
-<div class="music-circle">♪</div>
-<div class="upload-title" id="musicName">Choose a music file</div>
-<div class="upload-sub">MP3, WAV or OGG · Maximum 4 MB</div>
+<div class="music-upload">
+<div class="music-icon">♪</div>
+<div class="music-details">
+<div class="music-title">Profile music</div>
+<div class="music-sub">MP3, WAV or OGG · Maximum 4 MB</div>
+<div class="music-name" id="musicName">No music selected</div>
+</div>
 <input id="music" type="file" accept="audio/mpeg,audio/wav,audio/ogg">
 </div>
-
 </div>
 </div>
-
 </section>
 
 <div class="publish-wrap">
@@ -327,13 +404,11 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 </div>
 
 <div class="preview-column">
-
 <div class="preview-panel">
 <div class="preview-header">
 <div class="preview-header-title">Live preview</div>
 <div class="live"><span class="live-dot"></span>Live</div>
 </div>
-
 <div class="preview-screen" id="previewScreen">
 <div class="preview-content">
 <img class="preview-pfp" id="previewPfp" src="/biofyit.png">
@@ -351,9 +426,7 @@ textarea{min-height:115px;resize:vertical;line-height:1.5}
 <div class="progress-item" id="setupPfp">○ Profile picture added</div>
 <div class="progress-item" id="setupBg">○ Background added</div>
 </div>
-
 </div>
-
 </div>
 </div>
 </main>
@@ -396,7 +469,6 @@ return;
 }
 
 username=data.user.username;
-
 $("username").value=username;
 $("welcomeUser").textContent="@"+username;
 $("accountName").textContent=username;
@@ -404,7 +476,6 @@ $("accountUser").textContent="@"+username;
 $("previewUser").textContent="@"+username;
 
 await loadProfile();
-
 }catch(error){
 console.error(error);
 location.href="/login.html";
@@ -413,10 +484,7 @@ location.href="/login.html";
 
 async function loadProfile(){
 try{
-const response=await fetch("/api/profile?username="+encodeURIComponent(username),{
-cache:"no-store"
-});
-
+const response=await fetch("/api/profile?username="+encodeURIComponent(username),{cache:"no-store"});
 const data=await response.json();
 
 if(!response.ok||!data.success){
@@ -425,28 +493,18 @@ return;
 }
 
 profile=data.profile||{};
-
 $("displayName").value=profile.displayName||username;
 $("bio").value=profile.bio||"";
 
-if(profile.profilePicture){
-applySavedPfp(profile.profilePicture);
-}
-
-if(profile.background){
-applySavedBackground(profile.background);
-}
-
-if(profile.music){
-$("musicName").textContent="Music already uploaded";
-}
+if(profile.profilePicture)applySavedPfp(profile.profilePicture);
+if(profile.background)applySavedBackground(profile.background);
+if(profile.music)$("musicName").textContent="Music already uploaded";
 
 socialLinks=Array.isArray(profile.links)?profile.links.map(x=>({...x})):[];
 renderSocials();
 updatePreview();
 updateCounts();
 updateSetup();
-
 }catch(error){
 console.error("PROFILE LOAD ERROR:",error);
 }
@@ -461,28 +519,23 @@ $("accountPfp").src=url;
 
 function applySavedBackground(url){
 $("backgroundPreview").src=url;
+$("backgroundPreview").style.display="block";
+$("backgroundEmpty").style.display="none";
 $("appearanceBg").src=url;
+$("appearanceBg").style.display="block";
+$("appearanceBgEmpty").style.display="none";
 $("previewScreen").style.backgroundImage=`url("${url}")`;
+$("backgroundUpload").classList.add("has-image");
 }
 
 function switchTab(tab){
-document.querySelectorAll(".tab").forEach(x=>{
-x.classList.toggle("active",x.dataset.tab===tab);
-});
-
-document.querySelectorAll(".section").forEach(x=>{
-x.classList.toggle("active",x.id===tab);
-});
-
-if(window.innerWidth<=760){
-$("sidebar").classList.remove("open");
-}
+document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===tab));
+document.querySelectorAll(".section").forEach(x=>x.classList.toggle("active",x.id===tab));
+if(window.innerWidth<=760)$("sidebar").classList.remove("open");
 }
 
 document.querySelectorAll(".tab").forEach(button=>{
-button.addEventListener("click",()=>{
-switchTab(button.dataset.tab);
-});
+button.addEventListener("click",()=>switchTab(button.dataset.tab));
 });
 
 function renderSocials(){
@@ -506,11 +559,7 @@ platforms.forEach(platform=>{
 const option=document.createElement("option");
 option.value=platform;
 option.textContent=platform==="custom"?"Custom":platform.charAt(0).toUpperCase()+platform.slice(1);
-
-if(platform===item.platform){
-option.selected=true;
-}
-
+if(platform===item.platform)option.selected=true;
 select.appendChild(option);
 });
 
@@ -531,7 +580,6 @@ updatePreview();
 
 const remove=document.createElement("button");
 remove.textContent="×";
-
 remove.addEventListener("click",()=>{
 socialLinks.splice(index,1);
 renderSocials();
@@ -551,11 +599,7 @@ showStatus("You can only add 10 social links.","error");
 return;
 }
 
-socialLinks.push({
-platform:"discord",
-url:""
-});
-
+socialLinks.push({platform:"discord",url:""});
 renderSocials();
 });
 
@@ -571,7 +615,6 @@ socialLinks.forEach(item=>{
 if(!item.url)return;
 
 const icon=icons[item.platform]||"link";
-
 const link=document.createElement("a");
 link.className="preview-social";
 link.href=item.url;
@@ -602,16 +645,11 @@ $("setupBg").textContent=(bg?"✓":"○")+" Background added";
 $("setupPfp").className="progress-item"+(pfp?" done":"");
 $("setupBg").className="progress-item"+(bg?" done":"");
 
-if(pfp&&bg){
-$("progress").style.display="none";
-}else{
-$("progress").style.display="block";
-}
+$("progress").style.display=pfp&&bg?"none":"block";
 }
 
 function validateFile(file,type){
 if(!file)return false;
-
 const max=type==="audio"?4*1024*1024:2*1024*1024;
 
 if(file.size>max){
@@ -622,88 +660,54 @@ return false;
 return true;
 }
 
-$("profilePicture").addEventListener("change",event=>{
-const file=event.target.files[0];
-if(!file)return;
-
-if(!validateFile(file,"image")){
-event.target.value="";
-return;
-}
+function selectProfilePicture(file){
+if(!validateFile(file,"image"))return;
 
 selectedProfilePicture=file;
-
 const url=URL.createObjectURL(file);
 
 applySavedPfp(url);
 $("pfpName").textContent=file.name;
-
 updateSetup();
-});
-
-$("appearancePicture").addEventListener("change",event=>{
-const file=event.target.files[0];
-if(!file)return;
-
-if(!validateFile(file,"image")){
-event.target.value="";
-return;
 }
 
-selectedProfilePicture=file;
-
-const url=URL.createObjectURL(file);
-
-applySavedPfp(url);
-$("pfpName").textContent=file.name;
-
-updateSetup();
-});
-
-$("background").addEventListener("change",event=>{
-const file=event.target.files[0];
-if(!file)return;
-
-if(!validateFile(file,"image")){
-event.target.value="";
-return;
-}
+function selectBackground(file){
+if(!validateFile(file,"image"))return;
 
 selectedBackground=file;
-
 const url=URL.createObjectURL(file);
 
 applySavedBackground(url);
 $("backgroundName").textContent=file.name;
-
 updateSetup();
-});
-
-$("appearanceBackground").addEventListener("change",event=>{
-const file=event.target.files[0];
-if(!file)return;
-
-if(!validateFile(file,"image")){
-event.target.value="";
-return;
 }
 
-selectedBackground=file;
-
-const url=URL.createObjectURL(file);
-
-applySavedBackground(url);
-$("backgroundName").textContent=file.name;
-
-updateSetup();
+$("profilePicture").addEventListener("change",e=>{
+const file=e.target.files[0];
+if(file)selectProfilePicture(file);
 });
 
-$("music").addEventListener("change",event=>{
-const file=event.target.files[0];
+$("appearancePicture").addEventListener("change",e=>{
+const file=e.target.files[0];
+if(file)selectProfilePicture(file);
+});
+
+$("background").addEventListener("change",e=>{
+const file=e.target.files[0];
+if(file)selectBackground(file);
+});
+
+$("appearanceBackground").addEventListener("change",e=>{
+const file=e.target.files[0];
+if(file)selectBackground(file);
+});
+
+$("music").addEventListener("change",e=>{
+const file=e.target.files[0];
 if(!file)return;
 
 if(!validateFile(file,"audio")){
-event.target.value="";
+e.target.value="";
 return;
 }
 
@@ -724,28 +728,19 @@ updateCounts();
 function fileToBase64(file){
 return new Promise((resolve,reject)=>{
 const reader=new FileReader();
-
-reader.onload=()=>{
-resolve(reader.result);
-};
-
-reader.onerror=()=>{
-reject(new Error("Unable to read the selected file."));
-};
-
+reader.onload=()=>resolve(reader.result);
+reader.onerror=()=>reject(new Error("Unable to read the selected file."));
 reader.readAsDataURL(file);
 });
 }
 
 async function publish(){
 const button=$("publish");
-
 button.disabled=true;
 button.textContent="Publishing...";
 hideStatus();
 
 try{
-
 const payload={
 displayName:$("displayName").value.trim(),
 bio:$("bio").value.trim(),
@@ -778,16 +773,13 @@ extension:selectedMusic.name.split(".").pop().toLowerCase()
 
 const response=await fetch("/api/profile-save",{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
+headers:{"Content-Type":"application/json"},
 body:JSON.stringify(payload)
 });
 
 const text=await response.text();
 
 let result;
-
 try{
 result=JSON.parse(text);
 }catch{
@@ -799,9 +791,7 @@ if(!response.ok||!result.success){
 throw new Error(result.error||"Unable to publish profile.");
 }
 
-if(result.profile){
-profile=result.profile;
-}
+if(result.profile)profile=result.profile;
 
 selectedProfilePicture=null;
 selectedBackground=null;
@@ -817,15 +807,12 @@ applySavedBackground(profile.background);
 $("backgroundName").textContent="Saved background";
 }
 
-if(profile.music){
-$("musicName").textContent="Saved music";
-}
+if(profile.music)$("musicName").textContent="Saved music";
 
 updatePreview();
 updateSetup();
 
 showStatus("Published successfully. Your changes may take a minute or so to appear.","success");
-
 }catch(error){
 console.error("PUBLISH ERROR:",error);
 showStatus(error.message||"Unable to publish profile.","error");
@@ -847,16 +834,11 @@ $("status").className="status";
 }
 
 function openProfile(){
-if(username){
-window.open("/"+encodeURIComponent(username),"_blank");
-}
+if(username)window.open("/"+encodeURIComponent(username),"_blank");
 }
 
 async function logout(){
-try{
-await fetch("/api/logout",{method:"POST"});
-}catch{}
-
+try{await fetch("/api/logout",{method:"POST"});}catch{}
 location.href="/login.html";
 }
 
