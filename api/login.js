@@ -1,87 +1,80 @@
-import crypto from "crypto";
+const crypto = require("crypto");
+const { getFile } = require("./github");
 
-function safeEqual(a, b) {
-  const first = Buffer.from(a || "");
-  const second = Buffer.from(b || "");
+function verifyPassword(password, stored) {
+  const parts = String(stored).split(":");
 
-  if (first.length !== second.length) {
+  if (parts.length !== 2) {
     return false;
   }
 
-  return crypto.timingSafeEqual(first, second);
+  const salt = parts[0];
+  const originalHash = parts[1];
+
+  const hash = crypto
+    .scryptSync(password, salt, 64)
+    .toString("hex");
+
+  return crypto.timingSafeEqual(
+    Buffer.from(hash, "hex"),
+    Buffer.from(originalHash, "hex")
+  );
 }
 
-function createToken(email) {
-  const expires = Date.now() + 86400000;
-  const payload = `${email}|${expires}`;
-
-  const signature = crypto
-    .createHmac("sha256", process.env.SESSION_SECRET)
-    .update(payload)
-    .digest("base64url");
-
-  return Buffer.from(`${payload}|${signature}`).toString("base64url");
-}
-
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
-      error: "Method not allowed"
+      error: "Method not allowed."
     });
   }
 
   try {
-    const { email, password } = req.body || {};
+    const {
+      email,
+      password
+    } = req.body || {};
 
-    if (!email || !password) {
+    const cleanEmail = String(email || "")
+      .trim()
+      .toLowerCase();
+
+    if (!cleanEmail || !password) {
       return res.status(400).json({
         success: false,
         error: "Email and password are required."
       });
     }
 
-    const accounts = [
-      {
-        email: process.env.BIOFYIT_ADMIN_EMAIL,
-        password: process.env.BIOFYIT_ADMIN_PASSWORD
-      },
-      {
-        email: process.env.BIOFYIT_DEVELOPER_EMAIL,
-        password: process.env.BIOFYIT_DEVELOPER_PASSWORD
-      }
-    ];
+    const result = await getFile("users.json");
 
-    const account = accounts.find((user) => {
-      return (
-        user.email &&
-        user.password &&
-        safeEqual(email.toLowerCase(), user.email.toLowerCase()) &&
-        safeEqual(password, user.password)
-      );
-    });
+    const users = result?.content || [];
 
-    if (!account) {
+    const user = users.find(
+      item => item.email.toLowerCase() === cleanEmail
+    );
+
+    if (!user || !verifyPassword(password, user.passwordHash)) {
       return res.status(401).json({
         success: false,
         error: "Invalid email or password."
       });
     }
 
-    const token = createToken(account.email);
-
     res.setHeader(
       "Set-Cookie",
-      `biofyit_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`
+      `biofyit_user=${encodeURIComponent(user.id)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`
     );
 
     return res.status(200).json({
-      success: true
+      success: true,
+      username: user.username
     });
+
   } catch {
     return res.status(500).json({
       success: false,
-      error: "Authentication failed."
+      error: "Unable to sign in."
     });
   }
-}
+};
