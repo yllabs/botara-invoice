@@ -1,335 +1,222 @@
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Dashboard | Biofyit</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:#060609;color:#fff}
-body{overflow-x:hidden}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-a{text-decoration:none;color:inherit}
-.app{min-height:100vh;display:flex;background:radial-gradient(circle at 70% -10%,rgba(125,76,255,.16),transparent 35%),#060609}
-.sidebar{width:250px;min-height:100vh;position:fixed;left:0;top:0;padding:25px 17px;border-right:1px solid rgba(255,255,255,.07);background:rgba(7,7,11,.92);backdrop-filter:blur(20px);z-index:20}
-.logo{font-family:"Space Grotesk",sans-serif;font-size:23px;font-weight:700;letter-spacing:-.7px;padding:4px 12px 30px}
-.logo span{color:#9b6cff}
-.section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#55525f;text-transform:uppercase;padding:0 12px 9px}
-.nav{display:flex;flex-direction:column;gap:4px}
-.nav button{border:0;background:transparent;color:#85818f;width:100%;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;text-align:left;font-size:13px;transition:.2s}
-.nav button:hover{background:rgba(255,255,255,.045);color:#fff}
-.nav button.active{background:rgba(132,82,255,.13);color:#b997ff}
-.nav-icon{width:18px;text-align:center;font-size:14px}
-.sidebar-bottom{position:absolute;left:17px;right:17px;bottom:20px}
-.account{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.025)}
-.account-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
-.account-info{min-width:0;flex:1}
-.account-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.account-label{font-size:10px;color:#65616d;margin-top:3px}
-.logout{border:0;background:transparent;color:#66636d;font-size:16px}
-.logout:hover{color:#fff}
-.main{margin-left:250px;width:calc(100% - 250px);min-height:100vh}
-.topbar{height:72px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;padding:0 34px;background:rgba(6,6,9,.7);backdrop-filter:blur(18px);position:sticky;top:0;z-index:10}
-.page-title{font-family:"Space Grotesk",sans-serif;font-size:17px;font-weight:600}
-.page-subtitle{font-size:11px;color:#625f69;margin-top:3px}
-.view-profile{display:flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035);border-radius:9px;font-size:12px;color:#bdb9c4;transition:.2s}
-.view-profile:hover{border-color:rgba(151,103,255,.4);color:#fff}
-.content{padding:30px 34px 50px;max-width:1500px;margin:auto}
-.welcome{margin-bottom:27px}
-.welcome h1{font-family:"Space Grotesk",sans-serif;font-size:29px;letter-spacing:-1px;margin:0}
-.welcome p{margin:7px 0 0;color:#66626d;font-size:13px}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:22px;align-items:start}
-.editor{display:flex;flex-direction:column;gap:17px}
-.panel{border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(12,11,16,.78);box-shadow:0 15px 45px rgba(0,0,0,.18);overflow:hidden}
-.panel-head{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
-.panel-title{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600}
-.panel-desc{font-size:11px;color:#65616d;margin-top:4px}
-.panel-body{padding:20px}
-.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.field{display:flex;flex-direction:column;gap:7px}
-.field.full{grid-column:1/-1}
-label{font-size:11px;color:#918c98;font-weight:600}
-input,textarea,select{width:100%;border:1px solid rgba(255,255,255,.08);outline:none;background:#08080c;color:#fff;border-radius:10px;padding:11px 12px;font-size:12px;transition:.2s}
-input:focus,textarea:focus,select:focus{border-color:rgba(145,91,255,.6);box-shadow:0 0 0 3px rgba(132,82,255,.08)}
-textarea{resize:vertical;min-height:105px;line-height:1.55}
-.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.upload{border:1px dashed rgba(255,255,255,.12);border-radius:13px;background:rgba(255,255,255,.018);padding:19px;text-align:center;transition:.2s;position:relative}
-.upload:hover{border-color:rgba(145,91,255,.45);background:rgba(132,82,255,.035)}
-.upload input{display:none}
-.upload-icon{width:40px;height:40px;border-radius:11px;margin:0 auto 10px;background:rgba(132,82,255,.1);color:#a37aff;display:flex;align-items:center;justify-content:center;font-size:17px}
-.upload strong{font-size:12px;display:block}
-.upload span{display:block;font-size:10px;color:#625f69;margin-top:5px}
-.upload-name{font-size:10px!important;color:#a77fff!important;margin-top:9px!important;word-break:break-all}
-.social-add{display:flex;gap:9px}
-.social-add select{flex:0 0 145px}
-.social-add input{flex:1}
-.add-btn{border:1px solid rgba(142,91,255,.35);background:rgba(132,82,255,.12);color:#b797ff;border-radius:10px;padding:0 16px;font-size:12px;font-weight:600}
-.add-btn:hover{background:rgba(132,82,255,.2)}
-.social-list{display:flex;flex-direction:column;gap:8px;margin-top:13px}
-.social-row{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.02)}
-.social-icon{width:27px;height:27px;border-radius:7px;background:#111018;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.social-icon img{width:15px;height:15px}
-.social-platform{font-size:11px;font-weight:600;width:80px}
-.social-url{font-size:10px;color:#66626d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
-.remove{border:0;background:transparent;color:#55515c;font-size:15px}
-.remove:hover{color:#ff6d86}
-.social-count{font-size:10px;color:#5e5a65}
-.discord-box{display:flex;align-items:center;justify-content:space-between;padding:14px;border:1px solid rgba(88,101,242,.16);background:rgba(88,101,242,.05);border-radius:12px}
-.discord-left{display:flex;align-items:center;gap:11px}
-.discord-logo{width:36px;height:36px;border-radius:10px;background:#5865f2;display:flex;align-items:center;justify-content:center;font-weight:700}
-.discord-title{font-size:12px;font-weight:600}
-.discord-sub{font-size:10px;color:#65616d;margin-top:3px}
-.coming{font-size:9px;padding:5px 8px;border-radius:7px;background:rgba(255,255,255,.05);color:#68636f}
-.save-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid rgba(255,255,255,.06)}
-.save-note{font-size:10px;color:#5f5b66}
-.save-btn{border:0;border-radius:10px;background:linear-gradient(135deg,#8754ff,#6d3fe5);color:#fff;padding:11px 22px;font-size:12px;font-weight:700;box-shadow:0 8px 25px rgba(108,63,229,.22)}
-.save-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
-.preview-wrap{position:sticky;top:94px}
-.preview-label{font-size:10px;font-weight:700;letter-spacing:1.4px;color:#625e68;text-transform:uppercase;margin:0 0 9px 3px}
-.preview{height:590px;border-radius:18px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.08);background:#09080d;box-shadow:0 25px 70px rgba(0,0,0,.35)}
-.preview-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(132,82,255,.25),transparent 48%),#08070b;background-size:cover;background-position:center}
-.preview-bg:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.38)}
-.preview-card{position:absolute;left:22px;right:22px;top:50%;transform:translateY(-50%);padding:30px 20px 22px;text-align:center;border-radius:19px;background:rgba(8,7,12,.72);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px)}
-.preview-pfp{width:86px;height:86px;border-radius:50%;object-fit:cover;background:#17121f;border:2px solid rgba(255,255,255,.13);margin:auto;display:block}
-.preview-name{font-family:"Space Grotesk",sans-serif;font-size:20px;font-weight:700;margin-top:13px}
-.preview-user{font-size:10px;color:#a07bff;margin-top:5px}
-.preview-bio{font-size:10px;color:#8c8892;line-height:1.55;margin:13px auto 0;max-width:260px;white-space:pre-wrap}
-.preview-socials{display:flex;justify-content:center;gap:8px;margin-top:17px;flex-wrap:wrap}
-.preview-social{width:31px;height:31px;border-radius:9px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
-.preview-social img{width:15px;height:15px}
-.preview-footer{font-size:8px;color:#45414c;margin-top:20px}
-.toast{position:fixed;right:25px;bottom:25px;background:#121017;border:1px solid rgba(255,255,255,.1);box-shadow:0 15px 40px rgba(0,0,0,.5);border-radius:11px;padding:13px 17px;font-size:11px;opacity:0;pointer-events:none;transform:translateY(10px);transition:.25s;z-index:100}
-.toast.show{opacity:1;transform:translateY(0)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(9px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
-.modal.show{display:flex}
-.modal-box{width:100%;max-width:410px;background:#0d0c12;border:1px solid rgba(255,255,255,.09);border-radius:17px;padding:25px;box-shadow:0 30px 100px rgba(0,0,0,.65)}
-.modal-box h2{font-family:"Space Grotesk",sans-serif;font-size:19px;margin:0}
-.modal-box p{font-size:12px;color:#77727e;line-height:1.6;margin:9px 0 20px}
-.modal-actions{display:flex;gap:9px}
-.modal-actions button{flex:1;padding:11px;border-radius:9px;font-size:11px;font-weight:600}
-.cancel{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#aaa5b0}
-.confirm{border:0;background:#8050f5;color:#fff}
-.mobile-menu{display:none}
-@media(max-width:1050px){.layout{grid-template-columns:1fr}.preview-wrap{position:relative;top:auto}.preview{height:520px}.preview-label{margin-top:5px}}
-@media(max-width:760px){.sidebar{width:70px;padding:18px 9px}.logo{font-size:0;text-align:center;padding:5px 0 25px}.logo span{font-size:21px}.section-label,.nav button span:not(.nav-icon),.account-info,.logout{display:none}.nav button{justify-content:center;padding:12px}.sidebar-bottom{left:9px;right:9px}.account{justify-content:center;padding:8px}.main{margin-left:70px;width:calc(100% - 70px)}.topbar{padding:0 18px}.content{padding:23px 18px 40px}.fields,.upload-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.social-add{flex-wrap:wrap}.social-add select{flex:1 1 100%}.social-add input{flex:1}.add-btn{height:40px}.welcome h1{font-size:24px}}
-@media(max-width:500px){.topbar{height:62px}.page-subtitle{display:none}.view-profile{padding:8px 10px}.content{padding:19px 12px 30px}.panel-body{padding:15px}.panel-head{padding:15px}.preview{height:500px}.save-bar{align-items:flex-start;gap:13px;flex-direction:column}.save-btn{width:100%}}
-</style>
-</head>
-<body>
-<div class="app">
-<aside class="sidebar">
-<div class="logo">Bio<span>fyit</span></div>
-<div class="section-label">Workspace</div>
-<nav class="nav">
-<button class="active" data-section="profile"><span class="nav-icon">◈</span><span>Profile</span></button>
-<button data-section="appearance"><span class="nav-icon">◉</span><span>Appearance</span></button>
-<button data-section="socials"><span class="nav-icon">⌁</span><span>Socials</span></button>
-<button data-section="music"><span class="nav-icon">♪</span><span>Music</span></button>
-</nav>
-<div class="section-label" style="margin-top:25px">Account</div>
-<nav class="nav">
-<button onclick="window.open('/'+currentUsername,'_blank')"><span class="nav-icon">↗</span><span>View Profile</span></button>
-</nav>
-<div class="sidebar-bottom">
-<div class="account">
-<div class="account-avatar" id="accountAvatar">?</div>
-<div class="account-info"><div class="account-name" id="accountName">Loading...</div><div class="account-label">Biofyit creator</div></div>
-<button class="logout" id="logout">×</button>
-</div>
-</div>
-</aside>
-<main class="main">
-<header class="topbar">
-<div><div class="page-title">Creator Dashboard</div><div class="page-subtitle">Build and manage your Biofyit profile</div></div>
-<a class="view-profile" id="topProfile" href="#" target="_blank">View profile ↗</a>
-</header>
-<div class="content">
-<div class="welcome"><h1 id="welcome">Welcome</h1><p>Customize your profile and publish your changes.</p></div>
-<div class="layout">
-<div class="editor">
-<section class="panel section-panel" data-panel="profile">
-<div class="panel-head"><div><div class="panel-title">Profile information</div><div class="panel-desc">Tell people who you are.</div></div></div>
-<div class="panel-body">
-<div class="fields">
-<div class="field"><label>Username</label><input id="username" disabled></div>
-<div class="field"><label>Display name</label><input id="displayName" maxlength="80" placeholder="Your display name"></div>
-<div class="field full"><label>Bio</label><textarea id="bio" maxlength="500" placeholder="Tell people a little about yourself..."></textarea></div>
-</div>
-</div>
-</section>
-<section class="panel section-panel" data-panel="appearance">
-<div class="panel-head"><div><div class="panel-title">Appearance</div><div class="panel-desc">Upload the visuals used on your public profile.</div></div></div>
-<div class="panel-body">
-<div class="upload-grid">
-<label class="upload"><input type="file" id="profilePicture" accept="image/png,image/jpeg,image/webp"><div class="upload-icon">+</div><strong>Profile picture</strong><span>PNG, JPG or WebP</span><span class="upload-name" id="profilePictureName">No file selected</span></label>
-<label class="upload"><input type="file" id="background" accept="image/png,image/jpeg,image/webp"><div class="upload-icon">+</div><strong>Background</strong><span>PNG, JPG or WebP</span><span class="upload-name" id="backgroundName">No file selected</span></label>
-</div>
-</div>
-</section>
-<section class="panel section-panel" data-panel="socials">
-<div class="panel-head"><div><div class="panel-title">Social links</div><div class="panel-desc">Add up to 10 social platforms.</div></div><div class="social-count" id="socialCount">0 / 10</div></div>
-<div class="panel-body">
-<div class="social-add"><select id="platform"></select><input id="socialUrl" placeholder="https://..."><button class="add-btn" id="addSocial">Add</button></div>
-<div class="social-list" id="socialList"></div>
-</div>
-</section>
-<section class="panel section-panel" data-panel="music">
-<div class="panel-head"><div><div class="panel-title">Profile music</div><div class="panel-desc">Add a song that plays from your profile.</div></div></div>
-<div class="panel-body">
-<label class="upload"><input type="file" id="music" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg"><div class="upload-icon">♪</div><strong>Upload music</strong><span>MP3, WAV or OGG</span><span class="upload-name" id="musicName">No file selected</span></label>
-</div>
-</section>
-<section class="panel">
-<div class="panel-head"><div><div class="panel-title">Discord</div><div class="panel-desc">Connect your Discord presence to your profile.</div></div></div>
-<div class="panel-body">
-<div class="discord-box"><div class="discord-left"><div class="discord-logo">D</div><div><div class="discord-title">Discord connection</div><div class="discord-sub">Lanyard integration will be available soon.</div></div></div><div class="coming">COMING SOON</div></div>
-</div>
-</section>
-<section class="panel">
-<div class="save-bar"><div class="save-note">Changes may take a minute or so to publish through Vercel.</div><button class="save-btn" id="save">Publish changes</button></div>
-</section>
-</div>
-<div class="preview-wrap">
-<div class="preview-label">Live preview</div>
-<div class="preview">
-<div class="preview-bg" id="previewBg"></div>
-<div class="preview-card">
-<img class="preview-pfp" id="previewPfp" src="/biofyit.png" alt="">
-<div class="preview-name" id="previewName">Your Name</div>
-<div class="preview-user" id="previewUser">@username</div>
-<div class="preview-bio" id="previewBio"></div>
-<div class="preview-socials" id="previewSocials"></div>
-<div class="preview-footer">Powered by Biofyit</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-</div>
-<div class="toast" id="toast"></div>
-<div class="modal" id="modal">
-<div class="modal-box">
-<h2>Publish profile?</h2>
-<p>Your changes will be uploaded to Biofyit. Depending on deployment time, your public profile may take a minute or so to update.</p>
-<div class="modal-actions"><button class="cancel" id="cancel">Cancel</button><button class="confirm" id="confirm">Publish</button></div>
-</div>
-</div>
-<script>
-const $=id=>document.getElementById(id);
-let currentUsername="";
-let socialLinks=[];
-let selectedProfilePicture=null;
-let selectedBackground=null;
-let selectedMusic=null;
+const { getFile, saveFile, github } = require("./github");
 
-const platforms=[
-["discord","Discord"],["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["x","X"],["facebook","Facebook"],["snapchat","Snapchat"],["twitch","Twitch"],["kick","Kick"],["github","GitHub"],["reddit","Reddit"],["spotify","Spotify"],["soundcloud","SoundCloud"],["steam","Steam"],["roblox","Roblox"],["xbox","Xbox"],["playstation","PlayStation"],["linkedin","LinkedIn"],["threads","Threads"],["bluesky","Bluesky"],["telegram","Telegram"],["pinterest","Pinterest"],["tumblr","Tumblr"],["gitlab","GitLab"],["codepen","CodePen"],["patreon","Patreon"],["kofi","Ko-fi"],["cashapp","Cash App"],["venmo","Venmo"],["paypal","PayPal"],["custom","Custom Link"]
+function getCookie(req, name) {
+  const cookies = req.headers.cookie || "";
+  const match = cookies.split(";").map(x => x.trim()).find(x => x.startsWith(`${name}=`));
+  if (!match) return null;
+  return decodeURIComponent(match.substring(name.length + 1));
+}
+
+function cleanString(value, max = 500) {
+  return String(value || "").trim().slice(0, max);
+}
+
+const allowedPlatforms = [
+  "discord","instagram","tiktok","youtube","x","facebook","snapchat","twitch","kick",
+  "github","reddit","spotify","soundcloud","steam","roblox","xbox","playstation",
+  "linkedin","threads","bluesky","telegram","pinterest","tumblr","gitlab","codepen",
+  "patreon","kofi","cashapp","venmo","paypal","custom"
 ];
 
-function icon(slug){return `https://cdn.simpleicons.org/${slug}/ffffff`}
-function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
-function showToast(message){$("toast").textContent=message;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),3000)}
-function updatePreview(){
-$("previewName").textContent=$("displayName").value.trim()||currentUsername||"Your Name";
-$("previewUser").textContent="@"+(currentUsername||"username");
-$("previewBio").textContent=$("bio").value.trim();
-$("previewPfp").src=selectedProfilePicture?URL.createObjectURL(selectedProfilePicture):($("previewPfp").dataset.saved||"/biofyit.png");
-$("previewBg").style.backgroundImage=selectedBackground?`url("${URL.createObjectURL(selectedBackground)}")`:($("previewBg").dataset.saved?`url("${$("previewBg").dataset.saved}")`:"");
-$("previewSocials").innerHTML=socialLinks.map(link=>`<a class="preview-social" href="${link.url}" target="_blank" rel="noopener"><img src="${icon(link.platform)}" alt=""></a>`).join("");
+async function uploadMedia(path, data, username) {
+  const base64 = String(data).replace(/^data:[^;]+;base64, "");
+
+  const existing = await github(path);
+
+  let sha = null;
+
+  if (existing.ok) {
+    const file = await existing.json();
+    sha = file.sha;
+  } else if (existing.status !== 404) {
+    const error = await existing.text();
+    console.error(error);
+    throw new Error("Unable to access media storage.");
+  }
+
+  const body = {
+    message: `Update Biofyit media: ${username}`,
+    content: base64
+  };
+
+  if (sha) {
+    body.sha = sha;
+  }
+
+  const response = await github(path, {
+    method: "PUT",
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error("MEDIA UPLOAD ERROR:", error);
+    throw new Error("Unable to publish photo.");
+  }
+
+  return `https://raw.githubusercontent.com/${process.env.BIOFYIT_DATA_REPO}/main/${path}`;
 }
-function renderSocials(){
-$("socialCount").textContent=`${socialLinks.length} / 10`;
-$("socialList").innerHTML=socialLinks.map((link,i)=>`<div class="social-row"><div class="social-icon"><img src="${icon(link.platform)}" alt=""></div><div class="social-platform">${platforms.find(p=>p[0]===link.platform)?.[1]||link.platform}</div><div class="social-url">${link.url}</div><button class="remove" onclick="removeSocial(${i})">×</button></div>`).join("");
-updatePreview();
-}
-function removeSocial(index){socialLinks.splice(index,1);renderSocials()}
-function setupFile(input,nameEl,setter,previewHandler){
-$(input).addEventListener("change",e=>{const file=e.target.files[0];if(!file)return;setter(file);$(nameEl).textContent=file.name;previewHandler();});
-}
-async function load(){
-try{
-const session=await fetch("/api/session");
-const sessionData=await session.json();
-if(!sessionData.authenticated){location.href="/login.html";return}
-currentUsername=sessionData.user.username;
-$("accountName").textContent="@"+currentUsername;
-$("accountAvatar").textContent=currentUsername.charAt(0).toUpperCase();
-$("welcome").textContent="Welcome @"+currentUsername;
-$("username").value=currentUsername;
-$("topProfile").href="/"+currentUsername;
-const response=await fetch(`/api/profile?username=${encodeURIComponent(currentUsername)}`);
-const data=await response.json();
-if(data.success&&data.profile){
-const p=data.profile;
-$("displayName").value=p.displayName||currentUsername;
-$("bio").value=p.bio||"";
-socialLinks=Array.isArray(p.links)?p.links.slice(0,10):[];
-if(p.profilePicture){$("previewPfp").dataset.saved=p.profilePicture;$("previewPfp").src=p.profilePicture}
-if(p.background){$("previewBg").dataset.saved=p.background;$("previewBg").style.backgroundImage=`url("${p.background}")`}
-renderSocials();
-}else{renderSocials()}
-}catch{location.href="/login.html"}
-}
-$("displayName").addEventListener("input",updatePreview);
-$("bio").addEventListener("input",updatePreview);
-$("addSocial").addEventListener("click",()=>{
-if(socialLinks.length>=10){showToast("You can only add 10 socials.");return}
-const platform=$("platform").value;
-const url=$("socialUrl").value.trim();
-if(!url||!/^https?:\/\//i.test(url)){showToast("Enter a valid URL.");return}
-if(socialLinks.some(x=>x.platform===platform)){showToast("You already added that platform.");return}
-socialLinks.push({platform,url});
-$("socialUrl").value="";
-renderSocials();
-});
-platforms.forEach(p=>{const o=document.createElement("option");o.value=p[0];o.textContent=p[1];$("platform").appendChild(o)});
-setupFile("profilePicture","profilePictureName",file=>selectedProfilePicture=file,updatePreview);
-setupFile("background","backgroundName",file=>selectedBackground=file,updatePreview);
-setupFile("music","musicName",file=>selectedMusic=file,()=>{});
-document.querySelectorAll(".nav button[data-section]").forEach(button=>button.addEventListener("click",()=>{
-document.querySelectorAll(".nav button[data-section]").forEach(b=>b.classList.remove("active"));
-button.classList.add("active");
-const target=button.dataset.section;
-document.querySelectorAll(".section-panel").forEach(panel=>panel.style.display=panel.dataset.panel===target?"block":"none");
-}));
-$("save").addEventListener("click",()=>{$("modal").classList.add("show")});
-$("cancel").addEventListener("click",()=>{$("modal").classList.remove("show")});
-$("confirm").addEventListener("click",async()=>{
-$("modal").classList.remove("show");
-$("confirm").disabled=true;
-$("save").disabled=true;
-showToast("Publishing profile...");
-try{
-const payload={displayName:$("displayName").value.trim(),bio:$("bio").value.trim(),links:socialLinks.slice(0,10)};
-if(selectedProfilePicture)payload.profilePicture={data:await fileToBase64(selectedProfilePicture),type:selectedProfilePicture.type,extension:selectedProfilePicture.name.split(".").pop()};
-if(selectedBackground)payload.background={data:await fileToBase64(selectedBackground),type:selectedBackground.type,extension:selectedBackground.name.split(".").pop()};
-if(selectedMusic)payload.music={data:await fileToBase64(selectedMusic),type:selectedMusic.type,extension:selectedMusic.name.split(".").pop()};
-const response=await fetch("/api/profile-save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
-const data=await response.json();
-if(!response.ok||!data.success)throw new Error(data.error||"Unable to publish profile.");
-if(data.profile?.profilePicture){$("previewPfp").dataset.saved=data.profile.profilePicture;$("previewPfp").src=data.profile.profilePicture}
-if(data.profile?.background){$("previewBg").dataset.saved=data.profile.background;$("previewBg").style.backgroundImage=`url("${data.profile.background}")`}
-selectedProfilePicture=null;
-selectedBackground=null;
-selectedMusic=null;
-$("profilePicture").value="";
-$("background").value="";
-$("music").value="";
-$("profilePictureName").textContent="No file selected";
-$("backgroundName").textContent="No file selected";
-$("musicName").textContent="No file selected";
-showToast("Profile published successfully.");
-}catch(error){showToast(error.message)}finally{$("confirm").disabled=false;$("save").disabled=false}
-});
-$("logout").addEventListener("click",async()=>{await fetch("/api/logout",{method:"POST"});location.href="/login.html"});
-load();
-</script>
-</body>
-</html>
-```
+
+module.exports = async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      success: false,
+      error: "Method not allowed."
+    });
+  }
+
+  try {
+    const userId = getCookie(req, "biofyit_user");
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: "You must be signed in."
+      });
+    }
+
+    const usersResult = await getFile("users.json");
+    const users = usersResult?.content || [];
+    const user = users.find(x => x.id === userId);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: "Session expired."
+      });
+    }
+
+    const username = String(user.username).toLowerCase();
+    const profilePath = `profiles/${username}.json`;
+
+    let profileResult = await getFile(profilePath);
+
+    if (!profileResult) {
+      profileResult = {
+        content: {
+          username,
+          displayName: username,
+          bio: "",
+          profilePicture: "",
+          background: "",
+          music: "",
+          discord: {
+            enabled: false,
+            id: null
+          },
+          links: []
+        },
+        sha: null
+      };
+    }
+
+    let body = req.body || {};
+
+    if (typeof body === "string") {
+      body = JSON.parse(body);
+    }
+
+    const oldProfile = profileResult.content || {};
+
+    const updatedProfile = {
+      ...oldProfile,
+      username,
+      displayName: cleanString(body.displayName, 80) || username,
+      bio: cleanString(body.bio, 500)
+    };
+
+    let links = body.links;
+
+    if (typeof links === "string") {
+      try {
+        links = JSON.parse(links);
+      } catch {
+        links = [];
+      }
+    }
+
+    if (!Array.isArray(links)) {
+      links = [];
+    }
+
+    const cleanedLinks = [];
+    const usedPlatforms = new Set();
+
+    for (const link of links.slice(0, 10)) {
+      if (!link || typeof link !== "object") continue;
+
+      const platform = String(link.platform || "").trim().toLowerCase();
+      const url = String(link.url || "").trim();
+
+      if (!allowedPlatforms.includes(platform)) continue;
+      if (!url) continue;
+      if (usedPlatforms.has(platform)) continue;
+      if (!/^https?:\/\//i.test(url)) continue;
+
+      usedPlatforms.add(platform);
+
+      cleanedLinks.push({
+        platform,
+        url: url.slice(0, 500)
+      });
+    }
+
+    updatedProfile.links = cleanedLinks;
+
+    if (body.profilePicture?.data) {
+      const extension = String(body.profilePicture.extension || "png")
+        .replace(/[^a-z0-9]/gi, "")
+        .toLowerCase();
+
+      updatedProfile.profilePicture = await uploadMedia(
+        `media/profile-pictures/${username}.${extension || "png"}`,
+        body.profilePicture.data,
+        username
+      );
+    }
+
+    if (body.background?.data) {
+      const extension = String(body.background.extension || "jpg")
+        .replace(/[^a-z0-9]/gi, "")
+        .toLowerCase();
+
+      updatedProfile.background = await uploadMedia(
+        `media/backgrounds/${username}.${extension || "jpg"}`,
+        body.background.data,
+        username
+      );
+    }
+
+    if (body.music?.data) {
+      const extension = String(body.music.extension || "mp3")
+        .replace(/[^a-z0-9]/gi, "")
+        .toLowerCase();
+
+      updatedProfile.music = await uploadMedia(
+        `media/music/${username}.${extension || "mp3"}`,
+        body.music.data,
+        username
+      );
+    }
+
+    await saveFile(
+      profilePath,
+      updatedProfile,
+      profileResult.sha,
+      `Update Biofyit profile: ${username}`
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile published successfully.",
+      profile: updatedProfile
+    });
+  } catch (error) {
+    console.error("PROFILE SAVE ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Unable to publish profile."
+    });
+  }
+};
