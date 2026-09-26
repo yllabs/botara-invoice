@@ -1,0 +1,572 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Biofyit Developers</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #ffffff;
+      background: #050208;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.18), transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.14), transparent 30%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.045;
+      background-image:
+        linear-gradient(rgba(168, 85, 247, 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.5) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: -1;
+    }
+
+    .loading {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8f8698;
+      font-size: 14px;
+    }
+
+    .portal {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+      background: rgba(5, 2, 8, 0.78);
+      backdrop-filter: blur(20px);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 38px;
+    }
+
+    .nav-logo {
+      width: 130px;
+      height: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      color: #81788a;
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: #ffffff;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .account {
+      color: #81788a;
+      font-size: 12px;
+    }
+
+    .logout {
+      border: 1px solid #30243a;
+      border-radius: 9px;
+      padding: 9px 14px;
+      background: #0d0911;
+      color: #d5ccdc;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .logout:hover {
+      border-color: #7c3aed;
+      color: #ffffff;
+    }
+
+    .hero {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 110px 24px 80px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(168, 85, 247, 0.24);
+      background: rgba(139, 92, 246, 0.08);
+      color: #c084fc;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .hero h1 {
+      max-width: 850px;
+      margin: 22px 0 18px;
+      font-size: clamp(45px, 7vw, 78px);
+      line-height: 0.98;
+      letter-spacing: -4px;
+    }
+
+    .hero h1 span {
+      color: #a855f7;
+    }
+
+    .hero-description {
+      max-width: 650px;
+      margin: 0;
+      color: #91899d;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .primary,
+    .secondary {
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .primary {
+      border: 0;
+      background: linear-gradient(135deg, #9333ea, #6d28d9);
+      color: #ffffff;
+    }
+
+    .secondary {
+      border: 1px solid #30243a;
+      background: rgba(10, 6, 13, 0.8);
+      color: #d8d0df;
+    }
+
+    .section {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .section-heading {
+      margin-bottom: 22px;
+    }
+
+    .section-heading span {
+      color: #a855f7;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .section-heading h2 {
+      margin: 8px 0 0;
+      font-size: 28px;
+      letter-spacing: -1px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      min-height: 200px;
+      padding: 28px;
+      border: 1px solid rgba(168, 85, 247, 0.13);
+      border-radius: 18px;
+      background: rgba(12, 7, 18, 0.68);
+      backdrop-filter: blur(16px);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(168, 85, 247, 0.3);
+    }
+
+    .card-number {
+      color: #a855f7;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .card h3 {
+      margin: 18px 0 10px;
+      font-size: 19px;
+    }
+
+    .card p {
+      margin: 0;
+      color: #81788a;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .api-section {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .api-box {
+      padding: 30px;
+      border: 1px solid rgba(168, 85, 247, 0.14);
+      border-radius: 18px;
+      background: rgba(12, 7, 18, 0.68);
+    }
+
+    .api-box h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .api-box p {
+      margin: 0 0 22px;
+      color: #81788a;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .endpoint {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid #251d2c;
+      border-radius: 10px;
+      background: #08050b;
+      overflow-x: auto;
+    }
+
+    .method {
+      color: #c084fc;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .endpoint code {
+      color: #b8afc1;
+      font-size: 13px;
+    }
+
+    footer {
+      padding: 30px 24px;
+      border-top: 1px solid rgba(168, 85, 247, 0.1);
+      text-align: center;
+      color: #514959;
+      font-size: 11px;
+    }
+
+    @media (max-width: 800px) {
+      .nav-links {
+        display: none;
+      }
+
+      .account {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 80px;
+      }
+
+      .hero h1 {
+        letter-spacing: -2px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="loading" id="loading">
+    Checking your session...
+  </div>
+
+  <main class="portal" id="portal">
+
+    <nav class="navbar">
+
+      <div class="nav-left">
+
+        <img
+          src="biofyit.png"
+          alt="Biofyit"
+          class="nav-logo"
+        >
+
+        <div class="nav-links">
+          <a href="#overview">Overview</a>
+          <a href="#resources">Resources</a>
+          <a href="#api">API</a>
+        </div>
+
+      </div>
+
+      <div class="nav-right">
+        <span class="account" id="account"></span>
+
+        <button class="logout" id="logout">
+          Sign Out
+        </button>
+      </div>
+
+    </nav>
+
+
+    <section class="hero" id="overview">
+
+      <span class="badge">
+        BIOFYIT DEVELOPERS
+      </span>
+
+      <h1>
+        Build with <span>Biofyit.</span>
+      </h1>
+
+      <p class="hero-description">
+        Welcome to the Biofyit developer platform. Explore our
+        documentation, APIs, and resources to build applications
+        and integrations with Biofyit.
+      </p>
+
+      <div class="actions">
+
+        <a href="#resources" class="primary">
+          Explore Resources
+        </a>
+
+        <a href="#api" class="secondary">
+          View API
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <section class="section" id="resources">
+
+      <div class="section-heading">
+        <span>Resources</span>
+        <h2>Everything you need to build.</h2>
+      </div>
+
+      <div class="cards">
+
+        <div class="card">
+
+          <div class="card-number">
+            01
+          </div>
+
+          <h3>
+            Documentation
+          </h3>
+
+          <p>
+            Learn how Biofyit services work, understand available
+            features, and follow guides for your projects.
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="card-number">
+            02
+          </div>
+
+          <h3>
+            API
+          </h3>
+
+          <p>
+            Connect your applications to Biofyit using our developer
+            APIs and build your own integrations.
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="card-number">
+            03
+          </div>
+
+          <h3>
+            Projects
+          </h3>
+
+          <p>
+            Manage your developer projects and keep your integrations
+            organized from one place.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="api-section" id="api">
+
+      <div class="section-heading">
+        <span>API</span>
+        <h2>Connect your application.</h2>
+      </div>
+
+      <div class="api-box">
+
+        <h3>
+          Biofyit API
+        </h3>
+
+        <p>
+          Your API tools and endpoints will be available here.
+          Documentation and authentication details can be added
+          as the Biofyit developer platform grows.
+        </p>
+
+        <div class="endpoint">
+          <span class="method">
+            API
+          </span>
+
+          <code>
+            development.biofyit.com/api
+          </code>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <footer>
+      © 2026 Biofyit. Developer Platform.
+    </footer>
+
+  </main>
+
+
+  <script>
+    const loading = document.getElementById("loading");
+    const portal = document.getElementById("portal");
+    const account = document.getElementById("account");
+    const logout = document.getElementById("logout");
+
+    async function checkSession() {
+      try {
+        const response = await fetch("/api/session", {
+          method: "GET",
+          credentials: "include"
+        });
+
+        if (!response.ok) {
+          window.location.href = "/development/";
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.authenticated) {
+          window.location.href = "/development/";
+          return;
+        }
+
+        account.textContent = data.email;
+
+        loading.style.display = "none";
+        portal.style.display = "block";
+
+      } catch {
+        window.location.href = "/development/";
+      }
+    }
+
+    logout.addEventListener("click", async function() {
+      try {
+        await fetch("/api/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+      } finally {
+        window.location.href = "/development/";
+      }
+    });
+
+    checkSession();
+  </script>
+
+</body>
+</html>
+```
