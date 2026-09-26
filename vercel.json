@@ -1,8 +1,16 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/:username",
-      "destination": "/profile.html"
+      "src": "/api/(.*)",
+      "continue": true
+    },
+    {
+      "src": "/(dashboard|login|create-account|profile|index)\\.html",
+      "continue": true
+    },
+    {
+      "src": "/([a-zA-Z0-9_]+)",
+      "dest": "/profile.html"
     }
   ]
 }
