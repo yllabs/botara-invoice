@@ -9,249 +9,324 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:#070509;color:#fff}
-body{overflow-x:hidden}
+:root{--bg:#070609;--panel:#0d0b10;--panel2:#110e15;--border:rgba(255,255,255,.07);--muted:#77717f;--purple:#a855f7;--purple2:#7c3aed}
+html,body{margin:0;background:var(--bg);color:#fff;font-family:Inter,Arial,sans-serif}
+body{min-height:100vh}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
+button:disabled{cursor:not-allowed}
 a{text-decoration:none;color:inherit}
-.app{min-height:100vh;display:flex}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;background:rgba(10,7,14,.96);border-right:1px solid rgba(255,255,255,.07);padding:25px 18px;z-index:20}
-.logo{font-family:"Space Grotesk";font-size:24px;font-weight:700;letter-spacing:-1px;padding:0 12px;margin-bottom:38px}
-.logo span{color:#a855f7}
-.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#77717e;padding:0 12px;margin:25px 0 9px}
-.nav{display:flex;flex-direction:column;gap:4px}
-.nav button{border:0;background:transparent;color:#aaa3b0;text-align:left;padding:12px;border-radius:10px;font-size:13px;font-weight:600;transition:.2s}
-.nav button:hover{background:rgba(168,85,247,.08);color:#fff}
-.nav button.active{background:linear-gradient(90deg,rgba(168,85,247,.18),rgba(168,85,247,.05));color:#fff}
-.sidebar-bottom{position:absolute;left:18px;right:18px;bottom:20px}
-.profile-mini{border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);border-radius:13px;padding:12px;display:flex;align-items:center;gap:10px}
-.profile-mini img{width:35px;height:35px;border-radius:50%;object-fit:cover;background:#18121d}
-.profile-mini-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.profile-mini-user{font-size:11px;color:#77717e;margin-top:2px}
-.signout{width:100%;border:0;background:transparent;color:#827b88;text-align:left;padding:11px 3px 0;font-size:12px}
+.app{min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:245px;background:#09070b;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 15px;z-index:30}
+.brand{font-family:"Space Grotesk";font-size:23px;font-weight:700;letter-spacing:-1px;padding:4px 12px 28px}
+.brand span{color:#a855f7}
+.workspace{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:#5e5865;padding:0 12px 9px}
+.nav{display:flex;flex-direction:column;gap:3px}
+.nav button{width:100%;border:0;background:transparent;color:#817a88;padding:12px;border-radius:9px;text-align:left;font-size:12px;font-weight:600}
+.nav button:hover{background:rgba(255,255,255,.035);color:#fff}
+.nav button.active{background:rgba(168,85,247,.12);color:#fff}
+.nav button.active:before{content:"";display:inline-block;width:3px;height:13px;background:#a855f7;border-radius:3px;margin-right:9px;vertical-align:-2px}
+.sidebar-bottom{margin-top:auto}
+.account{border:1px solid var(--border);background:rgba(255,255,255,.025);border-radius:12px;padding:11px;display:flex;align-items:center;gap:10px}
+.account img{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#17121d}
+.account-name{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.account-user{font-size:10px;color:#625c68;margin-top:3px}
+.signout{width:100%;border:0;background:transparent;color:#67606e;text-align:left;font-size:11px;padding:12px 2px 0}
 .signout:hover{color:#fff}
-.main{margin-left:250px;width:calc(100% - 250px);min-height:100vh}
-.topbar{height:72px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(7,5,9,.78);backdrop-filter:blur(20px);position:sticky;top:0;z-index:10}
-.top-title{font-family:"Space Grotesk";font-size:18px;font-weight:700}
-.view-profile{border:1px solid rgba(168,85,247,.3);background:rgba(168,85,247,.09);color:#d9b5ff;padding:9px 14px;border-radius:9px;font-size:12px;font-weight:700}
-.view-profile:hover{background:rgba(168,85,247,.16)}
-.content{padding:34px;max-width:1500px;margin:auto}
-.welcome{margin-bottom:28px}
-.welcome h1{font-family:"Space Grotesk";font-size:30px;letter-spacing:-1.2px;margin:0}
-.welcome p{color:#77717e;font-size:13px;margin:7px 0 0}
-.editor-grid{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:24px;align-items:start}
-.panel{background:rgba(13,10,17,.86);border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden}
-.panel-head{padding:19px 21px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
-.panel-head h2{font-family:"Space Grotesk";font-size:14px;margin:0}
-.panel-head span{font-size:11px;color:#716a77}
-.panel-body{padding:22px}
-.section{display:none}
-.section.active{display:block}
-.field{margin-bottom:20px}
+.main{margin-left:245px;min-height:100vh}
+.topbar{height:67px;border-bottom:1px solid var(--border);background:rgba(7,6,9,.88);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:20}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.menu{display:none;border:0;background:none;color:#fff;font-size:19px}
+.page-title{font-family:"Space Grotesk";font-size:16px;font-weight:700}
+.top-actions{display:flex;align-items:center;gap:8px}
+.preview-link{border:1px solid var(--border);background:#0e0b12;color:#c1bbc6;border-radius:8px;padding:9px 13px;font-size:11px;font-weight:700}
+.preview-link:hover{border-color:rgba(168,85,247,.35);color:#fff}
+.content{max-width:1440px;margin:auto;padding:34px 34px 60px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:27px}
+.hero h1{font-family:"Space Grotesk";font-size:28px;letter-spacing:-1.2px;margin:0}
+.hero p{color:#6f6875;font-size:12px;margin:7px 0 0}
+.hero-user{color:#a855f7}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 405px;gap:22px;align-items:start}
+.editor{min-width:0}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px;overflow:auto}
+.tab{border:0;background:none;color:#716a78;padding:11px 13px;font-size:11px;font-weight:700;white-space:nowrap;border-bottom:2px solid transparent}
+.tab:hover{color:#fff}
+.tab.active{color:#fff;border-bottom-color:#a855f7}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.card-head{padding:18px 19px;border-bottom:1px solid rgba(255,255,255,.055);display:flex;justify-content:space-between;align-items:center}
+.card-title{font-family:"Space Grotesk";font-size:13px;font-weight:700}
+.card-desc{font-size:10px;color:#68616e;margin-top:4px}
+.card-body{padding:19px}
+.field{margin-bottom:17px}
 .field:last-child{margin-bottom:0}
-.field label{display:block;font-size:11px;font-weight:700;color:#c3bcc9;margin-bottom:8px}
-.field small{display:block;color:#69626f;font-size:10px;margin-top:7px}
-input[type=text],input[type=url],textarea,select{width:100%;border:1px solid rgba(255,255,255,.08);background:#0a080d;color:#fff;border-radius:10px;padding:12px 13px;outline:none;font-size:13px;transition:.2s}
-input:focus,textarea:focus,select:focus{border-color:rgba(168,85,247,.6);box-shadow:0 0 0 3px rgba(168,85,247,.07)}
-textarea{resize:vertical;min-height:115px}
-.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.upload{border:1px dashed rgba(255,255,255,.13);background:#0a080d;border-radius:12px;padding:17px;text-align:center;min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;overflow:hidden}
-.upload:hover{border-color:rgba(168,85,247,.5)}
-.upload-preview{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#151019;margin-bottom:10px}
-.upload-bg-preview{width:100%;height:65px;border-radius:8px;object-fit:cover;background:#151019;margin-bottom:10px}
-.upload-title{font-size:12px;font-weight:700}
-.upload-sub{font-size:10px;color:#6f6875;margin-top:5px}
-.upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.music-upload{border:1px dashed rgba(255,255,255,.13);background:#0a080d;border-radius:12px;padding:16px;position:relative}
-.music-upload input{width:100%;margin-top:10px}
-.social-list{display:flex;flex-direction:column;gap:9px}
-.social-row{display:grid;grid-template-columns:130px 1fr 40px;gap:8px}
-.social-row button{border:1px solid rgba(255,255,255,.07);background:#120e16;color:#aaa0ae;border-radius:9px}
-.social-row button:hover{color:#fff;border-color:rgba(168,85,247,.4)}
-.add-social{margin-top:12px;width:100%;border:1px dashed rgba(168,85,247,.3);background:rgba(168,85,247,.05);color:#bd83ee;padding:11px;border-radius:9px;font-size:12px;font-weight:700}
-.add-social:hover{background:rgba(168,85,247,.1)}
-.publish{margin-top:20px;width:100%;border:0;border-radius:10px;padding:14px;background:linear-gradient(135deg,#9333ea,#6d28d9);color:#fff;font-weight:800;font-size:13px;box-shadow:0 10px 30px rgba(109,40,217,.18)}
-.publish:hover{filter:brightness(1.08)}
-.publish:disabled{opacity:.6;cursor:not-allowed}
-.status{margin-top:12px;border-radius:9px;padding:11px 12px;font-size:11px;display:none}
+.label{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;color:#b9b2bf;margin-bottom:7px}
+.counter{font-size:9px;color:#5e5865;font-weight:500}
+input[type=text],input[type=url],textarea,select{width:100%;background:#09080c;border:1px solid rgba(255,255,255,.075);color:#fff;border-radius:9px;outline:0;padding:11px 12px;font-size:12px}
+input:focus,textarea:focus,select:focus{border-color:rgba(168,85,247,.55);box-shadow:0 0 0 3px rgba(168,85,247,.06)}
+textarea{min-height:105px;resize:vertical;line-height:1.5}
+.media-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.media-box{position:relative;border:1px dashed rgba(255,255,255,.11);background:#09080c;border-radius:11px;min-height:150px;padding:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+.media-box:hover{border-color:rgba(168,85,247,.4)}
+.media-box input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.media-pfp{width:63px;height:63px;border-radius:50%;object-fit:cover;background:#17121d;border:2px solid rgba(255,255,255,.08);margin-bottom:10px}
+.media-bg{width:100%;height:64px;border-radius:7px;object-fit:cover;background:#151119;margin-bottom:10px}
+.media-icon{width:40px;height:40px;border-radius:10px;background:rgba(168,85,247,.1);display:flex;align-items:center;justify-content:center;color:#b86df4;font-size:17px;margin-bottom:9px}
+.media-title{font-size:11px;font-weight:700}
+.media-sub{font-size:9px;color:#625c68;margin-top:4px}
+.social-list{display:flex;flex-direction:column;gap:8px}
+.social-row{display:grid;grid-template-columns:120px minmax(0,1fr) 35px;gap:7px}
+.social-row button{border:1px solid rgba(255,255,255,.07);background:#100d13;color:#8e8794;border-radius:8px}
+.social-row button:hover{color:#fff;border-color:rgba(168,85,247,.35)}
+.add-social{width:100%;border:1px dashed rgba(168,85,247,.3);background:rgba(168,85,247,.045);color:#ad65e9;border-radius:8px;padding:10px;margin-top:9px;font-size:10px;font-weight:700}
+.add-social:hover{background:rgba(168,85,247,.09)}
+.preview-column{position:sticky;top:91px}
+.preview-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.preview-head{height:52px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 17px}
+.preview-head-title{font-family:"Space Grotesk";font-size:12px;font-weight:700}
+.live{font-size:9px;color:#8e8794;display:flex;align-items:center;gap:5px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#a855f7}
+.profile-preview{height:580px;margin:14px;border-radius:11px;overflow:hidden;background:#0e0b12 center/cover no-repeat;position:relative;display:flex;align-items:center;justify-content:center}
+.profile-preview:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.72))}
+.preview-inner{position:relative;z-index:2;text-align:center;width:calc(100% - 45px);padding:27px 19px;border:1px solid rgba(255,255,255,.13);background:rgba(9,7,12,.48);backdrop-filter:blur(20px);border-radius:17px}
+.preview-pfp{width:79px;height:79px;border-radius:50%;object-fit:cover;background:#17121d;border:2px solid rgba(255,255,255,.14)}
+.preview-name{font-family:"Space Grotesk";font-size:20px;font-weight:700;margin-top:12px}
+.preview-handle{font-size:9px;color:#8b8491;margin-top:4px}
+.preview-bio{font-size:10px;color:#c0b9c5;line-height:1.55;margin:14px auto 0;max-width:275px;white-space:pre-wrap}
+.preview-socials{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:7px;margin-top:18px}
+.preview-social{width:31px;height:31px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.055);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.preview-social img{width:15px;height:15px}
+.check-card{margin-top:14px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+.check-heading{font-size:10px;font-weight:800;margin-bottom:9px}
+.check{font-size:10px;color:#69626f;padding:4px 0}
+.check.done{color:#a779c8}
+.publish-bar{position:sticky;bottom:15px;background:rgba(10,8,12,.9);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;margin-top:17px;display:flex;align-items:center;justify-content:space-between;gap:10px;z-index:10}
+.publish-info{font-size:10px;color:#67606e}
+.publish-button{border:0;background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border-radius:8px;padding:11px 19px;font-size:11px;font-weight:800;box-shadow:0 8px 25px rgba(124,58,237,.18)}
+.publish-button:hover{filter:brightness(1.08)}
+.status{display:none;margin-top:10px;border-radius:8px;padding:10px 12px;font-size:10px}
 .status.show{display:block}
-.status.error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
-.status.success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#86efac}
-.preview-wrap{position:sticky;top:96px}
-.preview-title{padding:19px 21px;border-bottom:1px solid rgba(255,255,255,.06);font-family:"Space Grotesk";font-size:14px;font-weight:700}
-.preview{margin:18px;height:560px;border-radius:14px;overflow:hidden;position:relative;background:#0c0910 center/cover no-repeat;display:flex;align-items:center;justify-content:center}
-.preview:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.62))}
-.preview-card{position:relative;z-index:2;width:calc(100% - 48px);text-align:center;padding:25px 17px;border:1px solid rgba(255,255,255,.15);background:rgba(10,8,13,.48);backdrop-filter:blur(20px);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
-.preview-pfp{width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.16);background:#17111d}
-.preview-name{font-family:"Space Grotesk";font-size:21px;font-weight:700;margin-top:12px}
-.preview-user{font-size:10px;color:#aaa0ad;margin-top:3px}
-.preview-bio{font-size:11px;line-height:1.55;color:#c8c0cb;margin:14px auto 0;max-width:270px;white-space:pre-wrap}
-.preview-socials{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:18px}
-.preview-social{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center}
-.preview-social img{width:17px;height:17px}
-.checklist{margin-top:20px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018);border-radius:12px;padding:15px}
-.check-title{font-size:11px;font-weight:800;margin-bottom:10px}
-.check{font-size:10px;color:#77717e;padding:5px 0}
-.check.done{color:#9f72c5}
-.mobile-menu{display:none}
-@media(max-width:1000px){
-.editor-grid{grid-template-columns:1fr}
-.preview-wrap{position:static}
-}
+.status.success{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.17);color:#86efac}
+.status.error{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.17);color:#fca5a5}
+.empty{border:1px dashed rgba(255,255,255,.09);border-radius:9px;padding:22px;text-align:center;color:#625c68;font-size:10px}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.preview-column{position:static}.profile-preview{height:540px}}
 @media(max-width:760px){
-.sidebar{transform:translateX(-100%);transition:.25s;width:250px}
-.sidebar.open{transform:translateX(0)}
-.main{margin-left:0;width:100%}
-.mobile-menu{display:block;border:0;background:transparent;color:#fff;font-size:20px}
-.topbar{padding:0 17px}
-.content{padding:22px 15px}
-.upload-grid{grid-template-columns:1fr}
+.sidebar{transform:translateX(-100%);transition:.22s}.sidebar.open{transform:translateX(0)}
+.main{margin-left:0}.menu{display:block}.topbar{padding:0 15px}.content{padding:23px 15px 45px}.hero{display:block}.hero h1{font-size:24px}.top-actions{display:none}.media-grid{grid-template-columns:1fr}.social-row{grid-template-columns:100px minmax(0,1fr) 34px}.preview-column{margin-top:4px}
 }
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar" id="sidebar">
-<div class="logo">Bio<span>fyit</span></div>
-<div class="nav-label">Creator</div>
-<div class="nav">
-<button class="active" data-section="profile">Profile</button>
-<button data-section="appearance">Appearance</button>
-<button data-section="socials">Socials</button>
-<button data-section="music">Music</button>
-</div>
-<div class="nav-label">Account</div>
-<div class="nav">
-<button onclick="openPublicProfile()">View Profile</button>
-<button onclick="logout()">Sign Out</button>
-</div>
+<div class="brand">Bio<span>fyit</span></div>
+<div class="workspace">Dashboard</div>
+<nav class="nav">
+<button class="active" data-tab="profile">Profile</button>
+<button data-tab="appearance">Appearance</button>
+<button data-tab="socials">Socials</button>
+<button data-tab="music">Music</button>
+</nav>
+<div class="workspace" style="margin-top:25px">Account</div>
+<nav class="nav">
+<button onclick="openProfile()">View profile</button>
+<button onclick="logout()">Sign out</button>
+</nav>
 <div class="sidebar-bottom">
-<div class="profile-mini">
-<img id="miniPfp" src="/biofyit.png">
+<div class="account">
+<img id="accountPfp" src="/biofyit.png">
 <div>
-<div class="profile-mini-name" id="miniName">Loading...</div>
-<div class="profile-mini-user" id="miniUser">@loading</div>
+<div class="account-name" id="accountName">Loading...</div>
+<div class="account-user" id="accountUser">@loading</div>
 </div>
 </div>
 <button class="signout" onclick="logout()">Sign out</button>
 </div>
 </aside>
+
 <main class="main">
 <header class="topbar">
-<div style="display:flex;align-items:center;gap:12px">
-<button class="mobile-menu" onclick="toggleSidebar()">☰</button>
-<div class="top-title">Creator Dashboard</div>
+<div class="topbar-left">
+<button class="menu" onclick="toggleSidebar()">☰</button>
+<div class="page-title">Dashboard</div>
 </div>
-<button class="view-profile" onclick="openPublicProfile()">View profile</button>
+<div class="top-actions">
+<button class="preview-link" onclick="openProfile()">View public profile</button>
+</div>
 </header>
+
 <div class="content">
-<div class="welcome">
-<h1>Welcome <span id="welcomeUser">@...</span></h1>
-<p>Build your Biofyit page and publish it when you're ready.</p>
-</div>
-<div class="editor-grid">
+<div class="hero">
 <div>
-<div class="panel">
-<div class="panel-head">
-<h2 id="sectionTitle">Profile</h2>
-<span>Changes are saved when published</span>
+<h1>Welcome <span class="hero-user" id="welcomeUser">@username</span></h1>
+<p>Create your page, customize your look, and share your link.</p>
 </div>
-<div class="panel-body">
-<section class="section active" id="profile">
+</div>
+
+<div class="layout">
+<div class="editor">
+
+<div class="tabs">
+<button class="tab active" data-tab="profile">Profile</button>
+<button class="tab" data-tab="appearance">Appearance</button>
+<button class="tab" data-tab="socials">Socials</button>
+<button class="tab" data-tab="music">Music</button>
+</div>
+
+<div class="tab-content active" id="profile">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Profile information</div>
+<div class="card-desc">This information appears on your public page.</div>
+</div>
+</div>
+<div class="card-body">
 <div class="field">
-<label>Display name</label>
+<div class="label"><span>Username</span></div>
+<input id="username" type="text" disabled>
+</div>
+<div class="field">
+<div class="label"><span>Display name</span><span class="counter" id="nameCount">0 / 80</span></div>
 <input id="displayName" type="text" maxlength="80" placeholder="Your display name">
 </div>
 <div class="field">
-<label>Bio</label>
-<textarea id="bio" maxlength="500" placeholder="Tell people a little about yourself..."></textarea>
-<small>Maximum 500 characters.</small>
+<div class="label"><span>Bio</span><span class="counter" id="bioCount">0 / 500</span></div>
+<textarea id="bio" maxlength="500" placeholder="Tell people about yourself..."></textarea>
 </div>
-<div class="field">
-<label>Profile picture & background</label>
-<div class="upload-grid">
-<div class="upload">
-<img class="upload-preview" id="pfpPreview" src="/biofyit.png">
-<div class="upload-title">Profile picture</div>
-<div class="upload-sub">PNG, JPG or WEBP</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Profile media</div>
+<div class="card-desc">Images are stored securely through Biofyit's server.</div>
+</div>
+</div>
+<div class="card-body">
+<div class="media-grid">
+<div class="media-box">
+<img class="media-pfp" id="pfpUploadPreview" src="/biofyit.png">
+<div class="media-title">Profile picture</div>
+<div class="media-sub">PNG, JPG or WEBP · Max 2 MB</div>
 <input id="profilePicture" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
-<div class="upload">
-<img class="upload-bg-preview" id="backgroundPreview">
-<div class="upload-title">Background</div>
-<div class="upload-sub">PNG, JPG or WEBP</div>
+<div class="media-box">
+<img class="media-bg" id="bgUploadPreview">
+<div class="media-title">Background</div>
+<div class="media-sub">PNG, JPG or WEBP · Max 2 MB</div>
 <input id="background" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
 </div>
 </div>
-</section>
-<section class="section" id="appearance">
-<div class="field">
-<label>Profile picture</label>
-<div class="upload">
-<img class="upload-preview" id="appearancePfp" src="/biofyit.png">
-<div class="upload-title">Change profile picture</div>
-<div class="upload-sub">PNG, JPG or WEBP</div>
+</div>
+</div>
+
+<div class="tab-content" id="appearance">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Appearance</div>
+<div class="card-desc">Customize the visuals of your profile.</div>
+</div>
+</div>
+<div class="card-body">
+<div class="media-grid">
+<div class="media-box">
+<img class="media-pfp" id="appearancePfp" src="/biofyit.png">
+<div class="media-title">Profile picture</div>
+<div class="media-sub">PNG, JPG or WEBP · Max 2 MB</div>
 <input id="appearancePicture" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
-</div>
-<div class="field">
-<label>Background image</label>
-<div class="upload">
-<img class="upload-bg-preview" id="appearanceBg">
-<div class="upload-title">Change background</div>
-<div class="upload-sub">PNG, JPG or WEBP</div>
+<div class="media-box">
+<img class="media-bg" id="appearanceBg">
+<div class="media-title">Background image</div>
+<div class="media-sub">PNG, JPG or WEBP · Max 2 MB</div>
 <input id="appearanceBackground" type="file" accept="image/png,image/jpeg,image/webp">
 </div>
 </div>
-</section>
-<section class="section" id="socials">
-<div class="field">
-<label>Social links</label>
-<div class="social-list" id="socialList"></div>
-<button class="add-social" id="addSocial">+ Add social</button>
-<small>You can add up to 10 social links.</small>
 </div>
-</section>
-<section class="section" id="music">
-<div class="field">
-<label>Profile music</label>
-<div class="music-upload">
-<div style="font-size:12px;font-weight:700">Upload music</div>
-<div style="font-size:10px;color:#6f6875;margin-top:5px">MP3, WAV or OGG</div>
+</div>
+</div>
+
+<div class="tab-content" id="socials">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Social links</div>
+<div class="card-desc">Add up to 10 links to your public profile.</div>
+</div>
+<div style="font-size:10px;color:#625c68" id="socialCount">0 / 10</div>
+</div>
+<div class="card-body">
+<div class="social-list" id="socialList"></div>
+<button class="add-social" id="addSocial">+ Add social link</button>
+</div>
+</div>
+</div>
+
+<div class="tab-content" id="music">
+<div class="card">
+<div class="card-head">
+<div>
+<div class="card-title">Profile music</div>
+<div class="card-desc">Add music that visitors can play from your profile.</div>
+</div>
+</div>
+<div class="card-body">
+<div class="media-box" style="min-height:180px">
+<div class="media-icon">♪</div>
+<div class="media-title" id="musicName">Choose a music file</div>
+<div class="media-sub">MP3, WAV or OGG · Max 4 MB</div>
 <input id="music" type="file" accept="audio/mpeg,audio/wav,audio/ogg">
 </div>
 </div>
-</section>
-<button class="publish" id="publish">Publish profile</button>
+</div>
+</div>
+
+<div class="publish-bar">
+<div class="publish-info">Changes are not public until you publish.</div>
+<button class="publish-button" id="publish">Publish changes</button>
+</div>
 <div class="status" id="status"></div>
+
 </div>
-</div>
-<div class="checklist" id="checklist">
-<div class="check-title">Setup checklist</div>
-<div class="check" id="checkUsername">○ Username claimed</div>
-<div class="check" id="checkPicture">○ Profile picture added</div>
-<div class="check" id="checkBackground">○ Background added</div>
-</div>
-</div>
-<div class="panel preview-wrap">
-<div class="preview-title">Live Preview</div>
-<div class="preview" id="preview">
+
+<div class="preview-column">
 <div class="preview-card">
+<div class="preview-head">
+<div class="preview-head-title">Live preview</div>
+<div class="live"><span class="live-dot"></span>Live</div>
+</div>
+<div class="profile-preview" id="profilePreview">
+<div class="preview-inner">
 <img class="preview-pfp" id="previewPfp" src="/biofyit.png">
 <div class="preview-name" id="previewName">Your Name</div>
-<div class="preview-user" id="previewUser">@username</div>
+<div class="preview-handle" id="previewHandle">@username</div>
 <div class="preview-bio" id="previewBio">Your bio will appear here.</div>
 <div class="preview-socials" id="previewSocials"></div>
 </div>
 </div>
 </div>
+
+<div class="check-card" id="checkCard">
+<div class="check-heading">Setup progress</div>
+<div class="check" id="checkUsername">✓ Username claimed</div>
+<div class="check" id="checkPicture">○ Profile picture added</div>
+<div class="check" id="checkBackground">○ Background added</div>
+</div>
+</div>
+
 </div>
 </div>
 </main>
 </div>
+
 <script>
 const $=id=>document.getElementById(id);
+
 let username="";
 let profile={};
 let socialLinks=[];
@@ -259,21 +334,22 @@ let selectedProfilePicture=null;
 let selectedBackground=null;
 let selectedMusic=null;
 
-const platformIcons={
-discord:"discord",instagram:"instagram",tiktok:"tiktok",youtube:"youtube",x:"x",facebook:"facebook",
-snapchat:"snapchat",twitch:"twitch",kick:"kick",github:"github",reddit:"reddit",spotify:"spotify",
-soundcloud:"soundcloud",steam:"steam",roblox:"roblox",xbox:"xbox",playstation:"playstation",
-linkedin:"linkedin",threads:"threads",bluesky:"bluesky",telegram:"telegram",pinterest:"pinterest",
-tumblr:"tumblr",gitlab:"gitlab",codepen:"codepen",patreon:"patreon",kofi:"kofi",cashapp:"cashapp",
+const platforms=[
+"discord","instagram","tiktok","youtube","x","facebook","snapchat","twitch","kick",
+"github","reddit","spotify","soundcloud","steam","roblox","xbox","playstation","linkedin",
+"threads","bluesky","telegram","pinterest","tumblr","gitlab","codepen","patreon","kofi",
+"cashapp","venmo","paypal","custom"
+];
+
+const icons={
+discord:"discord",instagram:"instagram",tiktok:"tiktok",youtube:"youtube",x:"x",
+facebook:"facebook",snapchat:"snapchat",twitch:"twitch",kick:"kick",github:"github",
+reddit:"reddit",spotify:"spotify",soundcloud:"soundcloud",steam:"steam",roblox:"roblox",
+xbox:"xbox",playstation:"playstation",linkedin:"linkedin",threads:"threads",
+bluesky:"bluesky",telegram:"telegram",pinterest:"pinterest",tumblr:"tumblr",
+gitlab:"gitlab",codepen:"codepen",patreon:"patreon",kofi:"kofi",cashapp:"cashapp",
 venmo:"venmo",paypal:"paypal",custom:"link"
 };
-
-const platforms=[
-"discord","instagram","tiktok","youtube","x","facebook","snapchat","twitch","kick","github",
-"reddit","spotify","soundcloud","steam","roblox","xbox","playstation","linkedin","threads",
-"bluesky","telegram","pinterest","tumblr","gitlab","codepen","patreon","kofi","cashapp","venmo",
-"paypal","custom"
-];
 
 async function init(){
 try{
@@ -286,12 +362,15 @@ return;
 }
 
 username=data.user.username;
+
+$("username").value=username;
 $("welcomeUser").textContent="@"+username;
-$("miniName").textContent=data.user.username;
-$("miniUser").textContent="@"+data.user.username;
+$("accountName").textContent=data.user.username;
+$("accountUser").textContent="@"+data.user.username;
 
 await loadProfile();
-}catch{
+}catch(error){
+console.error(error);
 location.href="/login.html";
 }
 }
@@ -301,47 +380,55 @@ try{
 const response=await fetch("/api/profile?username="+encodeURIComponent(username));
 const data=await response.json();
 
-if(data.success){
+if(!data.success)return;
+
 profile=data.profile||{};
+
 $("displayName").value=profile.displayName||username;
 $("bio").value=profile.bio||"";
 
 if(profile.profilePicture){
-$("pfpPreview").src=profile.profilePicture;
-$("appearancePfp").src=profile.profilePicture;
-$("previewPfp").src=profile.profilePicture;
-$("miniPfp").src=profile.profilePicture;
+setPfp(profile.profilePicture);
 }
 
 if(profile.background){
-$("backgroundPreview").src=profile.background;
-$("appearanceBg").src=profile.background;
-$("preview").style.backgroundImage=`url("${profile.background}")`;
+setBackground(profile.background);
 }
 
 socialLinks=Array.isArray(profile.links)?profile.links:[];
 renderSocials();
 updatePreview();
+updateCounts();
 updateChecklist();
-}
+
 }catch(error){
-console.error(error);
+console.error("PROFILE LOAD ERROR:",error);
 }
 }
 
-function setupNavigation(){
-document.querySelectorAll(".nav button[data-section]").forEach(button=>{
-button.addEventListener("click",()=>{
-document.querySelectorAll(".nav button[data-section]").forEach(x=>x.classList.remove("active"));
-button.classList.add("active");
-document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
-const section=button.dataset.section;
-$(section).classList.add("active");
-$("sectionTitle").textContent=button.textContent;
-if(window.innerWidth<=760)$("sidebar").classList.remove("open");
-});
-});
+function setPfp(src){
+$("pfpUploadPreview").src=src;
+$("appearancePfp").src=src;
+$("previewPfp").src=src;
+$("accountPfp").src=src;
 }
+
+function setBackground(src){
+$("bgUploadPreview").src=src;
+$("appearanceBg").src=src;
+$("profilePreview").style.backgroundImage=`url("${src}")`;
+}
+
+function switchTab(name){
+document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===name));
+document.querySelectorAll(".tab-content").forEach(x=>x.classList.toggle("active",x.id===name));
+}
+
+document.querySelectorAll(".tab").forEach(button=>{
+button.addEventListener("click",()=>{
+switchTab(button.dataset.tab);
+});
+});
 
 function renderSocials(){
 const list=$("socialList");
@@ -352,6 +439,7 @@ const row=document.createElement("div");
 row.className="social-row";
 
 const select=document.createElement("select");
+
 platforms.forEach(platform=>{
 const option=document.createElement("option");
 option.value=platform;
@@ -362,7 +450,7 @@ select.appendChild(option);
 
 const input=document.createElement("input");
 input.type="url";
-input.placeholder="https://...";
+input.placeholder="https://example.com";
 input.value=item.url||"";
 
 select.addEventListener("change",()=>{
@@ -386,6 +474,15 @@ updatePreview();
 row.append(select,input,remove);
 list.appendChild(row);
 });
+
+$("socialCount").textContent=socialLinks.length+" / 10";
+
+if(!socialLinks.length){
+const empty=document.createElement("div");
+empty.className="empty";
+empty.textContent="No social links added yet.";
+list.appendChild(empty);
+}
 }
 
 $("addSocial").addEventListener("click",()=>{
@@ -394,13 +491,17 @@ showStatus("You can only add 10 social links.","error");
 return;
 }
 
-socialLinks.push({platform:"discord",url:""});
+socialLinks.push({
+platform:"discord",
+url:""
+});
+
 renderSocials();
 });
 
 function updatePreview(){
 $("previewName").textContent=$("displayName").value.trim()||"Your Name";
-$("previewUser").textContent="@"+username;
+$("previewHandle").textContent="@"+username;
 $("previewBio").textContent=$("bio").value.trim()||"Your bio will appear here.";
 
 const socials=$("previewSocials");
@@ -409,53 +510,56 @@ socials.innerHTML="";
 socialLinks.slice(0,10).forEach(item=>{
 if(!item.url)return;
 
-const icon=platformIcons[item.platform]||"link";
+const icon=icons[item.platform]||"link";
 
-const a=document.createElement("a");
-a.className="preview-social";
-a.href=item.url;
-a.target="_blank";
-a.rel="noopener";
+const link=document.createElement("a");
+link.className="preview-social";
+link.href=item.url;
+link.target="_blank";
+link.rel="noopener noreferrer";
 
 const img=document.createElement("img");
 img.src=`https://cdn.simpleicons.org/${icon}/ffffff`;
 img.alt=item.platform;
 
-a.appendChild(img);
-socials.appendChild(a);
+link.appendChild(img);
+socials.appendChild(link);
 });
 }
 
+function updateCounts(){
+$("nameCount").textContent=$("displayName").value.length+" / 80";
+$("bioCount").textContent=$("bio").value.length+" / 500";
+}
+
 function updateChecklist(){
-const picture=Boolean(profile.profilePicture||selectedProfilePicture);
-const background=Boolean(profile.background||selectedBackground);
+const hasPfp=Boolean(profile.profilePicture||selectedProfilePicture);
+const hasBg=Boolean(profile.background||selectedBackground);
 
 $("checkUsername").textContent="✓ Username claimed";
-$("checkPicture").textContent=(picture?"✓":"○")+" Profile picture added";
-$("checkBackground").textContent=(background?"✓":"○")+" Background added";
+$("checkPicture").textContent=(hasPfp?"✓":"○")+" Profile picture added";
+$("checkBackground").textContent=(hasBg?"✓":"○")+" Background added";
 
-if(picture&&background){
-$("checklist").style.display="none";
-}else{
-$("checklist").style.display="block";
+$("checkCard").style.display=hasPfp&&hasBg?"none":"block";
 }
-}
+
+$("displayName").addEventListener("input",()=>{
+updatePreview();
+updateCounts();
+});
+
+$("bio").addEventListener("input",()=>{
+updatePreview();
+updateCounts();
+});
 
 function validateFile(file,type){
 if(!file)return true;
 
-const limits={
-image:2*1024*1024,
-audio:4*1024*1024
-};
+const limit=type==="audio"?4*1024*1024:2*1024*1024;
 
-if(type==="image"&&file.size>limits.image){
-showStatus("Images must be smaller than 2 MB.","error");
-return false;
-}
-
-if(type==="audio"&&file.size>limits.audio){
-showStatus("Music must be smaller than 4 MB.","error");
+if(file.size>limit){
+showStatus(type==="audio"?"Music must be smaller than 4 MB.":"Images must be smaller than 2 MB.","error");
 return false;
 }
 
@@ -465,73 +569,98 @@ return true;
 $("profilePicture").addEventListener("change",e=>{
 const file=e.target.files[0];
 if(!file)return;
-if(!validateFile(file,"image")){e.target.value="";return}
+
+if(!validateFile(file,"image")){
+e.target.value="";
+return;
+}
+
 selectedProfilePicture=file;
-$("pfpPreview").src=URL.createObjectURL(file);
-$("appearancePfp").src=$("pfpPreview").src;
-$("previewPfp").src=$("pfpPreview").src;
-$("miniPfp").src=$("pfpPreview").src;
+
+const url=URL.createObjectURL(file);
+
+setPfp(url);
 updateChecklist();
 });
 
 $("appearancePicture").addEventListener("change",e=>{
 const file=e.target.files[0];
 if(!file)return;
-if(!validateFile(file,"image")){e.target.value="";return}
+
+if(!validateFile(file,"image")){
+e.target.value="";
+return;
+}
+
 selectedProfilePicture=file;
+
 const url=URL.createObjectURL(file);
-$("pfpPreview").src=url;
-$("appearancePfp").src=url;
-$("previewPfp").src=url;
-$("miniPfp").src=url;
+
+setPfp(url);
 updateChecklist();
 });
 
 $("background").addEventListener("change",e=>{
 const file=e.target.files[0];
 if(!file)return;
-if(!validateFile(file,"image")){e.target.value="";return}
+
+if(!validateFile(file,"image")){
+e.target.value="";
+return;
+}
+
 selectedBackground=file;
+
 const url=URL.createObjectURL(file);
-$("backgroundPreview").src=url;
-$("appearanceBg").src=url;
-$("preview").style.backgroundImage=`url("${url}")`;
+
+setBackground(url);
 updateChecklist();
 });
 
 $("appearanceBackground").addEventListener("change",e=>{
 const file=e.target.files[0];
 if(!file)return;
-if(!validateFile(file,"image")){e.target.value="";return}
+
+if(!validateFile(file,"image")){
+e.target.value="";
+return;
+}
+
 selectedBackground=file;
+
 const url=URL.createObjectURL(file);
-$("backgroundPreview").src=url;
-$("appearanceBg").src=url;
-$("preview").style.backgroundImage=`url("${url}")`;
+
+setBackground(url);
 updateChecklist();
 });
 
 $("music").addEventListener("change",e=>{
 const file=e.target.files[0];
 if(!file)return;
-if(!validateFile(file,"audio")){e.target.value="";return}
-selectedMusic=file;
-});
 
-$("displayName").addEventListener("input",updatePreview);
-$("bio").addEventListener("input",updatePreview);
+if(!validateFile(file,"audio")){
+e.target.value="";
+return;
+}
+
+selectedMusic=file;
+$("musicName").textContent=file.name;
+});
 
 function fileToBase64(file){
 return new Promise((resolve,reject)=>{
 const reader=new FileReader();
+
 reader.onload=()=>resolve(reader.result);
 reader.onerror=()=>reject(new Error("Unable to read uploaded file."));
+
 reader.readAsDataURL(file);
 });
 }
 
 async function publish(){
 const button=$("publish");
+
 button.disabled=true;
 button.textContent="Publishing...";
 hideStatus();
@@ -569,7 +698,9 @@ extension:selectedMusic.name.split(".").pop()
 
 const response=await fetch("/api/profile-save",{
 method:"POST",
-headers:{"Content-Type":"application/json"},
+headers:{
+"Content-Type":"application/json"
+},
 body:JSON.stringify(payload)
 });
 
@@ -580,7 +711,7 @@ let result;
 try{
 result=JSON.parse(responseText);
 }catch{
-throw new Error(responseText||"Server returned an invalid response.");
+throw new Error(responseText||"The server returned an invalid response.");
 }
 
 if(!response.ok||!result.success){
@@ -588,34 +719,25 @@ throw new Error(result.error||"Unable to publish profile.");
 }
 
 profile=result.profile||profile;
+
 selectedProfilePicture=null;
 selectedBackground=null;
 selectedMusic=null;
 
-if(profile.profilePicture){
-$("pfpPreview").src=profile.profilePicture;
-$("appearancePfp").src=profile.profilePicture;
-$("previewPfp").src=profile.profilePicture;
-$("miniPfp").src=profile.profilePicture;
-}
-
-if(profile.background){
-$("backgroundPreview").src=profile.background;
-$("appearanceBg").src=profile.background;
-$("preview").style.backgroundImage=`url("${profile.background}")`;
-}
+if(profile.profilePicture)setPfp(profile.profilePicture);
+if(profile.background)setBackground(profile.background);
 
 updatePreview();
 updateChecklist();
 
-showStatus("Profile published successfully. It may take a minute or so to fully update.","success");
+showStatus("Published successfully. Your profile may take a minute or so to update.","success");
 
 }catch(error){
-console.error(error);
+console.error("PUBLISH ERROR:",error);
 showStatus(error.message||"Unable to publish profile.","error");
 }finally{
 button.disabled=false;
-button.textContent="Publish profile";
+button.textContent="Publish changes";
 }
 }
 
@@ -626,28 +748,28 @@ status.className="status show "+type;
 }
 
 function hideStatus(){
-$("status").className="status";
 $("status").textContent="";
+$("status").className="status";
+}
+
+function openProfile(){
+if(username){
+window.open("/"+encodeURIComponent(username),"_blank");
+}
 }
 
 async function logout(){
 try{
 await fetch("/api/logout",{method:"POST"});
 }catch{}
-location.href="/login.html";
-}
 
-function openPublicProfile(){
-if(username)window.open("/"+encodeURIComponent(username),"_blank");
+location.href="/login.html";
 }
 
 function toggleSidebar(){
 $("sidebar").classList.toggle("open");
 }
 
-$("publish").addEventListener("click",publish);
-
-setupNavigation();
 init();
 </script>
 </body>
