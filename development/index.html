@@ -1,0 +1,272 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Biofyit Developers</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #fff;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.22), transparent 32%),
+        radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.16), transparent 30%),
+        #050308;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      background-image:
+        linear-gradient(rgba(168, 85, 247, 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.5) 1px, transparent 1px);
+      background-size: 55px 55px;
+      mask-image: linear-gradient(to bottom, black, transparent);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card {
+      padding: 42px;
+      border-radius: 24px;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      background: rgba(12, 7, 18, 0.82);
+      backdrop-filter: blur(22px);
+      box-shadow:
+        0 30px 100px rgba(0, 0, 0, 0.55),
+        0 0 70px rgba(124, 58, 237, 0.08);
+    }
+
+    .logo {
+      display: block;
+      width: 190px;
+      max-width: 75%;
+      height: auto;
+      margin: 0 auto 35px;
+    }
+
+    .badge {
+      width: fit-content;
+      margin: 0 auto 12px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(168, 85, 247, 0.22);
+      background: rgba(139, 92, 246, 0.08);
+      color: #c084fc;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+
+    .description {
+      margin: 12px 0 30px;
+      color: #938a9f;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .field {
+      margin-bottom: 17px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #d9d1df;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      height: 50px;
+      padding: 0 15px;
+      border: 1px solid #2a2231;
+      border-radius: 11px;
+      outline: none;
+      background: #09060d;
+      color: #fff;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input::placeholder {
+      color: #5e5665;
+    }
+
+    input:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .signin {
+      width: 100%;
+      height: 51px;
+      margin-top: 5px;
+      border: 0;
+      border-radius: 11px;
+      background: linear-gradient(135deg, #9333ea, #6d28d9);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      transition: 0.2s ease;
+    }
+
+    .signin:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.3);
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 11px;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      color: #fca5a5;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 27px;
+      text-align: center;
+      color: #514a58;
+      font-size: 11px;
+    }
+
+    @media (max-width: 500px) {
+      .card {
+        padding: 32px 24px;
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="card">
+
+      <img
+        src="biofyit.png"
+        alt="Biofyit"
+        class="logo"
+      >
+
+      <div class="badge">
+        DEVELOPER PORTAL
+      </div>
+
+      <h1>Welcome back.</h1>
+
+      <p class="description">
+        Sign in to access the Biofyit developer platform.
+      </p>
+
+      <form id="signinForm">
+
+        <div class="field">
+          <label for="email">Email</label>
+
+          <input
+            type="email"
+            id="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="signin">
+          Sign In
+        </button>
+
+        <div class="message" id="message">
+          Please enter your email and password.
+        </div>
+
+      </form>
+
+      <div class="footer">
+        © 2026 Biofyit
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const form = document.getElementById("signinForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        message.style.display = "block";
+        return;
+      }
+
+      message.style.display = "none";
+
+      localStorage.setItem("biofyitSignedIn", "true");
+
+      window.location.href = "portal.html";
+    });
+  </script>
+
+</body>
+</html>
+```
