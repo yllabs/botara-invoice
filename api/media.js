@@ -1,71 +1,69 @@
 const { github } = require("./github");
 
-module.exports = async function handler(req, res) {
-  if (req.method !== "GET") {
-    return res.status(405).send("Method not allowed.");
-  }
+module.exports=async function handler(req,res){
+if(req.method!=="GET"){
+return res.status(405).end();
+}
 
-  try {
-    const path = String(req.query.path || "");
+try{
+const requested=String(req.query.path||"");
 
-    if (!path.startsWith("media/")) {
-      return res.status(400).send("Invalid media path.");
-    }
+if(!requested){
+return res.status(400).end("Missing media path.");
+}
 
-    if (path.includes("..")) {
-      return res.status(400).send("Invalid media path.");
-    }
+if(
+requested.includes("..")||
+requested.startsWith("/")||
+!requested.startsWith("media/")
+){
+return res.status(400).end("Invalid media path.");
+}
 
-    const response = await github(path);
+const response=await github(`contents/${requested}`);
 
-    if (response.status === 404) {
-      return res.status(404).send("Media not found.");
-    }
+if(!response.ok){
+return res.status(response.status).end();
+}
 
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("MEDIA ERROR:", text);
-      return res.status(500).send("Unable to load media.");
-    }
+const file=await response.json();
 
-    const data = await response.json();
+if(!file.content){
+return res.status(404).end();
+}
 
-    if (!data.content) {
-      return res.status(404).send("Media content not found.");
-    }
+const buffer=Buffer.from(
+file.content.replace(/\n/g,""),
+"base64"
+);
 
-    const buffer = Buffer.from(
-      data.content.replace(/\s/g, ""),
-      "base64"
-    );
+const extension=requested.split(".").pop().toLowerCase();
 
-    const extension = path.split(".").pop().toLowerCase();
+const types={
+png:"image/png",
+jpg:"image/jpeg",
+jpeg:"image/jpeg",
+webp:"image/webp",
+gif:"image/gif",
+mp3:"audio/mpeg",
+wav:"audio/wav",
+ogg:"audio/ogg"
+};
 
-    const mimeTypes = {
-      png: "image/png",
-      jpg: "image/jpeg",
-      jpeg: "image/jpeg",
-      webp: "image/webp",
-      gif: "image/gif",
-      mp3: "audio/mpeg",
-      wav: "audio/wav",
-      ogg: "audio/ogg"
-    };
+res.setHeader(
+"Content-Type",
+types[extension]||"application/octet-stream"
+);
 
-    res.setHeader(
-      "Content-Type",
-      mimeTypes[extension] || "application/octet-stream"
-    );
+res.setHeader(
+"Cache-Control",
+"public, max-age=3600, s-maxage=3600"
+);
 
-    res.setHeader(
-      "Cache-Control",
-      "public, max-age=3600"
-    );
+return res.status(200).send(buffer);
 
-    return res.status(200).send(buffer);
-
-  } catch (error) {
-    console.error("MEDIA SERVER ERROR:", error);
-    return res.status(500).send("Unable to load media.");
-  }
+}catch(error){
+console.error("MEDIA ERROR:",error);
+return res.status(500).end();
+}
 };
