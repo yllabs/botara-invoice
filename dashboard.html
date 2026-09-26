@@ -1,531 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Biofyit | Dashboard</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;padding:0;min-height:100%;font-family:Inter,Arial,Helvetica,sans-serif;background:#07070b;color:#fff}
-body{display:flex}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-a{text-decoration:none;color:inherit}
-.sidebar{width:245px;min-height:100vh;background:#0b0b10;border-right:1px solid #1d1d26;padding:24px 16px;display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0}
-.logo{font-size:24px;font-weight:800;padding:4px 12px 30px;letter-spacing:-.7px}
-.logo span{color:#9147ff}
-.nav-title{font-size:11px;text-transform:uppercase;color:#686873;font-weight:700;padding:0 12px;margin:8px 0 9px;letter-spacing:.8px}
-.nav{display:flex;flex-direction:column;gap:4px}
-.nav a{height:43px;border-radius:9px;color:#9999a5;display:flex;align-items:center;gap:12px;padding:0 13px;font-size:14px;transition:.2s}
-.nav a:hover{background:#14141b;color:#fff}
-.nav a.active{background:#17111f;color:#fff}
-.nav-icon{width:18px;text-align:center;font-size:15px}
-.account{margin-top:auto;border-top:1px solid #1c1c24;padding:17px 9px 3px}
-.account-label{font-size:11px;color:#666672;text-transform:uppercase;margin:0 4px 10px}
-.account-user{display:flex;align-items:center;gap:10px;padding:8px 5px}
-.avatar{width:35px;height:35px;border-radius:50%;background:#19151f;object-fit:cover;border:1px solid #30243c}
-.account-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.account-email{font-size:11px;color:#696975;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.logout{width:100%;border:0;background:transparent;color:#777783;text-align:left;padding:10px 5px;font-size:13px}
-.logout:hover{color:#fff}
-.main{margin-left:245px;width:calc(100% - 245px);min-height:100vh;padding:42px 48px 60px}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:35px}
-.topbar h1{font-size:22px;margin:0;font-weight:700}
-.topbar-right{display:flex;gap:10px}
-.top-btn{border:1px solid #282832;background:#111117;color:#ddd;padding:9px 14px;border-radius:8px;font-size:13px}
-.top-btn:hover{background:#18181f}
-.hero{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:31px}
-.hero h2{font-size:32px;letter-spacing:-1px;margin:0 0 8px}
-.hero p{margin:0;color:#747480;font-size:14px}
-.hero strong{color:#a86aff;font-weight:600}
-.actions{display:flex;gap:9px}
-.btn{border:1px solid #292933;background:#121218;color:#fff;border-radius:8px;padding:10px 16px;font-size:13px}
-.btn:hover{background:#19191f}
-.btn.primary{background:#8142db;border-color:#8142db}
-.btn.primary:hover{background:#914cf0}
-.layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr);gap:22px}
-.card{background:#0d0d12;border:1px solid #1c1c25;border-radius:12px}
-.card-head{padding:20px 22px;border-bottom:1px solid #1b1b23;display:flex;align-items:center;justify-content:space-between}
-.card-head h3{font-size:15px;margin:0;font-weight:650}
-.card-head span{font-size:11px;color:#676773}
-.card-body{padding:22px}
-.section{margin-bottom:24px}
-.section:last-child{margin-bottom:0}
-.section-title{font-size:12px;text-transform:uppercase;color:#70707b;font-weight:700;letter-spacing:.7px;margin-bottom:12px}
-.field{margin-bottom:15px}
-.field:last-child{margin-bottom:0}
-label{display:block;color:#b9b9c3;font-size:12px;margin-bottom:7px}
-input,textarea,select{width:100%;border:1px solid #25252f;background:#101016;color:#fff;border-radius:8px;padding:11px 12px;outline:none;font-size:13px}
-input:focus,textarea:focus,select:focus{border-color:#7540b9;box-shadow:0 0 0 2px rgba(129,66,219,.08)}
-textarea{min-height:92px;resize:vertical}
-.profile-upload{display:flex;align-items:center;gap:14px}
-.upload-img{width:60px;height:60px;border-radius:10px;background:#16161d;border:1px solid #282832;object-fit:cover}
-.upload-controls{flex:1}
-.upload-button{display:inline-block;background:#15151c;border:1px solid #292933;padding:8px 11px;border-radius:7px;font-size:12px;color:#ddd;cursor:pointer}
-.upload-button:hover{background:#1c1c24}
-.upload-note{font-size:10px;color:#656570;margin-top:6px}
-.links-list{display:flex;flex-direction:column;gap:9px}
-.link-row{display:grid;grid-template-columns:105px 1fr 32px;gap:7px}
-.link-row button{border:1px solid #292933;background:#15151c;color:#999;border-radius:7px}
-.link-row button:hover{color:#fff}
-.add-link{margin-top:10px;border:1px dashed #2a2932;background:transparent;color:#888;padding:9px;width:100%;border-radius:8px;font-size:12px}
-.add-link:hover{color:#fff;border-color:#4c3b60}
-.preview-wrap{position:sticky;top:25px}
-.preview{min-height:520px;border-radius:10px;background:#111116;overflow:hidden;position:relative;border:1px solid #24242d}
-.preview-bg{position:absolute;inset:0;background:linear-gradient(135deg,#17111e,#08080c 70%);background-size:cover;background-position:center}
-.preview-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35)}
-.preview-content{position:relative;z-index:2;min-height:520px;display:flex;align-items:center;justify-content:center;padding:30px}
-.preview-card{text-align:center;width:100%;max-width:350px}
-.preview-avatar{width:86px;height:86px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.12);background:#181820;margin-bottom:14px}
-.preview-name{font-size:22px;font-weight:700}
-.preview-username{font-size:12px;color:#9d9da8;margin-top:4px}
-.preview-bio{font-size:12px;color:#b5b5bf;line-height:1.6;margin:15px auto;max-width:290px}
-.preview-links{display:flex;flex-direction:column;gap:8px;margin-top:15px}
-.preview-link{padding:10px 14px;background:rgba(14,14,20,.78);border:1px solid rgba(255,255,255,.08);border-radius:8px;font-size:12px}
-.preview-status{font-size:10px;color:#74747f;margin-top:17px}
-.checklist{margin-top:22px}
-.check-item{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid #191920}
-.check-item:last-child{border-bottom:0}
-.check{width:20px;height:20px;border-radius:50%;border:1px solid #373741;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
-.check.done{background:#8142db;border-color:#8142db}
-.check-text{font-size:12px;color:#aaaab4}
-.check.done+.check-text{color:#676772;text-decoration:line-through}
-.notice{font-size:11px;color:#696974;line-height:1.6;margin-top:13px}
-.hidden{display:none!important}
-.toast{position:fixed;right:25px;bottom:25px;background:#15151c;border:1px solid #30303b;padding:12px 16px;border-radius:8px;font-size:12px;box-shadow:0 12px 30px #0008;z-index:20}
-@media(max-width:900px){
-.sidebar{width:205px}
-.main{margin-left:205px;width:calc(100% - 205px);padding:30px}
-.layout{grid-template-columns:1fr}
-.preview-wrap{position:relative;top:0}
-}
-@media(max-width:650px){
-.sidebar{position:relative;width:100%;min-height:auto;border-right:0;border-bottom:1px solid #1d1d26}
-body{display:block}
-.main{margin-left:0;width:100%;padding:25px 18px}
-.sidebar{padding:18px}
-.nav{display:grid;grid-template-columns:1fr 1fr}
-.account{margin-top:20px}
-.hero{display:block}
-.actions{margin-top:18px}
-}
-</style>
-</head>
-<body>
-<aside class="sidebar">
-<div class="logo">Bio<span>fyit</span></div>
-<div class="nav-title">Manage</div>
-<nav class="nav">
-<a class="active" href="dashboard.html"><span class="nav-icon">◈</span>Overview</a>
-<a href="dashboard.html#profile"><span class="nav-icon">◉</span>Profile</a>
-<a href="dashboard.html#appearance"><span class="nav-icon">◌</span>Appearance</a>
-<a href="dashboard.html#socials"><span class="nav-icon">◎</span>Socials</a>
-<a href="dashboard.html#music"><span class="nav-icon">♪</span>Music</a>
-</nav>
-<div class="account">
-<div class="account-label">Account</div>
-<div class="account-user">
-<img id="accountAvatar" class="avatar" src="" alt="">
-<div>
-<div id="accountName" class="account-name">Loading...</div>
-<div id="accountEmail" class="account-email"></div>
-</div>
-</div>
-<button class="logout" id="logout">Sign out</button>
-</div>
-</aside>
-
-<main class="main">
-<div class="topbar">
-<h1>Dashboard</h1>
-<div class="topbar-right">
-<button class="top-btn" id="viewProfile">View Profile</button>
-</div>
-</div>
-
-<div class="hero">
-<div>
-<h2>Welcome <strong id="welcomeUser">@username</strong></h2>
-<p>Manage your Biofyit profile and make it yours.</p>
-</div>
-<div class="actions">
-<button class="btn primary" id="save">Save Changes</button>
-</div>
-</div>
-
-<div class="layout">
-<div>
-<div class="card" id="profile">
-<div class="card-head">
-<h3>Profile</h3>
-<span>Public information</span>
-</div>
-<div class="card-body">
-<div class="section">
-<div class="section-title">Identity</div>
-<div class="field">
-<label>Username</label>
-<input id="username" type="text" disabled>
-</div>
-<div class="field">
-<label>Display name</label>
-<input id="displayName" type="text" maxlength="50" placeholder="Your display name">
-</div>
-<div class="field">
-<label>Bio</label>
-<textarea id="bio" maxlength="250" placeholder="Tell people a little about yourself"></textarea>
-</div>
-</div>
-
-<div class="section">
-<div class="section-title">Profile picture</div>
-<div class="profile-upload">
-<img id="profilePicturePreview" class="upload-img" src="" alt="">
-<div class="upload-controls">
-<label class="upload-button" for="profilePicture">Choose image</label>
-<input id="profilePicture" type="file" accept="image/png,image/jpeg,image/webp" hidden>
-<div class="upload-note">PNG, JPG or WEBP. Maximum 2 MB.</div>
-</div>
-</div>
-</div>
-
-<div class="section" id="appearance">
-<div class="section-title">Appearance</div>
-<div class="field">
-<label>Background</label>
-<div class="profile-upload">
-<div id="backgroundPreview" class="upload-img"></div>
-<div class="upload-controls">
-<label class="upload-button" for="background">Choose background</label>
-<input id="background" type="file" accept="image/png,image/jpeg,image/webp" hidden>
-<div class="upload-note">PNG, JPG or WEBP. Maximum 2 MB.</div>
-</div>
-</div>
-</div>
-</div>
-
-<div class="section" id="music">
-<div class="section-title">Music</div>
-<div class="field">
-<label>Profile music</label>
-<input id="music" type="file" accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg">
-<div class="upload-note">MP3, WAV or OGG. Maximum 4 MB.</div>
-</div>
-</div>
-
-<div class="section">
-<div class="section-title">Discord Presence</div>
-<div class="field">
-<label>Discord User ID</label>
-<input id="discordId" type="text" placeholder="Connect Discord through Biofyit">
-</div>
-<div class="notice">Your Discord presence can be displayed on your public profile after your Discord account is connected.</div>
-</div>
-
-<div class="section" id="socials">
-<div class="section-title">Social links</div>
-<div id="links" class="links-list"></div>
-<button class="add-link" id="addLink">+ Add social link</button>
-<div class="notice">You can add up to 10 links.</div>
-</div>
-</div>
-</div>
-
-<div class="card checklist" id="checklistCard">
-<div class="card-head">
-<h3>Setup checklist</h3>
-<span id="progressText">0 / 3</span>
-</div>
-<div class="card-body">
-<div class="check-item">
-<div id="checkUsername" class="check"></div>
-<div class="check-text">Choose your username</div>
-</div>
-<div class="check-item">
-<div id="checkPicture" class="check"></div>
-<div class="check-text">Add a profile picture</div>
-</div>
-<div class="check-item">
-<div id="checkBackground" class="check"></div>
-<div class="check-text">Add a background</div>
-</div>
-</div>
-</div>
-</div>
-
-<div class="preview-wrap">
-<div class="card">
-<div class="card-head">
-<h3>Live Preview</h3>
-<span>biofyit.com/<span id="previewUsername">username</span></span>
-</div>
-<div class="card-body">
-<div class="preview">
-<div id="previewBg" class="preview-bg"></div>
-<div class="preview-overlay"></div>
-<div class="preview-content">
-<div class="preview-card">
-<img id="previewAvatar" class="preview-avatar" src="" alt="">
-<div id="previewName" class="preview-name">Display Name</div>
-<div id="previewUser" class="preview-username">@username</div>
-<div id="previewBio" class="preview-bio">Your bio will appear here.</div>
-<div id="previewLinks" class="preview-links"></div>
-<div id="previewStatus" class="preview-status">Biofyit profile</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-
-<div id="toast" class="toast hidden"></div>
-
 <script>
-const state={profile:{links:[]},session:null,files:{profilePicture:null,background:null,music:null}};
-const $=id=>document.getElementById(id);
+async function getSession(){
+const response=await fetch("/api/auth?action=session",{
+method:"GET",
+credentials:"include",
+cache:"no-store"
+});
 
-async function request(url,options={}){
-const response=await fetch(url,{credentials:"include",...options});
 const data=await response.json().catch(()=>({}));
-if(!response.ok)throw new Error(data.error||"Request failed.");
-return data;
+
+if(!response.ok||!data.success){
+window.location.replace("/login.html");
+return null;
 }
 
-function toast(message){
-$("toast").textContent=message;
-$("toast").classList.remove("hidden");
-clearTimeout(window.toastTimer);
-window.toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),3000);
+return data.user;
 }
 
-function setPreviewImage(el,src){
-if(src)el.src=src;
-}
+async function loadDashboard(){
+const user=await getSession();
 
-function updatePreview(){
-const username=$("username").value||"username";
-const display=$("displayName").value||username;
-const bio=$("bio").value||"Your bio will appear here.";
-$("welcomeUser").textContent="@"+username;
-$("previewUsername").textContent=username;
-$("previewName").textContent=display;
-$("previewUser").textContent="@"+username;
-$("previewBio").textContent=bio;
-$("previewLinks").innerHTML="";
+if(!user)return;
+
+document.getElementById("accountName").textContent=user.username;
+document.getElementById("accountEmail").textContent=user.email||"";
+document.getElementById("username").value=user.username;
+document.getElementById("welcomeUser").textContent="@"+user.username;
+
+try{
+const response=await fetch(
+"/api/profile?username="+encodeURIComponent(user.username),
+{
+credentials:"include",
+cache:"no-store"
+}
+);
+
+const data=await response.json();
+
+if(data.profile){
+state.profile=data.profile;
 state.profile.links=state.profile.links||[];
-state.profile.links.forEach(link=>{
-if(!link.url)return;
-const a=document.createElement("a");
-a.className="preview-link";
-a.href=link.url;
-a.target="_blank";
-a.rel="noopener noreferrer";
-a.textContent=link.label||link.platform||"Link";
-$("previewLinks").appendChild(a);
-});
+
+document.getElementById("displayName").value=data.profile.displayName||"";
+document.getElementById("bio").value=data.profile.bio||"";
+
+if(data.profile.profilePicture){
+document.getElementById("profilePicturePreview").src=data.profile.profilePicture;
+document.getElementById("previewAvatar").src=data.profile.profilePicture;
+document.getElementById("accountAvatar").src=data.profile.profilePicture;
 }
 
-function renderLinks(){
-const container=$("links");
-container.innerHTML="";
-(state.profile.links||[]).forEach((link,index)=>{
-const row=document.createElement("div");
-row.className="link-row";
-const platform=document.createElement("select");
-["discord","instagram","tiktok","youtube","x","facebook","snapchat","twitch","kick","github","reddit","spotify","soundcloud","steam","roblox","xbox","playstation","linkedin","threads","bluesky","telegram","pinterest","tumblr","gitlab","codepen","patreon","kofi","cashapp","venmo","paypal","custom"].forEach(value=>{
-const option=document.createElement("option");
-option.value=value;
-option.textContent=value==="custom"?"Custom":value.charAt(0).toUpperCase()+value.slice(1);
-if(value===link.platform)option.selected=true;
-platform.appendChild(option);
-});
-const input=document.createElement("input");
-input.placeholder="https://...";
-input.value=link.url||"";
-const remove=document.createElement("button");
-remove.textContent="×";
-remove.type="button";
-remove.onclick=()=>{state.profile.links.splice(index,1);renderLinks();updatePreview()};
-platform.onchange=()=>{link.platform=platform.value;updatePreview()};
-input.oninput=()=>{link.url=input.value;updatePreview()};
-row.append(platform,input,remove);
-container.appendChild(row);
-});
-updatePreview();
+if(data.profile.background){
+document.getElementById("backgroundPreview").style.backgroundImage=`url("${data.profile.background}")`;
+document.getElementById("backgroundPreview").style.backgroundSize="cover";
+document.getElementById("backgroundPreview").style.backgroundPosition="center";
+document.getElementById("previewBg").style.backgroundImage=`url("${data.profile.background}")`;
 }
 
-function updateChecklist(){
-const items=[
-["checkUsername",!!$("username").value],
-["checkPicture",!!state.profile.profilePicture],
-["checkBackground",!!state.profile.background]
-];
-let done=0;
-items.forEach(([id,complete])=>{
-const el=$(id);
-el.textContent=complete?"✓":"";
-el.classList.toggle("done",complete);
-if(complete)done++;
-});
-$("progressText").textContent=done+" / 3";
-$("checklistCard").classList.toggle("hidden",done===3);
+if(data.profile.lanyard&&data.profile.lanyard.id){
+document.getElementById("discordId").value=data.profile.lanyard.id;
 }
 
-function dataUrl(file){
-return new Promise((resolve,reject)=>{
-const reader=new FileReader();
-reader.onload=()=>resolve(reader.result);
-reader.onerror=()=>reject(new Error("Unable to read file."));
-reader.readAsDataURL(file);
-});
-}
-
-async function uploadMedia(file,type){
-const max=type==="music"?4*1024*1024:2*1024*1024;
-if(file.size>max)throw new Error(type==="music"?"Music must be 4 MB or smaller.":"Images must be 2 MB or smaller.");
-const data=await dataUrl(file);
-const extension=(file.name.split(".").pop()||"bin").toLowerCase();
-const result=await request("/api/media-upload",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({type,data,extension})
-});
-return result.url;
-}
-
-async function load(){
-try{
-const session=await request("/api/session");
-state.session=session.user;
-$("accountName").textContent=session.user.username;
-$("accountEmail").textContent=session.user.email||"";
-$("username").value=session.user.username;
-$("welcomeUser").textContent="@"+session.user.username;
-const profileResult=await request("/api/profile?username="+encodeURIComponent(session.user.username));
-state.profile=profileResult.profile||{username:session.user.username,links:[]};
-state.profile.links=state.profile.links||[];
-$("displayName").value=state.profile.displayName||"";
-$("bio").value=state.profile.bio||"";
-if(state.profile.profilePicture){
-setPreviewImage($("profilePicturePreview"),state.profile.profilePicture);
-setPreviewImage($("previewAvatar"),state.profile.profilePicture);
-setPreviewImage($("accountAvatar"),state.profile.profilePicture);
-}
-if(state.profile.background){
-$("backgroundPreview").style.backgroundImage=`url("${state.profile.background}")`;
-$("backgroundPreview").style.backgroundSize="cover";
-$("backgroundPreview").style.backgroundPosition="center";
-$("previewBg").style.backgroundImage=`url("${state.profile.background}")`;
-}
-if(state.profile.music)$("music").dataset.current=state.profile.music;
-if(state.profile.lanyard&&state.profile.lanyard.id)$("discordId").value=state.profile.lanyard.id;
 renderLinks();
-updateChecklist();
 updatePreview();
+updateChecklist();
+}
 }catch(error){
-window.location.href="/login.html";
+console.error(error);
 }
 }
 
-async function save(){
+document.getElementById("logout").onclick=async()=>{
 try{
-$("save").disabled=true;
-$("save").textContent="Saving...";
-const profile={
-username:$("username").value,
-displayName:$("displayName").value.trim(),
-bio:$("bio").value.trim(),
-profilePicture:state.profile.profilePicture||"",
-background:state.profile.background||"",
-music:state.profile.music||"",
-lanyard:state.profile.lanyard||{enabled:false,id:null},
-links:state.profile.links||[]
-};
-if($("discordId").value.trim()){
-profile.lanyard={enabled:true,id:$("discordId").value.trim(),verified:false};
-}
-const result=await request("/api/profile-save",{
+await fetch("/api/auth?action=logout",{
 method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(profile)
+credentials:"include"
 });
-state.profile=result.profile||profile;
-toast("Changes saved. They may take a minute or so to appear.");
-updateChecklist();
-updatePreview();
-}catch(error){
-toast(error.message);
-}finally{
-$("save").disabled=false;
-$("save").textContent="Save Changes";
-}
-}
+}catch{}
 
-$("profilePicture").onchange=async e=>{
-const file=e.target.files[0];
-if(!file)return;
-try{
-const url=await uploadMedia(file,"profilePicture");
-state.profile.profilePicture=url;
-setPreviewImage($("profilePicturePreview"),url);
-setPreviewImage($("previewAvatar"),url);
-setPreviewImage($("accountAvatar"),url);
-updateChecklist();
-updatePreview();
-toast("Profile picture uploaded.");
-}catch(error){toast(error.message)}
+window.location.replace("/login.html");
 };
 
-$("background").onchange=async e=>{
-const file=e.target.files[0];
-if(!file)return;
-try{
-const url=await uploadMedia(file,"background");
-state.profile.background=url;
-$("backgroundPreview").style.backgroundImage=`url("${url}")`;
-$("backgroundPreview").style.backgroundSize="cover";
-$("backgroundPreview").style.backgroundPosition="center";
-$("previewBg").style.backgroundImage=`url("${url}")`;
-updateChecklist();
-toast("Background uploaded.");
-}catch(error){toast(error.message)}
-};
-
-$("music").onchange=async e=>{
-const file=e.target.files[0];
-if(!file)return;
-try{
-const url=await uploadMedia(file,"music");
-state.profile.music=url;
-toast("Music uploaded.");
-}catch(error){toast(error.message)}
-};
-
-["displayName","bio","discordId"].forEach(id=>$(id).addEventListener("input",updatePreview));
-
-$("addLink").onclick=()=>{
-if((state.profile.links||[]).length>=10){toast("You can only add 10 links.");return}
-state.profile.links.push({platform:"custom",label:"Link",url:""});
-renderLinks();
-};
-
-$("save").onclick=save;
-
-$("viewProfile").onclick=()=>{
-const username=$("username").value;
-if(username)window.open("/"+encodeURIComponent(username),"_blank");
-};
-
-$("logout").onclick=async()=>{
-try{
-await request("/api/logout",{method:"POST"});
-window.location.href="/login.html";
-}catch(error){toast(error.message)}
-};
-
-load();
+loadDashboard();
 </script>
-</body>
-</html>
