@@ -1,4 +1,4 @@
-const { getFile, saveFile, github } = require("./github");
+const { getFile, saveFile } = require("./github");
 
 function getCookie(req, name) {
   const cookies = req.headers.cookie || "";
@@ -11,73 +11,43 @@ function getCookie(req, name) {
   return decodeURIComponent(match.substring(name.length + 1));
 }
 
-function cleanString(value, max = 500) {
+function clean(value, max) {
   return String(value || "").trim().slice(0, max);
 }
 
 const allowedPlatforms = [
-  "discord","instagram","tiktok","youtube","x","facebook","snapchat",
-  "twitch","kick","github","reddit","spotify","soundcloud","steam",
-  "roblox","xbox","playstation","linkedin","threads","bluesky",
-  "telegram","pinterest","tumblr","gitlab","codepen","patreon","kofi",
-  "cashapp","venmo","paypal","custom"
+  "discord",
+  "instagram",
+  "tiktok",
+  "youtube",
+  "x",
+  "facebook",
+  "snapchat",
+  "twitch",
+  "kick",
+  "github",
+  "reddit",
+  "spotify",
+  "soundcloud",
+  "steam",
+  "roblox",
+  "xbox",
+  "playstation",
+  "linkedin",
+  "threads",
+  "bluesky",
+  "telegram",
+  "pinterest",
+  "tumblr",
+  "gitlab",
+  "codepen",
+  "patreon",
+  "kofi",
+  "cashapp",
+  "venmo",
+  "paypal",
+  "custom"
 ];
-
-function getExtension(value, fallback) {
-  const extension = String(value || fallback)
-    .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
-
-  const allowed = ["png","jpg","jpeg","webp","gif","mp3","wav","ogg"];
-
-  return allowed.includes(extension) ? extension : fallback;
-}
-
-async function uploadMedia(path, data, username) {
-  if (!data) {
-    throw new Error("Uploaded file is empty.");
-  }
-
-  const base64 = String(data).replace(/^data:[^;]+;base64,/, "");
-
-  if (!base64) {
-    throw new Error("Uploaded file is empty.");
-  }
-
-  const existing = await github(path);
-  let sha = null;
-
-  if (existing.ok) {
-    const file = await existing.json();
-    sha = file.sha;
-  } else if (existing.status !== 404) {
-    const error = await existing.text();
-    console.error("MEDIA CHECK ERROR:", error);
-    throw new Error("Unable to access media storage.");
-  }
-
-  const body = {
-    message: `Update Biofyit media: ${username}`,
-    content: base64
-  };
-
-  if (sha) {
-    body.sha = sha;
-  }
-
-  const response = await github(path, {
-    method: "PUT",
-    body: JSON.stringify(body)
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    console.error("MEDIA UPLOAD ERROR:", error);
-    throw new Error("Unable to upload media.");
-  }
-
-  return `/api/media?path=${encodeURIComponent(path)}`;
-}
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
@@ -100,26 +70,15 @@ module.exports = async function handler(req, res) {
     const usersResult = await getFile("users.json");
     const users = usersResult?.content || [];
 
-    const user = users.find(x => x.id === userId);
+    const user = users.find(
+      item => String(item.id) === String(userId)
+    );
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: "Your session has expired. Please sign in again."
+        error: "Your session has expired."
       });
-    }
-
-    let body = req.body || {};
-
-    if (typeof body === "string") {
-      try {
-        body = JSON.parse(body);
-      } catch {
-        return res.status(400).json({
-          success: false,
-          error: "Invalid request data."
-        });
-      }
     }
 
     const username = String(user.username).toLowerCase();
@@ -134,101 +93,76 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const oldProfile = profileResult.content || {};
+    const body = req.body || {};
+    const old = profileResult.content || {};
 
-    const updatedProfile = {
-      ...oldProfile,
-      username,
-      displayName: cleanString(body.displayName, 80) || username,
-      bio: cleanString(body.bio, 500)
+    const profilePicture =
+      typeof body.profilePicture === "string"
+        ? body.profilePicture.trim()
+        : String(old.profilePicture || "");
+
+    const background =
+      typeof body.background === "string"
+        ? body.background.trim()
+        : String(old.background || "");
+
+    const music =
+      typeof body.music === "string"
+        ? body.music.trim()
+        : String(old.music || "");
+
+    let discord = old.discord || {
+      enabled: false,
+      id: null
     };
 
-    let links = body.links;
-
-    if (typeof links === "string") {
-      try {
-        links = JSON.parse(links);
-      } catch {
-        links = [];
-      }
-    }
-
-    if (!Array.isArray(links)) {
-      links = [];
-    }
-
-    const cleanedLinks = [];
-    const usedPlatforms = new Set();
-
-    for (const link of links.slice(0, 10)) {
-      if (!link || typeof link !== "object") continue;
-
-      const platform = String(link.platform || "")
-        .trim()
-        .toLowerCase();
-
-      const url = String(link.url || "").trim();
-
-      if (!allowedPlatforms.includes(platform)) continue;
-      if (!url) continue;
-      if (usedPlatforms.has(platform)) continue;
-      if (!/^https?:\/\//i.test(url)) continue;
-
-      usedPlatforms.add(platform);
-
-      cleanedLinks.push({
-        platform,
-        url: url.slice(0, 500)
-      });
-    }
-
-    updatedProfile.links = cleanedLinks;
-
     if (body.discord && typeof body.discord === "object") {
-      updatedProfile.discord = {
+      discord = {
         enabled: Boolean(body.discord.enabled),
-        id: body.discord.id ? String(body.discord.id).slice(0, 30) : null
+        id: body.discord.id
+          ? clean(body.discord.id, 64)
+          : null
       };
     }
 
-    if (body.profilePicture?.data) {
-      const extension = getExtension(
-        body.profilePicture.extension,
-        "png"
-      );
+    let links = [];
 
-      updatedProfile.profilePicture = await uploadMedia(
-        `media/profile-pictures/${username}.${extension}`,
-        body.profilePicture.data,
-        username
-      );
+    if (Array.isArray(body.links)) {
+      const used = new Set();
+
+      for (const item of body.links.slice(0, 10)) {
+        if (!item || typeof item !== "object") continue;
+
+        const platform = clean(item.platform, 30).toLowerCase();
+        const url = clean(item.url, 500);
+
+        if (!allowedPlatforms.includes(platform)) continue;
+        if (!url) continue;
+        if (used.has(platform)) continue;
+        if (!/^https?:\/\//i.test(url)) continue;
+
+        used.add(platform);
+
+        links.push({
+          platform,
+          url
+        });
+      }
+    } else if (Array.isArray(old.links)) {
+      links = old.links;
     }
 
-    if (body.background?.data) {
-      const extension = getExtension(
-        body.background.extension,
-        "jpg"
-      );
-
-      updatedProfile.background = await uploadMedia(
-        `media/backgrounds/${username}.${extension}`,
-        body.background.data,
-        username
-      );
-    }
-
-    if (body.music?.data) {
-      const extension = getExtension(
-        body.music.extension,
-        "mp3"
-      );
-
-      updatedProfile.music = await uploadMedia(
-        `media/music/${username}.${extension}`,
-        body.music.data,
-        username
-      );
-    }
+    const updatedProfile = {
+      ...old,
+      username,
+      displayName: clean(body.displayName, 80) || username,
+      bio: clean(body.bio, 500),
+      profilePicture,
+      background,
+      music,
+      discord,
+      links
+    };
 
     await saveFile(
       profilePath,
@@ -248,7 +182,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: error.message || "Unable to publish profile."
+      error: error.message || "Unable to save your profile."
     });
   }
 };
