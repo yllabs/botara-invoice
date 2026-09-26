@@ -1,1699 +1,1756 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Dashboard | Biofyit</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #050308;
-      --panel: #0b0810;
-      --panel-2: #100b17;
-      --border: rgba(255,255,255,.08);
-      --purple: #9562ff;
-      --purple-light: #bd9aff;
-      --muted: #898292;
-      --text: #fff;
-      --danger: #ff6678;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 15% 10%, rgba(123,67,220,.13), transparent 30%),
-        radial-gradient(circle at 85% 80%, rgba(101,50,190,.10), transparent 30%),
-        var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .page {
-      min-height: 100vh;
-    }
-
-    .navbar {
-      height: 72px;
-      padding: 0 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      background: rgba(5,3,8,.82);
-      backdrop-filter: blur(20px);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .brand {
-      font-size: 21px;
-      font-weight: 900;
-      letter-spacing: -0.7px;
-    }
-
-    .brand span {
-      color: var(--purple-light);
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .username-pill {
-      padding: 9px 13px;
-      border-radius: 10px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--border);
-      color: #c4becb;
-      font-size: 13px;
-    }
-
-    .signout {
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
-      color: #fff;
-      padding: 9px 14px;
-      border-radius: 10px;
-    }
-
-    .signout:hover {
-      background: rgba(255,255,255,.08);
-    }
-
-    .layout {
-      width: min(1250px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 45px 0 80px;
-      display: grid;
-      grid-template-columns: 1fr 390px;
-      gap: 24px;
-      align-items: start;
-    }
-
-    .heading {
-      margin-bottom: 25px;
-    }
-
-    .heading h1 {
-      margin: 0;
-      font-size: 34px;
-      letter-spacing: -1.2px;
-    }
-
-    .heading p {
-      margin: 9px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .card {
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255,255,255,.045),
-          rgba(255,255,255,.018)
-        );
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 24px;
-      margin-bottom: 18px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.18);
-    }
-
-    .card-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .card-heading h2 {
-      margin: 0;
-      font-size: 17px;
-    }
-
-    .card-heading p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .setup {
-      border-color: rgba(149,98,255,.2);
-      background:
-        linear-gradient(
-          135deg,
-          rgba(149,98,255,.09),
-          rgba(255,255,255,.02)
-        );
-    }
-
-    .setup.complete {
-      display: none;
-    }
-
-    .setup-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .setup-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 13px;
-      border-radius: 12px;
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.05);
-    }
-
-    .setup-check {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,.06);
-      color: #77717e;
-      font-size: 12px;
-      flex-shrink: 0;
-    }
-
-    .setup-item.done .setup-check {
-      background: rgba(149,98,255,.2);
-      color: #c2a5ff;
-    }
-
-    .setup-item strong {
-      display: block;
-      font-size: 13px;
-    }
-
-    .setup-item span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .field {
-      margin-bottom: 18px;
-    }
-
-    .field:last-child {
-      margin-bottom: 0;
-    }
-
-    .field label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      color: #ddd7e2;
-    }
-
-    .field small {
-      display: block;
-      margin-top: 6px;
-      color: #6f6877;
-      font-size: 11px;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,.28);
-      color: white;
-      outline: none;
-      border-radius: 11px;
-      padding: 13px 14px;
-      transition: .2s;
-    }
-
-    input {
-      height: 46px;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-      line-height: 1.5;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: rgba(149,98,255,.6);
-      box-shadow: 0 0 0 3px rgba(149,98,255,.08);
-    }
-
-    .file-box {
-      position: relative;
-      border: 1px dashed rgba(149,98,255,.25);
-      border-radius: 13px;
-      padding: 16px;
-      background: rgba(149,98,255,.035);
-    }
-
-    .file-box input {
-      padding: 9px;
-      height: auto;
-    }
-
-    .image-preview {
-      width: 72px;
-      height: 72px;
-      border-radius: 14px;
-      object-fit: cover;
-      display: none;
-      margin-top: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .background-preview {
-      width: 100%;
-      height: 120px;
-      border-radius: 12px;
-      object-fit: cover;
-      display: none;
-      margin-top: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .social-count {
-      flex-shrink: 0;
-      padding: 7px 11px;
-      border-radius: 9px;
-      background: rgba(149,98,255,.1);
-      border: 1px solid rgba(149,98,255,.18);
-      color: var(--purple-light);
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .social-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .social-item {
-      display: grid;
-      grid-template-columns: 48px 170px 1fr 42px;
-      gap: 9px;
-      align-items: center;
-      padding: 9px;
-      border-radius: 13px;
-      background: rgba(0,0,0,.2);
-      border: 1px solid rgba(255,255,255,.06);
-    }
-
-    .social-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(149,98,255,.1);
-      border: 1px solid rgba(149,98,255,.15);
-    }
-
-    .social-icon img {
-      width: 21px;
-      height: 21px;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
-    }
-
-    .social-item select,
-    .social-item input {
-      height: 42px;
-      padding: 0 11px;
-      font-size: 12px;
-    }
-
-    .remove-social {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,102,120,.13);
-      background: rgba(255,102,120,.06);
-      color: var(--danger);
-      font-size: 19px;
-    }
-
-    .remove-social:hover {
-      background: rgba(255,102,120,.12);
-    }
-
-    .add-social {
-      width: 100%;
-      height: 46px;
-      margin-top: 12px;
-      border-radius: 11px;
-      border: 1px dashed rgba(149,98,255,.3);
-      background: rgba(149,98,255,.05);
-      color: var(--purple-light);
-      font-weight: 700;
-    }
-
-    .add-social:hover {
-      background: rgba(149,98,255,.1);
-    }
-
-    .limit-message {
-      display: none;
-      text-align: center;
-      color: #77707f;
-      font-size: 12px;
-      margin-top: 12px;
-    }
-
-    .discord-box {
-      padding: 18px;
-      border-radius: 14px;
-      background: rgba(88,101,242,.06);
-      border: 1px solid rgba(88,101,242,.14);
-    }
-
-    .discord-top {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
-
-    .discord-logo {
-      width: 45px;
-      height: 45px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(88,101,242,.13);
-    }
-
-    .discord-logo img {
-      width: 24px;
-      filter: brightness(0) invert(1);
-    }
-
-    .discord-info strong {
-      display: block;
-      font-size: 14px;
-    }
-
-    .discord-info span {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .discord-button {
-      width: 100%;
-      height: 44px;
-      margin-top: 15px;
-      border: 1px solid rgba(88,101,242,.2);
-      background: rgba(88,101,242,.12);
-      color: white;
-      border-radius: 10px;
-      font-weight: 700;
-    }
-
-    .save-area {
-      position: sticky;
-      bottom: 18px;
-      z-index: 20;
-    }
-
-    .save-button {
-      width: 100%;
-      height: 52px;
-      border: 0;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #8050e8, #a16cff);
-      color: white;
-      font-weight: 800;
-      box-shadow: 0 15px 40px rgba(128,80,232,.22);
-    }
-
-    .save-button:hover {
-      transform: translateY(-1px);
-    }
-
-    .preview-card {
-      position: sticky;
-      top: 97px;
-      overflow: hidden;
-      padding: 0;
-    }
-
-    .preview-header {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255,255,255,.025);
-    }
-
-    .preview-header strong {
-      font-size: 14px;
-    }
-
-    .preview-header span {
-      float: right;
-      color: #706977;
-      font-size: 11px;
-      padding-top: 2px;
-    }
-
-    .preview {
-      min-height: 570px;
-      padding: 35px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(128,72,230,.25), transparent 40%),
-        #07050a;
-    }
-
-    .preview-bg {
-      position: absolute;
-      inset: 0;
-      background-position: center;
-      background-size: cover;
-      opacity: .5;
-    }
-
-    .preview-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,.5);
-      backdrop-filter: blur(5px);
-    }
-
-    .preview-content {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      width: 100%;
-    }
-
-    .preview-avatar {
-      width: 82px;
-      height: 82px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid rgba(255,255,255,.14);
-      background: #100b17;
-    }
-
-    .preview-name {
-      margin-top: 15px;
-      font-size: 21px;
-      font-weight: 800;
-    }
-
-    .preview-username {
-      margin-top: 4px;
-      color: #8e8797;
-      font-size: 11px;
-    }
-
-    .preview-bio {
-      margin: 13px auto 0;
-      max-width: 300px;
-      color: #c0b9c7;
-      font-size: 12px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    .preview-socials {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 18px;
-    }
-
-    .preview-social {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 10px;
-      background: rgba(10,7,15,.65);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-
-    .preview-social img {
-      width: 17px;
-      height: 17px;
-      filter: brightness(0) invert(1);
-    }
-
-    .preview-powered {
-      margin-top: 22px;
-      font-size: 9px;
-      color: #5f5968;
-    }
-
-    .preview-powered span {
-      color: #9270d7;
-    }
-
-    .toast {
-      position: fixed;
-      right: 22px;
-      bottom: 22px;
-      z-index: 100;
-      max-width: 350px;
-      padding: 14px 17px;
-      border-radius: 12px;
-      background: #100c15;
-      border: 1px solid rgba(149,98,255,.22);
-      box-shadow: 0 20px 60px rgba(0,0,0,.45);
-      color: #ddd7e3;
-      font-size: 13px;
-      transform: translateY(20px);
-      opacity: 0;
-      pointer-events: none;
-      transition: .25s;
-    }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0,0,0,.7);
-      backdrop-filter: blur(10px);
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-box {
-      width: min(460px, 100%);
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: #0d0912;
-      padding: 25px;
-      box-shadow: 0 30px 100px rgba(0,0,0,.6);
-    }
-
-    .warning-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(149,98,255,.1);
-      color: var(--purple-light);
-      font-size: 22px;
-      margin-bottom: 16px;
-    }
-
-    .modal-box h2 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .modal-box p {
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 13px;
-      margin: 10px 0 20px;
-    }
-
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-    }
-
-    .modal-buttons button {
-      flex: 1;
-      height: 45px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-
-    .cancel {
-      background: rgba(255,255,255,.04);
-      color: white;
-    }
-
-    .confirm {
-      background: #8b5cf6;
-      color: white;
-      border-color: transparent !important;
-    }
-
-    @media (max-width: 950px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .preview-card {
-        position: relative;
-        top: auto;
-      }
-    }
-
-    @media (max-width: 650px) {
-      .navbar {
-        padding: 0 16px;
-      }
-
-      .username-pill {
-        display: none;
-      }
-
-      .layout {
-        width: min(100% - 24px, 1250px);
-        padding-top: 28px;
-      }
-
-      .heading h1 {
-        font-size: 28px;
-      }
-
-      .card {
-        padding: 18px;
-      }
-
-      .social-item {
-        grid-template-columns: 42px 1fr 42px;
-      }
-
-      .social-item select {
-        grid-column: 2;
-      }
-
-      .social-item input {
-        grid-column: 1 / 3;
-      }
-
-      .social-item .remove-social {
-        grid-column: 3;
-        grid-row: 1;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biofyit Dashboard</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+--bg: #050506;
+--panel: rgba(14, 14, 17, 0.82);
+--panel-solid: #0d0d10;
+--border: rgba(255,255,255,.08);
+--muted: #888892;
+--text: #f5f5f7;
+--purple: #8b5cf6;
+--purple2: #a78bfa;
+--danger: #ef4444;
+}
+
+html {
+scroll-behavior: smooth;
+}
+
+body {
+margin: 0;
+background:
+radial-gradient(circle at 15% 10%, rgba(124,58,237,.13), transparent 28%),
+radial-gradient(circle at 85% 80%, rgba(139,92,246,.08), transparent 30%),
+#050506;
+color: var(--text);
+font-family: Inter, Arial, Helvetica, sans-serif;
+min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+font: inherit;
+}
+
+button {
+cursor: pointer;
+}
+
+::-webkit-scrollbar {
+width: 7px;
+}
+
+::-webkit-scrollbar-track {
+background: #050506;
+}
+
+::-webkit-scrollbar-thumb {
+background: #24242b;
+border-radius: 20px;
+}
+
+.navbar {
+height: 72px;
+border-bottom: 1px solid var(--border);
+background: rgba(5,5,6,.82);
+backdrop-filter: blur(22px);
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 34px;
+position: sticky;
+top: 0;
+z-index: 100;
+}
+
+.brand {
+font-size: 21px;
+font-weight: 800;
+letter-spacing: -.7px;
+}
+
+.brand span {
+color: var(--purple2);
+}
+
+.nav-right {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.user-pill {
+display: flex;
+align-items: center;
+gap: 9px;
+padding: 8px 13px;
+border: 1px solid var(--border);
+border-radius: 10px;
+background: rgba(255,255,255,.035);
+color: #d6d6dc;
+font-size: 13px;
+}
+
+.user-dot {
+width: 7px;
+height: 7px;
+background: #8b5cf6;
+border-radius: 50%;
+box-shadow: 0 0 12px #8b5cf6;
+}
+
+.signout {
+border: 1px solid rgba(255,255,255,.09);
+background: rgba(255,255,255,.035);
+color: #cfcfd5;
+padding: 9px 14px;
+border-radius: 9px;
+transition: .2s;
+}
+
+.signout:hover {
+background: rgba(255,255,255,.07);
+color: white;
+}
+
+.dashboard {
+width: min(1500px, calc(100% - 44px));
+margin: 0 auto;
+padding: 34px 0 70px;
+}
+
+.page-heading {
+display: flex;
+align-items: flex-end;
+justify-content: space-between;
+gap: 20px;
+margin-bottom: 28px;
+}
+
+.heading-left h1 {
+margin: 0;
+font-size: 31px;
+letter-spacing: -.9px;
+}
+
+.heading-left p {
+color: var(--muted);
+margin: 8px 0 0;
+font-size: 14px;
+}
+
+.save-button {
+border: 0;
+color: white;
+background: linear-gradient(135deg, #7c3aed, #9b72f7);
+padding: 12px 20px;
+border-radius: 10px;
+font-weight: 700;
+box-shadow: 0 10px 35px rgba(124,58,237,.2);
+transition: .2s;
+}
+
+.save-button:hover {
+transform: translateY(-1px);
+box-shadow: 0 14px 40px rgba(124,58,237,.32);
+}
+
+.save-button:disabled {
+opacity: .6;
+cursor: wait;
+transform: none;
+}
+
+.editor-layout {
+display: grid;
+grid-template-columns: minmax(0, 1fr) 430px;
+gap: 22px;
+align-items: start;
+}
+
+.editor {
+min-width: 0;
+}
+
+.section {
+border: 1px solid var(--border);
+background: var(--panel);
+backdrop-filter: blur(22px);
+border-radius: 15px;
+padding: 22px;
+margin-bottom: 18px;
+box-shadow: 0 20px 70px rgba(0,0,0,.16);
+}
+
+.section-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 15px;
+margin-bottom: 20px;
+}
+
+.section-title {
+font-size: 16px;
+font-weight: 750;
+}
+
+.section-description {
+color: #777780;
+font-size: 12px;
+margin-top: 5px;
+line-height: 1.5;
+}
+
+.field {
+margin-bottom: 17px;
+}
+
+.field:last-child {
+margin-bottom: 0;
+}
+
+.field label {
+display: block;
+font-size: 12px;
+color: #bdbdc5;
+font-weight: 600;
+margin-bottom: 8px;
+}
+
+.input,
+.textarea,
+.select {
+width: 100%;
+border: 1px solid rgba(255,255,255,.08);
+background: rgba(0,0,0,.3);
+color: white;
+outline: none;
+border-radius: 10px;
+padding: 12px 13px;
+transition: .2s;
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+border-color: rgba(139,92,246,.7);
+box-shadow: 0 0 0 3px rgba(139,92,246,.08);
+}
+
+.textarea {
+min-height: 115px;
+resize: vertical;
+}
+
+.upload-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+}
+
+.upload-box {
+position: relative;
+min-height: 145px;
+border: 1px dashed rgba(255,255,255,.13);
+background:
+linear-gradient(145deg, rgba(139,92,246,.055), rgba(255,255,255,.015));
+border-radius: 13px;
+padding: 17px;
+overflow: hidden;
+transition: .2s;
+}
+
+.upload-box:hover {
+border-color: rgba(139,92,246,.55);
+background:
+linear-gradient(145deg, rgba(139,92,246,.09), rgba(255,255,255,.02));
+}
+
+.upload-box.dragging {
+border-color: var(--purple2);
+background: rgba(139,92,246,.12);
+}
+
+.upload-box input {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+opacity: 0;
+cursor: pointer;
+z-index: 5;
+}
+
+.upload-content {
+position: relative;
+z-index: 1;
+pointer-events: none;
+}
+
+.upload-icon {
+width: 39px;
+height: 39px;
+display: grid;
+place-items: center;
+border-radius: 10px;
+background: rgba(139,92,246,.13);
+border: 1px solid rgba(139,92,246,.18);
+margin-bottom: 12px;
+}
+
+.upload-icon svg {
+width: 19px;
+height: 19px;
+fill: none;
+stroke: #b79bff;
+stroke-width: 1.7;
+}
+
+.upload-title {
+font-size: 13px;
+font-weight: 700;
+}
+
+.upload-subtitle {
+font-size: 11px;
+color: #6e6e78;
+margin-top: 5px;
+line-height: 1.4;
+}
+
+.file-name {
+color: #aa8aff;
+font-size: 11px;
+margin-top: 9px;
+max-width: 100%;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.music-upload {
+min-height: 112px;
+}
+
+.social-add {
+display: grid;
+grid-template-columns: 180px 1fr auto;
+gap: 9px;
+margin-bottom: 14px;
+}
+
+.social-list {
+display: flex;
+flex-direction: column;
+gap: 9px;
+}
+
+.social-item {
+display: grid;
+grid-template-columns: 38px 110px 1fr 36px;
+gap: 10px;
+align-items: center;
+padding: 9px;
+border: 1px solid rgba(255,255,255,.065);
+background: rgba(255,255,255,.022);
+border-radius: 10px;
+}
+
+.social-icon {
+width: 38px;
+height: 38px;
+display: grid;
+place-items: center;
+border-radius: 8px;
+background: rgba(139,92,246,.08);
+overflow: hidden;
+}
+
+.social-icon img {
+width: 19px;
+height: 19px;
+}
+
+.social-platform {
+font-size: 12px;
+color: #cfcfd5;
+font-weight: 600;
+}
+
+.remove-social {
+width: 34px;
+height: 34px;
+border: 1px solid rgba(255,255,255,.06);
+background: rgba(255,255,255,.025);
+color: #777780;
+border-radius: 8px;
+}
+
+.remove-social:hover {
+color: #ff7777;
+border-color: rgba(239,68,68,.3);
+}
+
+.add-social {
+border: 1px solid rgba(139,92,246,.3);
+background: rgba(139,92,246,.08);
+color: #c3aaff;
+border-radius: 9px;
+padding: 0 15px;
+font-weight: 700;
+}
+
+.add-social:hover {
+background: rgba(139,92,246,.15);
+}
+
+.counter {
+font-size: 11px;
+color: #707079;
+margin-top: 7px;
+}
+
+.discord-box {
+border: 1px solid rgba(88,101,242,.15);
+background: rgba(88,101,242,.045);
+padding: 15px;
+border-radius: 11px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 15px;
+}
+
+.discord-left {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.discord-logo {
+width: 40px;
+height: 40px;
+border-radius: 10px;
+display: grid;
+place-items: center;
+background: rgba(88,101,242,.14);
+}
+
+.discord-logo img {
+width: 22px;
+height: 22px;
+}
+
+.discord-name {
+font-size: 13px;
+font-weight: 700;
+}
+
+.discord-status {
+color: #73737c;
+font-size: 11px;
+margin-top: 3px;
+}
+
+.coming-soon {
+border: 1px solid rgba(255,255,255,.07);
+background: rgba(255,255,255,.03);
+color: #777780;
+border-radius: 8px;
+padding: 8px 11px;
+font-size: 11px;
+}
+
+.preview-wrap {
+position: sticky;
+top: 94px;
+}
+
+.preview-label {
+color: #777780;
+font-size: 11px;
+text-transform: uppercase;
+letter-spacing: 1.5px;
+margin: 0 0 10px 3px;
+font-weight: 700;
+}
+
+.profile-preview {
+min-height: 650px;
+border: 1px solid var(--border);
+border-radius: 16px;
+overflow: hidden;
+position: relative;
+background: #09090c;
+box-shadow: 0 30px 90px rgba(0,0,0,.35);
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 35px;
+}
+
+.preview-background {
+position: absolute;
+inset: 0;
+background:
+radial-gradient(circle at 50% 25%, rgba(124,58,237,.32), transparent 40%),
+linear-gradient(145deg, #0b0810, #070709);
+background-size: cover;
+background-position: center;
+}
+
+.preview-overlay {
+position: absolute;
+inset: 0;
+background: linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.68));
+backdrop-filter: blur(1px);
+}
+
+.preview-card {
+position: relative;
+z-index: 2;
+width: 100%;
+text-align: center;
+}
+
+.preview-avatar {
+width: 94px;
+height: 94px;
+margin: 0 auto 16px;
+border-radius: 50%;
+border: 3px solid rgba(255,255,255,.13);
+background: linear-gradient(135deg, #19131f, #0d0d10);
+overflow: hidden;
+box-shadow: 0 18px 50px rgba(0,0,0,.4);
+}
+
+.preview-avatar img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.preview-name {
+font-size: 24px;
+font-weight: 800;
+letter-spacing: -.7px;
+}
+
+.preview-username {
+color: #96939f;
+font-size: 12px;
+margin-top: 5px;
+}
+
+.preview-bio {
+max-width: 320px;
+margin: 15px auto 20px;
+color: #d0ced5;
+font-size: 13px;
+line-height: 1.55;
+white-space: pre-wrap;
+}
+
+.preview-socials {
+display: flex;
+justify-content: center;
+flex-wrap: wrap;
+gap: 9px;
+}
+
+.preview-social {
+width: 39px;
+height: 39px;
+display: grid;
+place-items: center;
+border: 1px solid rgba(255,255,255,.09);
+border-radius: 10px;
+background: rgba(0,0,0,.3);
+backdrop-filter: blur(12px);
+}
+
+.preview-social img {
+width: 18px;
+height: 18px;
+}
+
+.preview-watermark {
+margin-top: 30px;
+font-size: 10px;
+color: #55535c;
+letter-spacing: .5px;
+}
+
+.checklist {
+display: flex;
+flex-direction: column;
+gap: 9px;
+}
+
+.check {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 11px 12px;
+border-radius: 9px;
+background: rgba(255,255,255,.025);
+color: #9a9aa3;
+font-size: 12px;
+}
+
+.check-icon {
+width: 17px;
+height: 17px;
+border: 1px solid rgba(255,255,255,.12);
+border-radius: 50%;
+display: grid;
+place-items: center;
+font-size: 9px;
+}
+
+.check.complete {
+color: #d7d2e3;
+}
+
+.check.complete .check-icon {
+background: rgba(139,92,246,.18);
+border-color: rgba(139,92,246,.5);
+color: #bda2ff;
+}
+
+.hidden {
+display: none !important;
+}
+
+.save-notice {
+margin-top: 10px;
+color: #676771;
+font-size: 11px;
+line-height: 1.5;
+}
+
+.toast {
+position: fixed;
+right: 22px;
+bottom: 22px;
+padding: 13px 17px;
+background: #111116;
+border: 1px solid rgba(139,92,246,.35);
+color: #e8e4f0;
+border-radius: 10px;
+box-shadow: 0 20px 50px rgba(0,0,0,.35);
+transform: translateY(20px);
+opacity: 0;
+pointer-events: none;
+transition: .25s;
+font-size: 12px;
+z-index: 300;
+}
+
+.toast.show {
+transform: translateY(0);
+opacity: 1;
+}
+
+.modal {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,.7);
+backdrop-filter: blur(12px);
+display: none;
+align-items: center;
+justify-content: center;
+z-index: 500;
+padding: 20px;
+}
+
+.modal.show {
+display: flex;
+}
+
+.modal-card {
+width: min(430px, 100%);
+background: #0e0e12;
+border: 1px solid rgba(255,255,255,.09);
+border-radius: 15px;
+padding: 24px;
+box-shadow: 0 30px 100px rgba(0,0,0,.55);
+}
+
+.modal-card h2 {
+margin: 0;
+font-size: 19px;
+}
+
+.modal-card p {
+color: #85858e;
+font-size: 13px;
+line-height: 1.55;
+margin: 9px 0 20px;
+}
+
+.modal-actions {
+display: flex;
+justify-content: flex-end;
+gap: 9px;
+}
+
+.modal-cancel,
+.modal-confirm {
+border-radius: 9px;
+padding: 10px 15px;
+border: 1px solid rgba(255,255,255,.08);
+}
+
+.modal-cancel {
+background: rgba(255,255,255,.035);
+color: #aaaab2;
+}
+
+.modal-confirm {
+background: #7c3aed;
+color: white;
+border-color: #7c3aed;
+}
+
+@media (max-width: 1050px) {
+.editor-layout {
+grid-template-columns: 1fr;
+}
+
+.preview-wrap {
+position: static;
+order: -1;
+}
+
+.profile-preview {
+min-height: 500px;
+}
+}
+
+@media (max-width: 700px) {
+.navbar {
+padding: 0 16px;
+}
+
+.user-pill {
+display: none;
+}
+
+.dashboard {
+width: min(100% - 24px, 1500px);
+padding-top: 22px;
+}
+
+.page-heading {
+align-items: stretch;
+flex-direction: column;
+}
+
+.save-button {
+width: 100%;
+}
+
+.upload-grid {
+grid-template-columns: 1fr;
+}
+
+.social-add {
+grid-template-columns: 1fr;
+}
+
+.add-social {
+height: 43px;
+}
+
+.social-item {
+grid-template-columns: 36px 1fr 36px;
+}
+
+.social-platform {
+display: none;
+}
+
+.section {
+padding: 17px;
+}
+
+.profile-preview {
+min-height: 460px;
+padding: 20px;
+}
+} </style>
+
 </head>
 
 <body>
 
-  <div class="page">
+<nav class="navbar">
+  <div class="brand">Bio<span>fyit</span></div>
 
-    <nav class="navbar">
-      <div class="brand">
-        Bio<span>fyit</span>
-      </div>
+  <div class="nav-right">
+    <div class="user-pill">
+      <span class="user-dot"></span>
+      <span id="navUsername">Loading...</span>
+    </div>
 
-      <div class="nav-right">
-        <div id="usernamePill" class="username-pill">
-          Loading...
-        </div>
+```
+<button class="signout" id="signoutButton">
+  Sign Out
+</button>
+```
 
-        <button id="signout" class="signout">
-          Sign Out
-        </button>
-      </div>
-    </nav>
+  </div>
+</nav>
 
-    <div class="layout">
+<main class="dashboard">
 
+  <div class="page-heading">
+    <div class="heading-left">
+      <h1 id="welcomeTitle">Welcome</h1>
+      <p>Edit your Biofyit profile and control how your page looks.</p>
+    </div>
+
+```
+<button class="save-button" id="saveButton">
+  Save Changes
+</button>
+```
+
+  </div>
+
+  <div class="editor-layout">
+
+```
+<div class="editor">
+
+  <section class="section">
+    <div class="section-header">
       <div>
-
-        <div class="heading">
-          <h1>Welcome <span id="welcomeUser">@user</span></h1>
-          <p>Customize your Biofyit profile.</p>
+        <div class="section-title">Profile</div>
+        <div class="section-description">
+          Set the information people see when they visit your page.
         </div>
-
-        <section id="setupCard" class="card setup">
-
-          <div class="card-heading">
-            <div>
-              <h2>Finish setting up your profile</h2>
-              <p>Complete the required items before your profile is ready.</p>
-            </div>
-          </div>
-
-          <div class="setup-list">
-
-            <div id="setupUsername" class="setup-item">
-              <div class="setup-check">1</div>
-              <div>
-                <strong>Claim your username</strong>
-                <span id="setupUsernameText">Loading...</span>
-              </div>
-            </div>
-
-            <div id="setupPicture" class="setup-item">
-              <div class="setup-check">2</div>
-              <div>
-                <strong>Add a profile picture</strong>
-                <span>Upload an image people will see on your profile.</span>
-              </div>
-            </div>
-
-            <div id="setupBackground" class="setup-item">
-              <div class="setup-check">3</div>
-              <div>
-                <strong>Add a background</strong>
-                <span>Choose the background for your Biofyit page.</span>
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-        <section class="card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Profile</h2>
-              <p>Your main profile information.</p>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Username</label>
-            <input
-              id="username"
-              type="text"
-              readonly
-            >
-            <small>Your username is your public Biofyit URL.</small>
-          </div>
-
-          <div class="field">
-            <label>Display Name</label>
-            <input
-              id="displayName"
-              type="text"
-              maxlength="80"
-              placeholder="Your name"
-            >
-          </div>
-
-          <div class="field">
-            <label>Bio</label>
-            <textarea
-              id="bio"
-              maxlength="500"
-              placeholder="Tell people a little about yourself..."
-            ></textarea>
-          </div>
-
-        </section>
-
-        <section class="card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Appearance</h2>
-              <p>Customize the images displayed on your profile.</p>
-            </div>
-          </div>
-
-          <div class="field">
-
-            <label>Profile Picture</label>
-
-            <div class="file-box">
-              <input
-                id="profilePicture"
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/gif"
-              >
-
-              <img
-                id="picturePreview"
-                class="image-preview"
-                alt=""
-              >
-            </div>
-
-          </div>
-
-          <div class="field">
-
-            <label>Background</label>
-
-            <div class="file-box">
-              <input
-                id="background"
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-              >
-
-              <img
-                id="backgroundPreview"
-                class="background-preview"
-                alt=""
-              >
-            </div>
-
-          </div>
-
-        </section>
-
-        <section class="card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Socials</h2>
-              <p>Add up to 10 social platforms. Your public profile will display their logos.</p>
-            </div>
-
-            <div class="social-count">
-              <span id="socialCount">0</span>/10
-            </div>
-          </div>
-
-          <div id="socialList" class="social-list"></div>
-
-          <button
-            id="addSocial"
-            class="add-social"
-            type="button"
-          >
-            + Add Social
-          </button>
-
-          <div id="socialLimit" class="limit-message">
-            You've reached the 10 social limit.
-          </div>
-
-        </section>
-
-        <section class="card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Music</h2>
-              <p>Add an audio track to your profile.</p>
-            </div>
-          </div>
-
-          <div class="file-box">
-
-            <input
-              id="music"
-              type="file"
-              accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg"
-            >
-
-            <small>
-              MP3, WAV and OGG files are supported.
-            </small>
-
-          </div>
-
-        </section>
-
-        <section class="card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Discord</h2>
-              <p>Connect Discord to show a connected status on your profile.</p>
-            </div>
-          </div>
-
-          <div class="discord-box">
-
-            <div class="discord-top">
-
-              <div class="discord-logo">
-                <img
-                  src="https://cdn.simpleicons.org/discord"
-                  alt=""
-                >
-              </div>
-
-              <div class="discord-info">
-                <strong id="discordStatus">
-                  Discord Not Connected
-                </strong>
-
-                <span id="discordDescription">
-                  Connect your Discord account later.
-                </span>
-              </div>
-
-            </div>
-
-            <button
-              id="discordButton"
-              class="discord-button"
-              type="button"
-            >
-              Connect Discord
-            </button>
-
-          </div>
-
-        </section>
-
-        <div class="save-area">
-
-          <button
-            id="saveButton"
-            class="save-button"
-            type="button"
-          >
-            Save Profile
-          </button>
-
-        </div>
-
       </div>
-
-      <aside>
-
-        <section class="card preview-card">
-
-          <div class="preview-header">
-            <strong>Live Preview</strong>
-            <span>biofyit.com/username</span>
-          </div>
-
-          <div class="preview">
-
-            <div
-              id="previewBackground"
-              class="preview-bg"
-            ></div>
-
-            <div class="preview-overlay"></div>
-
-            <div class="preview-content">
-
-              <img
-                id="previewAvatar"
-                class="preview-avatar"
-                src="https://cdn.simpleicons.org/user"
-                alt=""
-              >
-
-              <div
-                id="previewName"
-                class="preview-name"
-              >
-                Your Name
-              </div>
-
-              <div
-                id="previewUsername"
-                class="preview-username"
-              >
-                @username
-              </div>
-
-              <div
-                id="previewBio"
-                class="preview-bio"
-              >
-                Your bio will appear here.
-              </div>
-
-              <div
-                id="previewSocials"
-                class="preview-socials"
-              ></div>
-
-              <div class="preview-powered">
-                Powered by <span>Biofyit</span>
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-      </aside>
-
     </div>
 
-  </div>
+    <div class="field">
+      <label>Display Name</label>
+      <input
+        class="input"
+        id="displayName"
+        maxlength="80"
+        placeholder="Your display name"
+      >
+    </div>
 
-  <div id="toast" class="toast"></div>
+    <div class="field">
+      <label>Bio</label>
+      <textarea
+        class="textarea"
+        id="bio"
+        maxlength="500"
+        placeholder="Tell people a little about yourself..."
+      ></textarea>
+    </div>
+  </section>
 
-  <div id="saveModal" class="modal">
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Appearance</div>
+        <div class="section-description">
+          Customize the images and media shown on your profile.
+        </div>
+      </div>
+    </div>
 
-    <div class="modal-box">
+    <div class="upload-grid">
 
-      <div class="warning-icon">
-        !
+      <div class="upload-box" id="profileUploadBox">
+        <input
+          type="file"
+          id="profilePicture"
+          accept="image/png,image/jpeg,image/webp,image/gif"
+        >
+
+        <div class="upload-content">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 16V4M7 9l5-5 5 5"/>
+              <path d="M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/>
+            </svg>
+          </div>
+
+          <div class="upload-title">
+            Profile Picture
+          </div>
+
+          <div class="upload-subtitle">
+            Click or drag an image here
+          </div>
+
+          <div class="file-name" id="profilePictureName">
+            No file selected
+          </div>
+        </div>
       </div>
 
-      <h2>Update your profile?</h2>
-
-      <p>
-        Saving your profile may take a minute or so to fully update because
-        Biofyit uses Vercel to deploy profile changes. Your changes will be
-        saved and your profile will update shortly.
-      </p>
-
-      <div class="modal-buttons">
-
-        <button
-          id="cancelSave"
-          class="cancel"
-          type="button"
+      <div class="upload-box" id="backgroundUploadBox">
+        <input
+          type="file"
+          id="background"
+          accept="image/png,image/jpeg,image/webp"
         >
-          Cancel
-        </button>
 
-        <button
-          id="confirmSave"
-          class="confirm"
-          type="button"
-        >
-          Save Changes
-        </button>
+        <div class="upload-content">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 19l5-6 4 4 3-3 4 5"/>
+              <circle cx="8" cy="8" r="2"/>
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+            </svg>
+          </div>
 
+          <div class="upload-title">
+            Background
+          </div>
+
+          <div class="upload-subtitle">
+            Click or drag an image here
+          </div>
+
+          <div class="file-name" id="backgroundName">
+            No file selected
+          </div>
+        </div>
       </div>
 
     </div>
 
+    <div style="height:14px"></div>
+
+    <div class="upload-box music-upload" id="musicUploadBox">
+      <input
+        type="file"
+        id="music"
+        accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg"
+      >
+
+      <div class="upload-content">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 18V5l11-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="17" cy="16" r="3"/>
+          </svg>
+        </div>
+
+        <div class="upload-title">
+          Profile Music
+        </div>
+
+        <div class="upload-subtitle">
+          Add a song that plays on your profile
+        </div>
+
+        <div class="file-name" id="musicName">
+          No file selected
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Socials</div>
+        <div class="section-description">
+          Add up to 10 social accounts. Your profile displays their icons.
+        </div>
+      </div>
+    </div>
+
+    <div class="social-add">
+      <select class="select" id="platformSelect">
+        <option value="discord">Discord</option>
+        <option value="instagram">Instagram</option>
+        <option value="tiktok">TikTok</option>
+        <option value="youtube">YouTube</option>
+        <option value="x">X</option>
+        <option value="facebook">Facebook</option>
+        <option value="snapchat">Snapchat</option>
+        <option value="twitch">Twitch</option>
+        <option value="kick">Kick</option>
+        <option value="github">GitHub</option>
+        <option value="reddit">Reddit</option>
+        <option value="spotify">Spotify</option>
+        <option value="soundcloud">SoundCloud</option>
+        <option value="steam">Steam</option>
+        <option value="roblox">Roblox</option>
+        <option value="xbox">Xbox</option>
+        <option value="playstation">PlayStation</option>
+        <option value="linkedin">LinkedIn</option>
+        <option value="threads">Threads</option>
+        <option value="bluesky">Bluesky</option>
+        <option value="telegram">Telegram</option>
+        <option value="pinterest">Pinterest</option>
+        <option value="tumblr">Tumblr</option>
+        <option value="gitlab">GitLab</option>
+        <option value="codepen">CodePen</option>
+        <option value="patreon">Patreon</option>
+        <option value="kofi">Ko-fi</option>
+        <option value="cashapp">Cash App</option>
+        <option value="venmo">Venmo</option>
+        <option value="paypal">PayPal</option>
+        <option value="custom">Custom Link</option>
+      </select>
+
+      <input
+        class="input"
+        id="socialUrl"
+        placeholder="https://..."
+      >
+
+      <button class="add-social" id="addSocial">
+        Add
+      </button>
+    </div>
+
+    <div class="social-list" id="socialList"></div>
+
+    <div class="counter">
+      <span id="socialCount">0</span> / 10 socials
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Discord</div>
+        <div class="section-description">
+          Connect Discord for richer profile information.
+        </div>
+      </div>
+    </div>
+
+    <div class="discord-box">
+      <div class="discord-left">
+        <div class="discord-logo">
+          <img src="https://cdn.simpleicons.org/discord/ffffff" alt="">
+        </div>
+
+        <div>
+          <div class="discord-name">Discord Connection</div>
+          <div class="discord-status">Discord integration is coming soon.</div>
+        </div>
+      </div>
+
+      <div class="coming-soon">
+        Coming Soon
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Profile Setup</div>
+        <div class="section-description">
+          Complete these items before sharing your page.
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist" id="checklist">
+
+      <div class="check" id="checkUsername">
+        <span class="check-icon">✓</span>
+        Username claimed
+      </div>
+
+      <div class="check" id="checkPicture">
+        <span class="check-icon">✓</span>
+        Profile picture added
+      </div>
+
+      <div class="check" id="checkBackground">
+        <span class="check-icon">✓</span>
+        Background added
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<aside class="preview-wrap">
+  <div class="preview-label">Live Preview</div>
+
+  <div class="profile-preview">
+
+    <div class="preview-background" id="previewBackground"></div>
+    <div class="preview-overlay"></div>
+
+    <div class="preview-card">
+
+      <div class="preview-avatar">
+        <img id="previewAvatar" alt="">
+      </div>
+
+      <div class="preview-name" id="previewName">
+        Your Name
+      </div>
+
+      <div class="preview-username" id="previewUsername">
+        @username
+      </div>
+
+      <div class="preview-bio" id="previewBio">
+        Your bio will appear here.
+      </div>
+
+      <div class="preview-socials" id="previewSocials"></div>
+
+      <div class="preview-watermark">
+        Powered by Biofyit
+      </div>
+
+    </div>
   </div>
 
-  <script>
-    const SOCIAL_PLATFORMS = [
-      ["discord", "Discord", "https://cdn.simpleicons.org/discord"],
-      ["instagram", "Instagram", "https://cdn.simpleicons.org/instagram"],
-      ["tiktok", "TikTok", "https://cdn.simpleicons.org/tiktok"],
-      ["youtube", "YouTube", "https://cdn.simpleicons.org/youtube"],
-      ["x", "X", "https://cdn.simpleicons.org/x"],
-      ["facebook", "Facebook", "https://cdn.simpleicons.org/facebook"],
-      ["snapchat", "Snapchat", "https://cdn.simpleicons.org/snapchat"],
-      ["twitch", "Twitch", "https://cdn.simpleicons.org/twitch"],
-      ["kick", "Kick", "https://cdn.simpleicons.org/kick"],
-      ["github", "GitHub", "https://cdn.simpleicons.org/github"],
-      ["reddit", "Reddit", "https://cdn.simpleicons.org/reddit"],
-      ["spotify", "Spotify", "https://cdn.simpleicons.org/spotify"],
-      ["soundcloud", "SoundCloud", "https://cdn.simpleicons.org/soundcloud"],
-      ["steam", "Steam", "https://cdn.simpleicons.org/steam"],
-      ["roblox", "Roblox", "https://cdn.simpleicons.org/roblox"],
-      ["xbox", "Xbox", "https://cdn.simpleicons.org/xbox"],
-      ["playstation", "PlayStation", "https://cdn.simpleicons.org/playstation"],
-      ["linkedin", "LinkedIn", "https://cdn.simpleicons.org/linkedin"],
-      ["threads", "Threads", "https://cdn.simpleicons.org/threads"],
-      ["bluesky", "Bluesky", "https://cdn.simpleicons.org/bluesky"],
-      ["telegram", "Telegram", "https://cdn.simpleicons.org/telegram"],
-      ["pinterest", "Pinterest", "https://cdn.simpleicons.org/pinterest"],
-      ["tumblr", "Tumblr", "https://cdn.simpleicons.org/tumblr"],
-      ["gitlab", "GitLab", "https://cdn.simpleicons.org/gitlab"],
-      ["codepen", "CodePen", "https://cdn.simpleicons.org/codepen"],
-      ["patreon", "Patreon", "https://cdn.simpleicons.org/patreon"],
-      ["kofi", "Ko-fi", "https://cdn.simpleicons.org/kofi"],
-      ["cashapp", "Cash App", "https://cdn.simpleicons.org/cashapp"],
-      ["venmo", "Venmo", "https://cdn.simpleicons.org/venmo"],
-      ["paypal", "PayPal", "https://cdn.simpleicons.org/paypal"],
-      ["custom", "Custom Link", ""]
-    ];
+  <div class="save-notice">
+    Profile updates are deployed through Biofyit's hosting system.
+    After saving, changes may take a minute or so to appear everywhere.
+  </div>
+</aside>
+```
 
-    let socialLinks = [];
-    let currentProfile = {};
-    let selectedProfilePicture = null;
-    let selectedBackground = null;
-    let selectedMusic = null;
+  </div>
 
-    const $ = id => document.getElementById(id);
+</main>
 
-    function showToast(message) {
-      const toast = $("toast");
+<div class="toast" id="toast"></div>
 
-      toast.textContent = message;
-      toast.classList.add("show");
+<div class="modal" id="saveModal">
+  <div class="modal-card">
+    <h2>Save your profile?</h2>
+    <p>
+      Your profile will be updated and deployed. Changes may take a minute
+      or so to appear on your public Biofyit page.
+    </p>
 
-      clearTimeout(window.toastTimer);
+```
+<div class="modal-actions">
+  <button class="modal-cancel" id="cancelSave">
+    Cancel
+  </button>
 
-      window.toastTimer = setTimeout(() => {
-        toast.classList.remove("show");
-      }, 3500);
+  <button class="modal-confirm" id="confirmSave">
+    Save Changes
+  </button>
+</div>
+```
+
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let currentProfile = null;
+let socialLinks = [];
+
+let selectedProfilePicture = null;
+let selectedBackground = null;
+let selectedMusic = null;
+
+const iconNames = {
+  discord: "discord",
+  instagram: "instagram",
+  tiktok: "tiktok",
+  youtube: "youtube",
+  x: "x",
+  facebook: "facebook",
+  snapchat: "snapchat",
+  twitch: "twitch",
+  kick: "kick",
+  github: "github",
+  reddit: "reddit",
+  spotify: "spotify",
+  soundcloud: "soundcloud",
+  steam: "steam",
+  roblox: "roblox",
+  xbox: "xbox",
+  playstation: "playstation",
+  linkedin: "linkedin",
+  threads: "threads",
+  bluesky: "bluesky",
+  telegram: "telegram",
+  pinterest: "pinterest",
+  tumblr: "tumblr",
+  gitlab: "gitlab",
+  codepen: "codepen",
+  patreon: "patreon",
+  kofi: "ko-fi",
+  cashapp: "cash-app",
+  venmo: "venmo",
+  paypal: "paypal"
+};
+
+const platformNames = {
+  discord: "Discord",
+  instagram: "Instagram",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+  x: "X",
+  facebook: "Facebook",
+  snapchat: "Snapchat",
+  twitch: "Twitch",
+  kick: "Kick",
+  github: "GitHub",
+  reddit: "Reddit",
+  spotify: "Spotify",
+  soundcloud: "SoundCloud",
+  steam: "Steam",
+  roblox: "Roblox",
+  xbox: "Xbox",
+  playstation: "PlayStation",
+  linkedin: "LinkedIn",
+  threads: "Threads",
+  bluesky: "Bluesky",
+  telegram: "Telegram",
+  pinterest: "Pinterest",
+  tumblr: "Tumblr",
+  gitlab: "GitLab",
+  codepen: "CodePen",
+  patreon: "Patreon",
+  kofi: "Ko-fi",
+  cashapp: "Cash App",
+  venmo: "Venmo",
+  paypal: "PayPal",
+  custom: "Custom Link"
+};
+
+function iconUrl(platform) {
+  const icon = iconNames[platform];
+
+  if (!icon) {
+    return "";
+  }
+
+  return `https://cdn.simpleicons.org/${icon}/ffffff`;
+}
+
+function showToast(message) {
+  $("toast").textContent = message;
+  $("toast").classList.add("show");
+
+  setTimeout(() => {
+    $("toast").classList.remove("show");
+  }, 2800);
+}
+
+function setCheck(id, complete) {
+  const element = $(id);
+
+  if (complete) {
+    element.classList.add("complete");
+  } else {
+    element.classList.remove("complete");
+  }
+}
+
+function updateChecklist() {
+  setCheck("checkUsername", Boolean(currentUser?.username));
+
+  setCheck(
+    "checkPicture",
+    Boolean(
+      selectedProfilePicture ||
+      currentProfile?.profilePicture
+    )
+  );
+
+  setCheck(
+    "checkBackground",
+    Boolean(
+      selectedBackground ||
+      currentProfile?.background
+    )
+  );
+
+  const complete =
+    currentUser?.username &&
+    (selectedProfilePicture || currentProfile?.profilePicture) &&
+    (selectedBackground || currentProfile?.background);
+
+  if (complete) {
+    $("checklist").classList.add("hidden");
+  } else {
+    $("checklist").classList.remove("hidden");
+  }
+}
+
+function renderSocials() {
+  $("socialList").innerHTML = "";
+  $("previewSocials").innerHTML = "";
+
+  socialLinks = socialLinks.slice(0, 10);
+
+  $("socialCount").textContent = socialLinks.length;
+
+  socialLinks.forEach((link, index) => {
+    const item = document.createElement("div");
+    item.className = "social-item";
+
+    const icon = document.createElement("div");
+    icon.className = "social-icon";
+
+    if (iconUrl(link.platform)) {
+      const image = document.createElement("img");
+      image.src = iconUrl(link.platform);
+      image.alt = "";
+      icon.appendChild(image);
     }
 
-    function getSocial(platform) {
-      return SOCIAL_PLATFORMS.find(item => item[0] === platform);
-    }
+    const platform = document.createElement("div");
+    platform.className = "social-platform";
+    platform.textContent =
+      platformNames[link.platform] || "Custom Link";
 
-    function renderSocials() {
-      const list = $("socialList");
+    const url = document.createElement("input");
+    url.className = "input";
+    url.value = link.url;
+    url.placeholder = "https://...";
+    url.addEventListener("input", () => {
+      socialLinks[index].url = url.value;
+      renderPreviewSocials();
+    });
 
-      list.innerHTML = "";
+    const remove = document.createElement("button");
+    remove.className = "remove-social";
+    remove.textContent = "×";
 
-      socialLinks.forEach((social, index) => {
-        const platform = getSocial(social.platform);
-
-        const row = document.createElement("div");
-        row.className = "social-item";
-
-        const icon = document.createElement("div");
-        icon.className = "social-icon";
-
-        if (platform && platform[2]) {
-          const image = document.createElement("img");
-          image.src = platform[2];
-          image.alt = "";
-          icon.appendChild(image);
-        }
-
-        const select = document.createElement("select");
-
-        SOCIAL_PLATFORMS.forEach(item => {
-          const option = document.createElement("option");
-
-          option.value = item[0];
-          option.textContent = item[1];
-
-          if (item[0] === social.platform) {
-            option.selected = true;
-          }
-
-          select.appendChild(option);
-        });
-
-        select.addEventListener("change", () => {
-          socialLinks[index].platform = select.value;
-          renderSocials();
-          renderPreview();
-        });
-
-        const input = document.createElement("input");
-
-        input.type = "url";
-        input.placeholder = "https://...";
-        input.value = social.url || "";
-
-        input.addEventListener("input", () => {
-          socialLinks[index].url = input.value;
-          renderPreview();
-        });
-
-        const remove = document.createElement("button");
-
-        remove.type = "button";
-        remove.className = "remove-social";
-        remove.textContent = "×";
-
-        remove.addEventListener("click", () => {
-          socialLinks.splice(index, 1);
-          renderSocials();
-          renderPreview();
-        });
-
-        row.appendChild(icon);
-        row.appendChild(select);
-        row.appendChild(input);
-        row.appendChild(remove);
-
-        list.appendChild(row);
-      });
-
-      $("socialCount").textContent = socialLinks.length;
-
-      if (socialLinks.length >= 10) {
-        $("addSocial").style.display = "none";
-        $("socialLimit").style.display = "block";
-      } else {
-        $("addSocial").style.display = "block";
-        $("socialLimit").style.display = "none";
-      }
-    }
-
-    $("addSocial").addEventListener("click", () => {
-      if (socialLinks.length >= 10) {
-        showToast("You can only have 10 social links.");
-        return;
-      }
-
-      socialLinks.push({
-        platform: "instagram",
-        url: ""
-      });
-
+    remove.addEventListener("click", () => {
+      socialLinks.splice(index, 1);
       renderSocials();
-      renderPreview();
     });
 
-    function renderPreview() {
-      const displayName =
-        $("displayName").value.trim() ||
-        currentProfile.username ||
-        "Your Name";
+    item.appendChild(icon);
+    item.appendChild(platform);
+    item.appendChild(url);
+    item.appendChild(remove);
 
-      const username =
-        $("username").value.trim() ||
-        "username";
+    $("socialList").appendChild(item);
+  });
 
-      const bio =
-        $("bio").value.trim() ||
-        "Your bio will appear here.";
+  renderPreviewSocials();
+}
 
-      $("previewName").textContent = displayName;
-      $("previewUsername").textContent = `@${username}`;
-      $("previewBio").textContent = bio;
+function renderPreviewSocials() {
+  $("previewSocials").innerHTML = "";
 
-      const previewSocials = $("previewSocials");
+  socialLinks.slice(0, 10).forEach(link => {
+    if (!link.url) return;
 
-      previewSocials.innerHTML = "";
+    const button = document.createElement("div");
+    button.className = "preview-social";
 
-      socialLinks
-        .filter(item => item.url)
-        .slice(0, 10)
-        .forEach(item => {
-          const platform = getSocial(item.platform);
+    if (iconUrl(link.platform)) {
+      const image = document.createElement("img");
+      image.src = iconUrl(link.platform);
+      image.alt = "";
+      button.appendChild(image);
+    } else {
+      button.textContent = "↗";
+      button.style.color = "#c4aaff";
+    }
 
-          if (!platform || !platform[2]) {
-            return;
-          }
+    $("previewSocials").appendChild(button);
+  });
+}
 
-          const link = document.createElement("a");
+function updatePreview() {
+  const displayName =
+    $("displayName").value.trim() ||
+    currentUser?.username ||
+    "Your Name";
 
-          link.className = "preview-social";
-          link.href = item.url;
-          link.target = "_blank";
-          link.rel = "noopener noreferrer";
-          link.title = platform[1];
+  const bio =
+    $("bio").value.trim() ||
+    "Your bio will appear here.";
 
-          const image = document.createElement("img");
+  $("previewName").textContent = displayName;
+  $("previewUsername").textContent =
+    `@${currentUser?.username || "username"}`;
 
-          image.src = platform[2];
-          image.alt = "";
+  $("previewBio").textContent = bio;
 
-          link.appendChild(image);
-          previewSocials.appendChild(link);
+  if (selectedProfilePicture) {
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      $("previewAvatar").src = event.target.result;
+    };
+
+    reader.readAsDataURL(selectedProfilePicture);
+  } else if (currentProfile?.profilePicture) {
+    $("previewAvatar").src =
+      currentProfile.profilePicture;
+  } else {
+    $("previewAvatar").src =
+      "https://cdn.simpleicons.org/user/ffffff";
+  }
+
+  if (selectedBackground) {
+    const reader = new FileReader();
+
+    reader.onload = event => {
+      $("previewBackground").style.backgroundImage =
+        `url("${event.target.result}")`;
+    };
+
+    reader.readAsDataURL(selectedBackground);
+  } else if (currentProfile?.background) {
+    $("previewBackground").style.backgroundImage =
+      `url("${currentProfile.background}")`;
+  }
+}
+
+function setupUpload(inputId, nameId, boxId, setter) {
+  const input = $(inputId);
+  const box = $(boxId);
+  const name = $(nameId);
+
+  input.addEventListener("change", () => {
+    if (!input.files.length) return;
+
+    const file = input.files[0];
+
+    setter(file);
+    name.textContent = file.name;
+
+    box.classList.add("dragging");
+
+    setTimeout(() => {
+      box.classList.remove("dragging");
+    }, 500);
+
+    updatePreview();
+    updateChecklist();
+  });
+
+  ["dragenter", "dragover"].forEach(eventName => {
+    box.addEventListener(eventName, event => {
+      event.preventDefault();
+      box.classList.add("dragging");
+    });
+  });
+
+  ["dragleave", "drop"].forEach(eventName => {
+    box.addEventListener(eventName, event => {
+      event.preventDefault();
+      box.classList.remove("dragging");
+    });
+  });
+
+  box.addEventListener("drop", event => {
+    const file = event.dataTransfer.files[0];
+
+    if (!file) return;
+
+    input.files = event.dataTransfer.files;
+    setter(file);
+    name.textContent = file.name;
+
+    updatePreview();
+    updateChecklist();
+  });
+}
+
+async function loadDashboard() {
+  try {
+    const sessionResponse =
+      await fetch("/api/session", {
+        credentials: "include"
+      });
+
+    const session =
+      await sessionResponse.json();
+
+    if (!session.authenticated) {
+      window.location.href = "/login.html";
+      return;
+    }
+
+    currentUser = session.user;
+
+    $("navUsername").textContent =
+      `@${currentUser.username}`;
+
+    $("welcomeTitle").textContent =
+      `Welcome @${currentUser.username}`;
+
+    const profileResponse =
+      await fetch(
+        `/api/profile?username=${encodeURIComponent(currentUser.username)}`,
+        {
+          credentials: "include"
+        }
+      );
+
+    const profileData =
+      await profileResponse.json();
+
+    if (profileData.success) {
+      currentProfile = profileData.profile;
+
+      $("displayName").value =
+        currentProfile.displayName || "";
+
+      $("bio").value =
+        currentProfile.bio || "";
+
+      socialLinks =
+        Array.isArray(currentProfile.links)
+          ? currentProfile.links.slice(0, 10)
+          : [];
+
+      if (currentProfile.profilePicture) {
+        $("profilePictureName").textContent =
+          "Current profile picture";
+      }
+
+      if (currentProfile.background) {
+        $("backgroundName").textContent =
+          "Current background";
+      }
+
+      if (currentProfile.music) {
+        $("musicName").textContent =
+          "Current music";
+      }
+    }
+
+    renderSocials();
+    updatePreview();
+    updateChecklist();
+
+  } catch {
+    showToast("Unable to load your dashboard.");
+  }
+}
+
+$("displayName").addEventListener(
+  "input",
+  updatePreview
+);
+
+$("bio").addEventListener(
+  "input",
+  updatePreview
+);
+
+$("addSocial").addEventListener("click", () => {
+  if (socialLinks.length >= 10) {
+    showToast("You can only add 10 socials.");
+    return;
+  }
+
+  const platform =
+    $("platformSelect").value;
+
+  const url =
+    $("socialUrl").value.trim();
+
+  if (!url) {
+    showToast("Enter a social URL.");
+    return;
+  }
+
+  if (!/^https?:\/\//i.test(url)) {
+    showToast("Use a valid URL beginning with https://");
+    return;
+  }
+
+  if (
+    socialLinks.some(
+      item => item.platform === platform
+    )
+  ) {
+    showToast("You already added that platform.");
+    return;
+  }
+
+  socialLinks.push({
+    platform,
+    url
+  });
+
+  $("socialUrl").value = "";
+
+  renderSocials();
+});
+
+setupUpload(
+  "profilePicture",
+  "profilePictureName",
+  "profileUploadBox",
+  file => {
+    selectedProfilePicture = file;
+  }
+);
+
+setupUpload(
+  "background",
+  "backgroundName",
+  "backgroundUploadBox",
+  file => {
+    selectedBackground = file;
+  }
+);
+
+setupUpload(
+  "music",
+  "musicName",
+  "musicUploadBox",
+  file => {
+    selectedMusic = file;
+  }
+);
+
+$("saveButton").addEventListener("click", () => {
+  $("saveModal").classList.add("show");
+});
+
+$("cancelSave").addEventListener("click", () => {
+  $("saveModal").classList.remove("show");
+});
+
+$("confirmSave").addEventListener(
+  "click",
+  async () => {
+    $("saveModal").classList.remove("show");
+
+    const button = $("saveButton");
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+      const formData = new FormData();
+
+      formData.append(
+        "displayName",
+        $("displayName").value.trim()
+      );
+
+      formData.append(
+        "bio",
+        $("bio").value.trim()
+      );
+
+      formData.append(
+        "links",
+        JSON.stringify(
+          socialLinks.slice(0, 10)
+        )
+      );
+
+      if (selectedProfilePicture) {
+        formData.append(
+          "profilePicture",
+          selectedProfilePicture
+        );
+      }
+
+      if (selectedBackground) {
+        formData.append(
+          "background",
+          selectedBackground
+        );
+      }
+
+      if (selectedMusic) {
+        formData.append(
+          "music",
+          selectedMusic
+        );
+      }
+
+      const response =
+        await fetch("/api/profile-save", {
+          method: "POST",
+          credentials: "include",
+          body: formData
         });
-    }
 
-    function markSetup() {
-      const username = $("username").value.trim();
-      const picture =
-        selectedProfilePicture ||
-        currentProfile.profilePicture;
+      const result =
+        await response.json();
 
-      const background =
-        selectedBackground ||
-        currentProfile.background;
-
-      const usernameDone = Boolean(username);
-      const pictureDone = Boolean(picture);
-      const backgroundDone = Boolean(background);
-
-      $("setupUsername").classList.toggle(
-        "done",
-        usernameDone
-      );
-
-      $("setupPicture").classList.toggle(
-        "done",
-        pictureDone
-      );
-
-      $("setupBackground").classList.toggle(
-        "done",
-        backgroundDone
-      );
-
-      $("setupUsernameText").textContent =
-        usernameDone
-          ? `biofyit.com/${username}`
-          : "Choose a username.";
-
-      if (
-        usernameDone &&
-        pictureDone &&
-        backgroundDone
-      ) {
-        $("setupCard").classList.add("complete");
-      } else {
-        $("setupCard").classList.remove("complete");
-      }
-    }
-
-    function previewImage(file, target, isBackground = false) {
-      if (!file) return;
-
-      const reader = new FileReader();
-
-      reader.onload = event => {
-        target.src = event.target.result;
-        target.style.display = "block";
-
-        if (isBackground) {
-          $("previewBackground").style.backgroundImage =
-            `url("${event.target.result}")`;
-        } else {
-          $("previewAvatar").src =
-            event.target.result;
-        }
-      };
-
-      reader.readAsDataURL(file);
-    }
-
-    $("profilePicture").addEventListener("change", event => {
-      selectedProfilePicture =
-        event.target.files[0] || null;
-
-      previewImage(
-        selectedProfilePicture,
-        $("picturePreview")
-      );
-
-      markSetup();
-    });
-
-    $("background").addEventListener("change", event => {
-      selectedBackground =
-        event.target.files[0] || null;
-
-      previewImage(
-        selectedBackground,
-        $("backgroundPreview"),
-        true
-      );
-
-      markSetup();
-    });
-
-    $("music").addEventListener("change", event => {
-      selectedMusic =
-        event.target.files[0] || null;
-    });
-
-    $("displayName").addEventListener(
-      "input",
-      renderPreview
-    );
-
-    $("bio").addEventListener(
-      "input",
-      renderPreview
-    );
-
-    async function loadDashboard() {
-      try {
-        const response =
-          await fetch("/api/session");
-
-        const session =
-          await response.json();
-
-        if (
-          !response.ok ||
-          !session.authenticated
-        ) {
-          window.location.href = "/login.html";
-          return;
-        }
-
-        $("usernamePill").textContent =
-          `@${session.user.username}`;
-
-        $("welcomeUser").textContent =
-          `@${session.user.username}`;
-
-        $("username").value =
-          session.user.username;
-
-        try {
-          const profileResponse =
-            await fetch(
-              `/api/profile?username=${encodeURIComponent(
-                session.user.username
-              )}`
-            );
-
-          const profileData =
-            await profileResponse.json();
-
-          if (
-            profileResponse.ok &&
-            profileData.success
-          ) {
-            currentProfile =
-              profileData.profile || {};
-
-            $("displayName").value =
-              currentProfile.displayName || "";
-
-            $("bio").value =
-              currentProfile.bio || "";
-
-            socialLinks =
-              Array.isArray(currentProfile.links)
-                ? currentProfile.links
-                    .slice(0, 10)
-                    .map(item => ({
-                      platform: item.platform,
-                      url: item.url
-                    }))
-                : [];
-
-            if (currentProfile.profilePicture) {
-              $("picturePreview").src =
-                currentProfile.profilePicture;
-
-              $("picturePreview").style.display =
-                "block";
-
-              $("previewAvatar").src =
-                currentProfile.profilePicture;
-            }
-
-            if (currentProfile.background) {
-              $("backgroundPreview").src =
-                currentProfile.background;
-
-              $("backgroundPreview").style.display =
-                "block";
-
-              $("previewBackground").style.backgroundImage =
-                `url("${currentProfile.background}")`;
-            }
-
-            if (
-              currentProfile.discord &&
-              currentProfile.discord.enabled
-            ) {
-              $("discordStatus").textContent =
-                "Discord Connected";
-
-              $("discordDescription").textContent =
-                "Your Discord account is connected.";
-
-              $("discordButton").textContent =
-                "Discord Connected";
-            }
-          }
-
-        } catch {
-          currentProfile = {};
-        }
-
-        renderSocials();
-        renderPreview();
-        markSetup();
-
-      } catch {
-        window.location.href =
-          "/login.html";
-      }
-    }
-
-    async function saveProfile() {
-      const saveButton = $("confirmSave");
-
-      saveButton.disabled = true;
-      saveButton.textContent = "Saving...";
-
-      try {
-        const formData = new FormData();
-
-        formData.append(
-          "displayName",
-          $("displayName").value.trim()
-        );
-
-        formData.append(
-          "bio",
-          $("bio").value.trim()
-        );
-
-        formData.append(
-          "links",
-          JSON.stringify(
-            socialLinks.slice(0, 10)
-          )
-        );
-
-        if (selectedProfilePicture) {
-          formData.append(
-            "profilePicture",
-            selectedProfilePicture
-          );
-        }
-
-        if (selectedBackground) {
-          formData.append(
-            "background",
-            selectedBackground
-          );
-        }
-
-        if (selectedMusic) {
-          formData.append(
-            "music",
-            selectedMusic
-          );
-        }
-
-        const response =
-          await fetch(
-            "/api/profile-save",
-            {
-              method: "POST",
-              body: formData
-            }
-          );
-
-        const data =
-          await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(
-            data.error ||
-            "Unable to save profile."
-          );
-        }
-
-        currentProfile =
-          data.profile || currentProfile;
-
-        $("saveModal").classList.remove(
-          "show"
-        );
-
-        selectedProfilePicture = null;
-        selectedBackground = null;
-        selectedMusic = null;
-
-        showToast(
-          "Profile saved successfully."
-        );
-
-        markSetup();
-
-      } catch (error) {
-        showToast(
-          error.message ||
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.error ||
           "Unable to save profile."
         );
       }
 
-      saveButton.disabled = false;
-      saveButton.textContent = "Save Changes";
+      currentProfile = result.profile;
+
+      selectedProfilePicture = null;
+      selectedBackground = null;
+      selectedMusic = null;
+
+      showToast(
+        "Profile saved successfully."
+      );
+
+      updateChecklist();
+      updatePreview();
+
+    } catch (error) {
+      showToast(
+        error.message ||
+        "Unable to save your profile."
+      );
+    } finally {
+      button.disabled = false;
+      button.textContent = "Save Changes";
     }
+  }
+);
 
-    $("saveButton").addEventListener(
-      "click",
-      () => {
-        $("saveModal").classList.add("show");
-      }
-    );
+$("signoutButton").addEventListener(
+  "click",
+  async () => {
+    try {
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "include"
+      });
+    } finally {
+      window.location.href = "/login.html";
+    }
+  }
+);
 
-    $("cancelSave").addEventListener(
-      "click",
-      () => {
-        $("saveModal").classList.remove(
-          "show"
-        );
-      }
-    );
-
-    $("confirmSave").addEventListener(
-      "click",
-      saveProfile
-    );
-
-    $("signout").addEventListener(
-      "click",
-      async () => {
-        try {
-          await fetch(
-            "/api/logout",
-            {
-              method: "POST"
-            }
-          );
-        } finally {
-          window.location.href =
-            "/login.html";
-        }
-      }
-    );
-
-    $("discordButton").addEventListener(
-      "click",
-      () => {
-        showToast(
-          "Discord connection will be available soon."
-        );
-      }
-    );
-
-    loadDashboard();
-  </script>
+loadDashboard();
+</script>
 
 </body>
 </html>
