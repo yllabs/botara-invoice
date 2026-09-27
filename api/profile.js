@@ -28,9 +28,9 @@ const NAME_STYLES = [
 ];
 
 function getCookie(req, name) {
-  const cookieHeader = req.headers?.cookie || "";
+  const header = req.headers?.cookie || "";
 
-  for (const item of cookieHeader.split(";")) {
+  for (const item of header.split(";")) {
     const index = item.indexOf("=");
 
     if (index === -1) continue;
@@ -61,11 +61,11 @@ async function getUser(req) {
   return users.find(user => user.id === id) || null;
 }
 
-function text(value, length) {
+function cleanText(value, length) {
   return String(value ?? "").trim().slice(0, length);
 }
 
-function media(value, oldValue = "") {
+function cleanMedia(value, oldValue = "") {
   if (typeof value !== "string") return oldValue;
 
   const result = value.trim();
@@ -83,7 +83,7 @@ function media(value, oldValue = "") {
   return oldValue;
 }
 
-function url(value) {
+function cleanUrl(value) {
   if (typeof value !== "string") return "";
 
   const valueTrimmed = value.trim();
@@ -112,21 +112,30 @@ function cleanLinks(input) {
   return input
     .slice(0, 10)
     .map(item => {
-      if (!item || typeof item !== "object") return null;
+      if (!item || typeof item !== "object") {
+        return null;
+      }
 
       const platform = String(item.platform || "")
         .trim()
         .toLowerCase();
 
-      if (!PLATFORMS.includes(platform)) return null;
+      if (!PLATFORMS.includes(platform)) {
+        return null;
+      }
 
-      const link = url(item.url);
+      const link = cleanUrl(item.url);
 
-      if (!link) return null;
+      if (!link) {
+        return null;
+      }
 
       return {
         platform,
-        title: text(item.title || platform, 40),
+        title: cleanText(
+          item.title || platform,
+          40
+        ),
         url: link
       };
     })
@@ -196,9 +205,9 @@ function cleanLanyard(input, old = {}) {
 module.exports = async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const username = String(req.query?.username || "")
-        .trim()
-        .toLowerCase();
+      const username = String(
+        req.query?.username || ""
+      ).trim().toLowerCase();
 
       if (!/^[a-z0-9_]{3,32}$/.test(username)) {
         return res.status(400).json({
@@ -207,7 +216,9 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      const file = await getFile(`profiles/${username}.json`);
+      const file = await getFile(
+        `profiles/${username}.json`
+      );
 
       if (!file) {
         return res.status(404).json({
@@ -222,21 +233,28 @@ module.exports = async function handler(req, res) {
         success: true,
         profile: {
           username: profile.username || username,
-          displayName: profile.displayName || username,
+          displayName:
+            profile.displayName || username,
           bio: profile.bio || "",
-          profilePicture: profile.profilePicture || "",
-          background: profile.background || "",
+          profilePicture:
+            profile.profilePicture || "",
+          background:
+            profile.background || "",
           music: profile.music || "",
-          lanyard: profile.lanyard || {
-            enabled: false,
-            id: null
-          },
+          lanyard:
+            profile.lanyard || {
+              enabled: false,
+              id: null,
+              verified: false,
+              guildId: null
+            },
           links: Array.isArray(profile.links)
             ? profile.links
             : [],
-          customization: cleanCustomization(
-            profile.customization
-          )
+          customization:
+            cleanCustomization(
+              profile.customization
+            )
         }
       });
     }
@@ -257,18 +275,12 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const username = String(user.username || "")
-      .trim()
-      .toLowerCase();
-
-    if (!/^[a-z0-9_]{3,32}$/.test(username)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid account username."
-      });
-    }
+    const username = String(
+      user.username || ""
+    ).trim().toLowerCase();
 
     const path = `profiles/${username}.json`;
+
     const file = await getFile(path);
 
     if (!file) {
@@ -279,52 +291,74 @@ module.exports = async function handler(req, res) {
     }
 
     const old = file.content || {};
+
     const body =
-      req.body && typeof req.body === "object"
+      req.body &&
+      typeof req.body === "object"
         ? req.body
         : {};
 
     const profile = {
       username,
+
       displayName:
-        text(body.displayName, 50) ||
+        cleanText(body.displayName, 50) ||
         old.displayName ||
         username,
 
       bio:
         typeof body.bio === "string"
-          ? text(body.bio, 300)
+          ? cleanText(body.bio, 300)
           : old.bio || "",
 
       profilePicture:
         body.profilePicture !== undefined
-          ? media(body.profilePicture, old.profilePicture || "")
+          ? cleanMedia(
+              body.profilePicture,
+              old.profilePicture || ""
+            )
           : old.profilePicture || "",
 
       background:
         body.background !== undefined
-          ? media(body.background, old.background || "")
+          ? cleanMedia(
+              body.background,
+              old.background || ""
+            )
           : old.background || "",
 
       music:
         body.music !== undefined
-          ? media(body.music, old.music || "")
+          ? cleanMedia(
+              body.music,
+              old.music || ""
+            )
           : old.music || "",
 
-      lanyard: cleanLanyard(
-        body.lanyard,
-        old.lanyard || {}
-      ),
+      lanyard:
+        body.lanyard !== undefined
+          ? cleanLanyard(
+              body.lanyard,
+              old.lanyard || {}
+            )
+          : cleanLanyard(
+              old.lanyard || {}
+            ),
 
       links:
         body.links !== undefined
           ? cleanLinks(body.links)
           : cleanLinks(old.links || []),
 
-      customization: cleanCustomization(
-        body.customization,
-        old.customization || {}
-      )
+      customization:
+        body.customization !== undefined
+          ? cleanCustomization(
+              body.customization,
+              old.customization || {}
+            )
+          : cleanCustomization(
+              old.customization || {}
+            )
     };
 
     await saveFile(
@@ -336,7 +370,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: "Profile saved.",
+      message: "Profile saved successfully.",
       profile
     });
   } catch (error) {
@@ -344,7 +378,9 @@ module.exports = async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: error.message || "Unable to save profile."
+      error:
+        error.message ||
+        "Unable to save profile."
     });
   }
 };
