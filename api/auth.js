@@ -2,182 +2,80 @@ const crypto = require("crypto");
 const { getFile, saveFile } = require("../github");
 
 const COOKIE_NAME = "biofyit_user";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
+const MAX_AGE = 60 * 60 * 24 * 30;
 
-function parseCookies(req) {
-  const header = req.headers.cookie || "";
-  const cookies = {};
-  for (const part of header.split(";")) {
-    const index = part.indexOf("=");
-    if (index === -1) continue;
-    const key = part.slice(0, index).trim();
-    const value = part.slice(index + 1).trim();
-    cookies[key] = decodeURIComponent(value);
-  }
-  return cookies;
-}
-
-function setCookie(res, value, maxAge = COOKIE_MAX_AGE) {
+function setSession(res, userId) {
   res.setHeader(
     "Set-Cookie",
-    `${COOKIE_NAME}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}`
+    `${COOKIE_NAME}=${encodeURIComponent(userId)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${MAX_AGE}`
   );
 }
 
-function clearCookie(res) {
+function clearSession(res) {
   res.setHeader(
     "Set-Cookie",
     `${COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`
   );
 }
 
-function hashPassword(password, salt) {
+function passwordHash(password, salt) {
   return crypto.scryptSync(password, salt, 64).toString("hex");
 }
 
 function createPasswordHash(password) {
   const salt = crypto.randomBytes(16).toString("hex");
-  const hash = hashPassword(password, salt);
-  return `${salt}:${hash}`;
+  return `${salt}:${passwordHash(password, salt)}`;
 }
 
 function verifyPassword(password, stored) {
   if (!stored || !stored.includes(":")) return false;
 
-  const [salt, originalHash] = stored.split(":");
-  const hash = hashPassword(password, salt);
+  const [salt, storedHash] = stored.split(":");
+  const calculated = passwordHash(password, salt);
+
+  if (calculated.length !== storedHash.length) return false;
 
   return crypto.timingSafeEqual(
-    Buffer.from(hash, "hex"),
-    Buffer.from(originalHash, "hex")
+    Buffer.from(calculated, "hex"),
+    Buffer.from(storedHash, "hex")
   );
 }
 
-async function getUsers() {
+async function users() {
   const file = await getFile("users.json");
-  return file ? file.content : [];
+  return {
+    users: file ? file.content : [],
+    sha: file?.sha || null
+  };
 }
 
 module.exports = async function handler(req, res) {
   try {
     const action = String(req.query.action || "").toLowerCase();
 
-    if (action === "register") {
-      if (req.method !== "POST") {
-        return res.status(405).json({ success: false, error: "Method not allowed." });
-      }
-
-      const { email, username, password } = req.body || {};
-
-      const cleanEmail = String(email || "").trim().toLowerCase();
-      const cleanUsername = String(username || "").trim().toLowerCase();
-      const cleanPassword = String(password || "");
-
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-        return res.status(400).json({ success: false, error: "Enter a valid email." });
-      }
-
-      if (!/^[a-z0-9_]{3,32}$/.test(cleanUsername)) {
-        return res.status(400).json({
-          success: false,
-          error: "Username must be 3-32 characters and only use letters, numbers, and underscores."
-        });
-      }
-
-      if (cleanPassword.length < 8) {
-        return res.status(400).json({
-          success: false,
-          error: "Password must be at least 8 characters."
-        });
-      }
-
-      const file = await getFile("users.json");
-      const users = file ? file.content : [];
-
-      if (users.some(user => user.username === cleanUsername)) {
-        return res.status(409).json({
-          success: false,
-          error: "That username is already taken."
-        });
-      }
-
-      if (users.some(user => user.email === cleanEmail)) {
-        return res.status(409).json({
-          success: false,
-          error: "An account with that email already exists."
-        });
-      }
-
-      const user = {
-        id: `user_${crypto.randomBytes(12).toString("hex")}`,
-        email: cleanEmail,
-        username: cleanUsername,
-        passwordHash: createPasswordHash(cleanPassword),
-        createdAt: new Date().toISOString()
-      };
-
-      users.push(user);
-
-      await saveFile(
-        "users.json",
-        users,
-        file?.sha,
-        `Create Biofyit user ${cleanUsername}`
-      );
-
-      await saveFile(
-        `profiles/${cleanUsername}.json`,
-        {
-          username: cleanUsername,
-          displayName: cleanUsername,
-          bio: "",
-          profilePicture: "",
-          background: "",
-          music: "",
-          lanyard: {
-            enabled: false,
-            id: null
-          },
-          links: []
-        },
-        null,
-        `Create Biofyit profile ${cleanUsername}`
-      );
-
-      setCookie(res, user.id);
-
-      return res.status(201).json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username
-        }
-      });
-    }
-
     if (action === "login") {
       if (req.method !== "POST") {
-        return res.status(405).json({ success: false, error: "Method not allowed." });
+        return res.status(405).json({
+          success: false,
+          error: "Method not allowed."
+        });
       }
 
-      const { email, password } = req.body || {};
+      const email = String(req.body?.email || "").trim().toLowerCase();
+      const password = String(req.body?.password || "");
 
-      const cleanEmail = String(email || "").trim().toLowerCase();
-      const cleanPassword = String(password || "");
+      const data = await users();
 
-      const users = await getUsers();
+      const user = data.users.find(u => u.email === email);
 
-      const user = users.find(item => item.email === cleanEmail);
-
-      if (!user || !verifyPassword(cleanPassword, user.passwordHash)) {
+      if (!user || !verifyPassword(password, user.passwordHash)) {
         return res.status(401).json({
           success: false,
           error: "Invalid email or password."
         });
       }
 
-      setCookie(res, user.id);
+      setSession(res, user.id);
 
       return res.status(200).json({
         success: true,
@@ -190,25 +88,25 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === "session") {
-      const cookies = parseCookies(req);
-      const userId = cookies[COOKIE_NAME];
+      const userId = req.cookies?.[COOKIE_NAME];
 
       if (!userId) {
         return res.status(401).json({
           success: false,
-          error: "Not signed in."
+          error: "No session cookie."
         });
       }
 
-      const users = await getUsers();
-      const user = users.find(item => item.id === userId);
+      const data = await users();
+
+      const user = data.users.find(u => u.id === userId);
 
       if (!user) {
-        clearCookie(res);
+        clearSession(res);
 
         return res.status(401).json({
           success: false,
-          error: "Session expired."
+          error: "Session user not found."
         });
       }
 
@@ -223,7 +121,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === "logout") {
-      clearCookie(res);
+      clearSession(res);
 
       return res.status(200).json({
         success: true
@@ -240,12 +138,108 @@ module.exports = async function handler(req, res) {
         });
       }
 
-      const users = await getUsers();
-      const exists = users.some(user => user.username === username);
+      const data = await users();
 
       return res.status(200).json({
         success: true,
-        available: !exists
+        available: !data.users.some(u => u.username === username)
+      });
+    }
+
+    if (action === "register") {
+      if (req.method !== "POST") {
+        return res.status(405).json({
+          success: false,
+          error: "Method not allowed."
+        });
+      }
+
+      const email = String(req.body?.email || "").trim().toLowerCase();
+      const username = String(req.body?.username || "").trim().toLowerCase();
+      const password = String(req.body?.password || "");
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({
+          success: false,
+          error: "Enter a valid email."
+        });
+      }
+
+      if (!/^[a-z0-9_]{3,32}$/.test(username)) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid username."
+        });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({
+          success: false,
+          error: "Password must be at least 8 characters."
+        });
+      }
+
+      const data = await users();
+
+      if (data.users.some(u => u.email === email)) {
+        return res.status(409).json({
+          success: false,
+          error: "Email already exists."
+        });
+      }
+
+      if (data.users.some(u => u.username === username)) {
+        return res.status(409).json({
+          success: false,
+          error: "Username already exists."
+        });
+      }
+
+      const user = {
+        id: `user_${crypto.randomBytes(12).toString("hex")}`,
+        email,
+        username,
+        passwordHash: createPasswordHash(password),
+        createdAt: new Date().toISOString()
+      };
+
+      data.users.push(user);
+
+      await saveFile(
+        "users.json",
+        data.users,
+        data.sha,
+        `Create Biofyit user ${username}`
+      );
+
+      await saveFile(
+        `profiles/${username}.json`,
+        {
+          username,
+          displayName: username,
+          bio: "",
+          profilePicture: "",
+          background: "",
+          music: "",
+          lanyard: {
+            enabled: false,
+            id: null
+          },
+          links: []
+        },
+        null,
+        `Create Biofyit profile ${username}`
+      );
+
+      setSession(res, user.id);
+
+      return res.status(201).json({
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username
+        }
       });
     }
 
@@ -258,7 +252,7 @@ module.exports = async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: "Authentication service error."
+      error: error.message || "Authentication error."
     });
   }
 };
