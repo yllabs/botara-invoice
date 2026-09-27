@@ -6,108 +6,55 @@
 <title>Biofyit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;min-height:100%;background:#050507;color:#fff;font-family:Inter,Arial,sans-serif}
+html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:#050308;color:#fff}
 body{min-height:100vh;overflow-x:hidden}
-a{text-decoration:none;color:inherit}
-.background{position:fixed;inset:0;background:#050507 center/cover no-repeat;z-index:0;transform:scale(1.03)}
-.background:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,3,6,.48),rgba(4,3,6,.72))}
-.glow{position:fixed;width:550px;height:550px;border-radius:50%;background:rgba(168,85,247,.16);filter:blur(120px);top:-180px;left:50%;transform:translateX(-50%);z-index:0;pointer-events:none}
-.page{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:35px 18px}
-.profile{width:100%;max-width:560px;text-align:center}
-.avatar-wrap{position:relative;display:inline-block;margin-bottom:18px}
-.avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;display:block;background:#111015;border:3px solid rgba(255,255,255,.12);box-shadow:0 15px 45px rgba(0,0,0,.45)}
-.status{position:absolute;right:4px;bottom:5px;width:23px;height:23px;background:#050507;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.status:after{content:"";width:12px;height:12px;border-radius:50%;background:#35d978;box-shadow:0 0 12px rgba(53,217,120,.7)}
-.name{font:700 29px "Space Grotesk",sans-serif;letter-spacing:-.03em;text-shadow:0 4px 25px rgba(0,0,0,.5)}
-.username{font-size:10px;color:#a855f7;margin-top:5px}
-.bio{max-width:470px;margin:12px auto 0;color:#c0bac5;font-size:12px;line-height:1.7;white-space:pre-wrap}
-.discord{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:9px 13px;border:1px solid rgba(255,255,255,.09);background:rgba(8,7,11,.55);backdrop-filter:blur(18px);border-radius:9px;font-size:10px;color:#ddd7e1}
-.discord-icon{width:18px;height:18px;border-radius:5px;background:#5865f2;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
-.socials{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-top:22px}
-.social{width:38px;height:38px;border-radius:10px;background:rgba(7,6,10,.58);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(15px);transition:.18s}
-.social:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.55);background:rgba(24,15,32,.8);box-shadow:0 10px 25px rgba(0,0,0,.3)}
-.social img{width:18px;height:18px;display:block}
-.music{margin:25px auto 0;max-width:390px;padding:11px 13px;display:flex;align-items:center;gap:11px;background:rgba(7,6,10,.62);border:1px solid rgba(255,255,255,.09);border-radius:11px;backdrop-filter:blur(18px)}
-.music-cover{width:39px;height:39px;border-radius:8px;background:#17121d;display:flex;align-items:center;justify-content:center;color:#c084fc;font-size:16px}
-.music-info{text-align:left;flex:1;min-width:0}
-.music-title{font-size:10px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.music-sub{font-size:8px;color:#68616e;margin-top:4px}
-.music button{width:34px;height:34px;border:0;border-radius:8px;background:#a855f7;color:#fff;font-size:13px}
-.brand{margin-top:28px;font:600 10px "Space Grotesk";color:rgba(255,255,255,.35);letter-spacing:.05em}
-.brand span{color:#a855f7}
-.loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#050507;z-index:20;font:600 13px "Space Grotesk";color:#a855f7}
-.error{display:none;position:fixed;inset:0;align-items:center;justify-content:center;text-align:center;padding:20px;background:#050507;z-index:19}
-.error.show{display:flex}
-.error-box{max-width:400px}
-.error-box h1{font:700 25px "Space Grotesk";margin:0 0 8px}
-.error-box p{font-size:11px;color:#67616d;line-height:1.6}
-@media(max-width:600px){
-.page{padding:25px 16px}
-.avatar{width:96px;height:96px}
-.name{font-size:25px}
-.bio{font-size:11px}
+#background{position:fixed;inset:0;background:#050308 center/cover no-repeat;z-index:-3}
+#overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,rgba(126,43,255,.2),transparent 45%),linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.82));z-index:-2}
+#noise{position:fixed;inset:0;opacity:.035;pointer-events:none;z-index:-1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E")}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 18px}
+.card{width:min(650px,100%);padding:42px 30px;border:1px solid rgba(255,255,255,.12);background:rgba(8,6,14,.62);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-radius:30px;box-shadow:0 30px 100px rgba(0,0,0,.5),0 0 80px rgba(125,35,255,.12);text-align:center}
+.pfp{width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.18);box-shadow:0 0 40px rgba(139,63,255,.35);margin:0 auto 20px;display:block;background:#120d1c}
+.name{font-size:34px;font-weight:800;line-height:1.1;margin:0}
+.name.gradient{background:linear-gradient(90deg,#fff,#c993ff,#8b3dff,#fff);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradient 5s linear infinite}
+.name.uppercase{text-transform:uppercase}
+.name.wide{letter-spacing:.12em}
+.glow{text-shadow:0 0 10px rgba(158,85,255,.7),0 0 35px rgba(119,39,255,.45)}
+.bio{margin:14px auto 25px;max-width:510px;color:rgba(255,255,255,.68);font-size:15px;line-height:1.7;white-space:pre-wrap}
+.bio.glow{text-shadow:0 0 12px rgba(163,89,255,.45)}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:20px}
+.link{display:flex;align-items:center;gap:9px;padding:11px 15px;border-radius:14px;text-decoration:none;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);transition:.2s ease;font-size:14px}
+.link:hover{transform:translateY(-3px);background:rgba(143,65,255,.18);border-color:rgba(173,115,255,.4);box-shadow:0 10px 30px rgba(103,35,190,.2)}
+.icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+.music{margin:28px auto 0;max-width:460px}
+audio{width:100%;height:40px}
+.loading{font-size:14px;color:rgba(255,255,255,.5)}
+.error{font-size:15px;color:#ff8caa}
+.footer{margin-top:28px;font-size:11px;color:rgba(255,255,255,.3)}
+@keyframes gradient{to{background-position:250% center}}
+@media(max-width:500px){
+.card{padding:34px 20px;border-radius:24px}
+.name{font-size:28px}
+.pfp{width:96px;height:96px}
 }
 </style>
 </head>
 <body>
-
-<div id="loading" class="loading">Loading profile...</div>
-
-<div id="error" class="error">
-<div class="error-box">
-<h1>Profile not found</h1>
-<p>This Biofyit profile doesn't exist or is currently unavailable.</p>
-</div>
-</div>
-
-<div id="background" class="background"></div>
-<div class="glow"></div>
+<div id="background"></div>
+<div id="overlay"></div>
+<div id="noise"></div>
 
 <main class="page">
-<div class="profile">
-
-<div class="avatar-wrap">
-<img id="avatar" class="avatar" src="/biofyit.png" alt="Profile picture">
-<div id="status" class="status" style="display:none"></div>
-</div>
-
-<div id="name" class="name"></div>
-<div id="username" class="username"></div>
-<div id="bio" class="bio"></div>
-
-<div id="discord" class="discord" style="display:none">
-<div class="discord-icon">D</div>
-<span id="discordText"></span>
-</div>
-
-<div id="socials" class="socials"></div>
-
-<div id="music" class="music" style="display:none">
-<div class="music-cover">♫</div>
-<div class="music-info">
-<div id="musicTitle" class="music-title">Profile music</div>
-<div class="music-sub">Biofyit music</div>
-</div>
-<button id="musicButton" type="button">▶</button>
-</div>
-
-<div class="brand">POWERED BY <span>BIOFYIT</span></div>
-
-<audio id="audio"></audio>
-
-</div>
+<section class="card">
+<div id="content" class="loading">Loading profile...</div>
+</section>
 </main>
 
 <script>
-const username=window.location.pathname
-.split("/")
-.filter(Boolean)[0]
-?.toLowerCase()||"";
-
-const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+const usernameFromQuery=params.get("username")||location.pathname.split("/").filter(Boolean).pop();
 
 const platformNames={
 discord:"Discord",
@@ -143,204 +90,130 @@ paypal:"PayPal",
 custom:"Link"
 };
 
-function mediaUrl(value){
-if(!value)return"";
-
-if(value.startsWith("/api/media")){
-return value;
-}
-
-if(value.startsWith("http://")||value.startsWith("https://")){
-return value;
-}
-
-return value;
-}
-
-function setBackground(url){
-if(!url)return;
-
-const background=$("background");
-const image=new Image();
-
-image.onload=()=>{
-background.style.backgroundImage=`url("${url}")`;
-background.style.backgroundSize="cover";
-background.style.backgroundPosition="center";
-background.style.backgroundRepeat="no-repeat";
+const fonts={
+Inter:"Inter",
+"DM Sans":"DM Sans",
+Manrope:"Manrope",
+Montserrat:"Montserrat",
+Outfit:"Outfit",
+Poppins:"Poppins",
+"Space Grotesk":"Space Grotesk"
 };
 
-image.onerror=()=>{
-console.error("Background failed to load:",url);
+const icons={
+discord:"DC",
+instagram:"IG",
+tiktok:"TT",
+youtube:"YT",
+x:"X",
+facebook:"F",
+snapchat:"SC",
+twitch:"TW",
+kick:"K",
+github:"GH",
+reddit:"R",
+spotify:"SP",
+soundcloud:"S",
+steam:"ST",
+roblox:"RB",
+xbox:"XB",
+playstation:"PS",
+linkedin:"IN",
+threads:"TH",
+bluesky:"BS",
+telegram:"TG",
+pinterest:"PI",
+tumblr:"TU",
+gitlab:"GL",
+codepen:"CP",
+patreon:"PA",
+kofi:"KO",
+cashapp:"CA",
+venmo:"VE",
+paypal:"PP",
+custom:"↗"
 };
 
-image.src=url;
-}
-
-function setAvatar(url){
-if(!url)return;
-
-const avatar=$("avatar");
-const image=new Image();
-
-image.onload=()=>{
-avatar.src=url;
-};
-
-image.onerror=()=>{
-console.error("Profile picture failed to load:",url);
-};
-
-image.src=url;
-}
-
-function renderSocials(links){
-const container=$("socials");
-container.innerHTML="";
-
-if(!Array.isArray(links))return;
-
-links.slice(0,10).forEach(link=>{
-if(!link||!link.url||!link.platform)return;
-
-const platform=String(link.platform).toLowerCase();
-
-const a=document.createElement("a");
-a.className="social";
-a.href=link.url;
-a.target="_blank";
-a.rel="noopener noreferrer";
-a.title=platformNames[platform]||platform;
-
-const img=document.createElement("img");
-img.src=`https://cdn.simpleicons.org/${encodeURIComponent(platform)}/ffffff`;
-img.alt=platformNames[platform]||platform;
-
-img.onerror=()=>{
-a.style.display="none";
-};
-
-a.appendChild(img);
-container.appendChild(a);
-});
-}
-
-function renderMusic(url){
-if(!url)return;
-
-const musicUrl=mediaUrl(url);
-
-$("music").style.display="flex";
-$("audio").src=musicUrl;
-
-const filename=decodeURIComponent(
-musicUrl.split("?")[0].split("/").pop()||"Profile music"
-);
-
-$("musicTitle").textContent=filename;
-
-let playing=false;
-
-$("musicButton").addEventListener("click",async()=>{
-const audio=$("audio");
-
-if(audio.paused){
-try{
-await audio.play();
-playing=true;
-$("musicButton").textContent="Ⅱ";
-}catch(error){
-console.error("Music playback failed:",error);
-}
-}else{
-audio.pause();
-playing=false;
-$("musicButton").textContent="▶";
-}
-});
-
-$("audio").addEventListener("ended",()=>{
-playing=false;
-$("musicButton").textContent="▶";
-});
+function escapeHtml(value){
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 }
 
 async function loadProfile(){
-if(!username){
-$("loading").style.display="none";
-$("error").classList.add("show");
+if(!usernameFromQuery){
+document.getElementById("content").innerHTML='<div class="error">Profile not found.</div>';
 return;
 }
 
 try{
-const response=await fetch(
-`/api/profile?username=${encodeURIComponent(username)}`,
-{
-method:"GET",
-cache:"no-store"
-}
-);
+const response=await fetch("/api/profile?username="+encodeURIComponent(usernameFromQuery),{cache:"no-store"});
+const result=await response.json();
 
-if(!response.ok){
-throw new Error("Profile request failed.");
+if(!response.ok||!result.success){
+throw new Error(result.error||"Profile not found.");
 }
 
-const data=await response.json();
-
-if(!data.success||!data.profile){
-throw new Error("Profile not found.");
+renderProfile(result.profile);
+}catch(error){
+document.getElementById("content").innerHTML='<div class="error">'+escapeHtml(error.message)+'</div>';
+}
 }
 
-const profile=data.profile;
+function renderProfile(profile){
+const customization=profile.customization||{};
+const font=fonts[customization.font]||"Inter";
+const nameStyle=customization.nameStyle||"normal";
 
-document.title=
-`${profile.displayName||profile.username||username} | Biofyit`;
-
-$("name").textContent=
-profile.displayName||profile.username||username;
-
-$("username").textContent=
-"@"+(profile.username||username);
-
-$("bio").textContent=
-profile.bio||"";
-
-if(!profile.bio){
-$("bio").style.display="none";
-}
-
-if(profile.profilePicture){
-setAvatar(mediaUrl(profile.profilePicture));
-}
+document.body.style.fontFamily="'"+font+"',Arial,sans-serif";
 
 if(profile.background){
-setBackground(mediaUrl(profile.background));
+document.getElementById("background").style.backgroundImage="url('"+profile.background.replace(/'/g,"%27")+"')";
 }
 
-if(
-profile.discord&&
-profile.discord.enabled&&
-profile.discord.id
-){
-$("discord").style.display="inline-flex";
-$("discordText").textContent=
-"Discord · "+profile.discord.id;
-}
+const nameClasses=[
+"name",
+nameStyle==="gradient"?"gradient":"",
+nameStyle==="uppercase"?"uppercase":"",
+nameStyle==="wide"?"wide":"",
+customization.nameGlow?"glow":""
+].filter(Boolean).join(" ");
 
-renderSocials(profile.links);
-renderMusic(profile.music);
+const bioClasses=[
+"bio",
+customization.bioGlow?"glow":""
+].filter(Boolean).join(" ");
 
-$("loading").style.display="none";
+const links=Array.isArray(profile.links)?profile.links:[];
 
-}catch(error){
-console.error("PROFILE ERROR:",error);
-$("loading").style.display="none";
-$("error").classList.add("show");
-}
+const linksHtml=links.map(link=>{
+const platform=String(link.platform||"custom").toLowerCase();
+const title=escapeHtml(link.title||platformNames[platform]||"Link");
+const url=escapeHtml(link.url||"#");
+const icon=escapeHtml(icons[platform]||"↗");
+return '<a class="link" href="'+url+'" target="_blank" rel="noopener noreferrer"><span class="icon">'+icon+'</span><span>'+title+'</span></a>';
+}).join("");
+
+const music=profile.music
+?'<div class="music"><audio controls preload="none" src="'+escapeHtml(profile.music)+'"></audio></div>'
+:"";
+
+document.title=(profile.displayName||profile.username||"Biofyit")+" | Biofyit";
+
+document.getElementById("content").innerHTML=`
+${profile.profilePicture?'<img class="pfp" src="'+escapeHtml(profile.profilePicture)+'" alt="">':""}
+<h1 class="${nameClasses}">${escapeHtml(profile.displayName||profile.username)}</h1>
+${profile.bio?'<div class="'+bioClasses+'">'+escapeHtml(profile.bio)+'</div>':""}
+${links.length?'<div class="links">'+linksHtml+"</div>":""}
+${music}
+<div class="footer">biofyit.com/${escapeHtml(profile.username||usernameFromQuery)}</div>
+`;
 }
 
 loadProfile();
 </script>
-
 </body>
 </html>
