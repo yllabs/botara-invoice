@@ -10,19 +10,24 @@ const GUILD_ID = "1435008832655982614";
 
 function getCookie(req, name) {
   const cookies = req.headers.cookie || "";
-  const parts = cookies.split(";");
 
-  for (const part of parts) {
-    const [key, ...value] = part.trim().split("=");
+  for (const part of cookies.split(";")) {
+    const index = part.indexOf("=");
+
+    if (index === -1) continue;
+
+    const key = part.slice(0, index).trim();
+    const value = part.slice(index + 1).trim();
+
     if (key === name) {
-      return decodeURIComponent(value.join("="));
+      return decodeURIComponent(value);
     }
   }
 
   return null;
 }
 
-async function getCurrentUser(req) {
+async function getUser(req) {
   const userId = getCookie(req, "biofyit_user");
 
   if (!userId) return null;
@@ -33,15 +38,29 @@ async function getCurrentUser(req) {
   return users.find(user => user.id === userId) || null;
 }
 
+function errorRedirect(res, message) {
+  return res.redirect(
+    "/dashboard.html?discord=error&message=" +
+    encodeURIComponent(message)
+  );
+}
+
 module.exports = async function handler(req, res) {
   try {
     const action = String(req.query.action || "").toLowerCase();
 
     if (action === "start") {
-      const user = await getCurrentUser(req);
+      const user = await getUser(req);
 
       if (!user) {
         return res.redirect("/login.html");
+      }
+
+      if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) {
+        return errorRedirect(
+          res,
+          "Discord OAuth environment variables are missing."
+        );
       }
 
       const state = crypto.randomBytes(32).toString("hex");
@@ -60,17 +79,17 @@ module.exports = async function handler(req, res) {
       });
 
       return res.redirect(
-        `https://discord.com/oauth2/authorize?${params.toString()}`
+        "https://discord.com/oauth2/authorize?" + params.toString()
       );
     }
 
     if (action === "callback") {
-      const user = await getCurrentUser(req);
+      const user = await getUser(req);
 
       if (!user) {
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Your Biofyit session expired. Please sign in again.")
+        return errorRedirect(
+          res,
+          "Biofyit session was lost before Discord finished."
         );
       }
 
@@ -79,42 +98,60 @@ module.exports = async function handler(req, res) {
       const savedState = getCookie(req, "biofyit_discord_state");
 
       if (!code) {
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Discord did not return an authorization code.")
+        return errorRedirect(
+          res,
+          "Discord did not return an authorization code."
         );
       }
 
-      if (!savedState || savedState !== returnedState) {
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Discord authorization state was invalid.")
+      if (!savedState) {
+        return errorRedirect(
+          res,
+          "Discord state cookie was missing."
+        );
+      }
+
+      if (savedState !== returnedState) {
+        return errorRedirect(
+          res,
+          "Discord state verification failed."
         );
       }
 
       if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) {
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Discord OAuth environment variables are missing.")
+        return errorRedirect(
+          res,
+          "Discord OAuth environment variables are missing."
         );
       }
 
-      const tokenResponse = await fetch(
-        "https://discord.com/api/oauth2/token",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: new URLSearchParams({
-            client_id: CLIENT_ID,
-            client_secret: CLIENT_SECRET,
-            grant_type: "authorization_code",
-            code,
-            redirect_uri: REDIRECT_URI
-          })
-        }
-      );
+      let tokenResponse;
+
+      try {
+        tokenResponse = await fetch(
+          "https://discord.com/api/oauth2/token",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+              client_id: CLIENT_ID,
+              client_secret: CLIENT_SECRET,
+              grant_type: "authorization_code",
+              code,
+              redirect_uri: REDIRECT_URI
+            })
+          }
+        );
+      } catch (error) {
+        console.error("DISCORD TOKEN FETCH FAILED:", error);
+
+        return errorRedirect(
+          res,
+          "Step 1 failed: Biofyit could not reach Discord's token API."
+        );
+      }
 
       const tokenText = await tokenResponse.text();
 
@@ -127,40 +164,72 @@ module.exports = async function handler(req, res) {
       }
 
       if (!tokenResponse.ok || !tokenData?.access_token) {
-        console.error("DISCORD TOKEN ERROR:", tokenText);
+        console.error(
+          "DISCORD TOKEN RESPONSE:",
+          tokenResponse.status,
+          tokenText
+        );
 
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent(
-            `Discord token exchange failed (${tokenResponse.status}).`
-          )
+        return errorRedirect(
+          res,
+          `Step 1 failed: Discord returned HTTP ${tokenResponse.status}.`
         );
       }
 
-      const discordResponse = await fetch(
-        "https://discord.com/api/users/@me",
-        {
-          headers: {
-            Authorization: `Bearer ${tokenData.access_token}`
-          }
-        }
-      );
+      let discordResponse;
 
-      const discordUser = await discordResponse.json();
+      try {
+        discordResponse = await fetch(
+          "https://discord.com/api/users/@me",
+          {
+            headers: {
+              Authorization: `Bearer ${tokenData.access_token}`
+            }
+          }
+        );
+      } catch (error) {
+        console.error("DISCORD USER FETCH FAILED:", error);
+
+        return errorRedirect(
+          res,
+          "Step 2 failed: Biofyit could not reach Discord user API."
+        );
+      }
+
+      const discordText = await discordResponse.text();
+
+      let discordUser;
+
+      try {
+        discordUser = JSON.parse(discordText);
+      } catch {
+        discordUser = null;
+      }
 
       if (!discordResponse.ok || !discordUser?.id) {
-        console.error("DISCORD USER ERROR:", discordUser);
+        console.error(
+          "DISCORD USER RESPONSE:",
+          discordResponse.status,
+          discordText
+        );
 
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Biofyit could not retrieve your Discord account.")
+        return errorRedirect(
+          res,
+          `Step 2 failed: Discord returned HTTP ${discordResponse.status}.`
         );
       }
 
-      if (!PRESENCE_API_URL || !PRESENCE_API_KEY) {
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Presence service is not configured.")
+      if (!PRESENCE_API_URL) {
+        return errorRedirect(
+          res,
+          "Step 3 failed: PRESENCE_API_URL is missing."
+        );
+      }
+
+      if (!PRESENCE_API_KEY) {
+        return errorRedirect(
+          res,
+          "Step 3 failed: PRESENCE_API_KEY is missing."
         );
       }
 
@@ -168,11 +237,22 @@ module.exports = async function handler(req, res) {
         PRESENCE_API_URL.replace(/\/+$/, "") +
         `/v1/users/${discordUser.id}`;
 
-      const presenceResponse = await fetch(presenceUrl, {
-        headers: {
-          "X-API-Key": PRESENCE_API_KEY
-        }
-      });
+      let presenceResponse;
+
+      try {
+        presenceResponse = await fetch(presenceUrl, {
+          headers: {
+            "X-API-Key": PRESENCE_API_KEY
+          }
+        });
+      } catch (error) {
+        console.error("PRESENCE FETCH FAILED:", error);
+
+        return errorRedirect(
+          res,
+          "Step 3 failed: Biofyit could not reach the presence server."
+        );
+      }
 
       const presenceText = await presenceResponse.text();
 
@@ -185,20 +265,22 @@ module.exports = async function handler(req, res) {
       }
 
       if (!presenceResponse.ok) {
-        console.error("PRESENCE ERROR:", presenceResponse.status, presenceText);
+        console.error(
+          "PRESENCE RESPONSE:",
+          presenceResponse.status,
+          presenceText
+        );
 
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent(
-            `You must be in the Biofyit Discord server to connect Discord.`
-          )
+        return errorRedirect(
+          res,
+          `Step 3 failed: Presence server returned HTTP ${presenceResponse.status}.`
         );
       }
 
       if (!presenceData || presenceData.success === false) {
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Presence service could not verify your Discord account.")
+        return errorRedirect(
+          res,
+          "Step 3 failed: Presence server could not verify your Discord account."
         );
       }
 
@@ -206,9 +288,9 @@ module.exports = async function handler(req, res) {
       const profileFile = await getFile(profilePath);
 
       if (!profileFile) {
-        return res.redirect(
-          "/dashboard.html?discord=error&message=" +
-          encodeURIComponent("Your Biofyit profile could not be found.")
+        return errorRedirect(
+          res,
+          "Step 4 failed: Biofyit profile was not found."
         );
       }
 
@@ -241,11 +323,11 @@ module.exports = async function handler(req, res) {
       error: "Invalid Discord action."
     });
   } catch (error) {
-    console.error("DISCORD CALLBACK ERROR:", error);
+    console.error("DISCORD CALLBACK CRASH:", error);
 
-    return res.redirect(
-      "/dashboard.html?discord=error&message=" +
-      encodeURIComponent(error.message || "Unable to connect Discord.")
+    return errorRedirect(
+      res,
+      "Discord connection crashed: " + (error.message || "Unknown error.")
     );
   }
 };
