@@ -6,116 +6,642 @@
 <title>Biofyit Dashboard</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:#050507;color:#fff}
-body{overflow-x:hidden}
+:root{
+--bg:#050507;
+--panel:#0a0a0f;
+--panel2:#0d0d13;
+--border:#1c1c26;
+--border2:#282833;
+--text:#f7f7fa;
+--muted:#858592;
+--muted2:#5c5c68;
+--purple:#914cff;
+--purple2:#b06cff;
+--purple-soft:#914cff18;
+--green:#4ade80;
+}
+html{scroll-behavior:smooth}
+body{
+margin:0;
+background:
+radial-gradient(circle at 75% -10%,#692cc51a,transparent 30%),
+radial-gradient(circle at 15% 40%,#4b168e0d,transparent 30%),
+var(--bg);
+color:var(--text);
+font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+min-height:100vh;
+}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-a{text-decoration:none;color:inherit}
+button:disabled{opacity:.55;cursor:not-allowed}
 .app{display:flex;min-height:100vh}
-.sidebar{width:245px;background:#09090d;border-right:1px solid #191921;padding:22px 15px;position:fixed;left:0;top:0;bottom:0;z-index:20}
-.logo{font-size:23px;font-weight:800;padding:7px 12px 25px;letter-spacing:-.7px}
-.logo span{color:#9b5cff}
-.nav-title{font-size:10px;color:#626270;text-transform:uppercase;letter-spacing:1.4px;padding:0 12px;margin:12px 0 8px}
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+bottom:0;
+width:250px;
+background:#07070bde;
+backdrop-filter:blur(25px);
+border-right:1px solid var(--border);
+padding:24px 16px;
+z-index:50;
+}
+.brand{
+display:flex;
+align-items:center;
+gap:10px;
+padding:4px 12px 30px;
+font-size:22px;
+font-weight:850;
+letter-spacing:-1px;
+}
+.brand-mark{
+width:32px;
+height:32px;
+border-radius:10px;
+display:grid;
+place-items:center;
+background:linear-gradient(135deg,#9d55ff,#6123bd);
+box-shadow:0 8px 25px #8d4cff35;
+font-size:14px;
+}
+.brand span{color:var(--purple2)}
+.nav-label{
+font-size:10px;
+font-weight:700;
+letter-spacing:1.5px;
+text-transform:uppercase;
+color:#555560;
+padding:0 12px;
+margin:8px 0 9px;
+}
 .nav{display:flex;flex-direction:column;gap:4px}
-.nav button{border:0;background:transparent;color:#92929e;width:100%;padding:12px;border-radius:10px;text-align:left;display:flex;align-items:center;gap:11px;font-size:14px;transition:.18s}
-.nav button:hover{background:#111118;color:#fff}
-.nav button.active{background:linear-gradient(90deg,#171021,#111018);color:#fff;box-shadow:inset 2px 0 #9b5cff}
-.nav-icon{width:20px;text-align:center;color:#a36cff;font-size:14px}
-.sidebar-bottom{position:absolute;bottom:18px;left:15px;right:15px}
-.user-mini{border:1px solid #1d1d27;background:#0d0d13;border-radius:13px;padding:11px;display:flex;align-items:center;gap:10px}
-.avatar{width:35px;height:35px;border-radius:50%;background:#181820;object-fit:cover}
-.user-mini-text{min-width:0;flex:1}
-.user-mini-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-mini-email{font-size:11px;color:#666672;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.logout{background:none;border:0;color:#777783;font-size:17px}
-.main{margin-left:245px;width:calc(100% - 245px);padding:30px;max-width:1600px}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:27px}
-.mobile-menu{display:none}
-.top-actions{display:flex;gap:9px}
-.btn{border:1px solid #24242e;background:#101016;color:#fff;border-radius:10px;padding:10px 15px;font-size:13px;transition:.18s}
-.btn:hover{border-color:#393944;background:#15151c}
-.btn.primary{background:#8d4cff;border-color:#8d4cff;box-shadow:0 8px 25px #8d4c0025}
-.btn.primary:hover{background:#9b5cff}
-.btn.danger{color:#ff8585;border-color:#382025}
-.heading h1{font-size:31px;letter-spacing:-1px;margin:0 0 6px}
-.heading p{margin:0;color:#73737e;font-size:14px}
+.nav button{
+border:1px solid transparent;
+background:transparent;
+color:#858591;
+width:100%;
+padding:12px 13px;
+border-radius:11px;
+display:flex;
+align-items:center;
+gap:12px;
+font-size:13px;
+text-align:left;
+transition:.2s;
+}
+.nav button:hover{
+background:#101016;
+color:#eee;
+}
+.nav button.active{
+background:linear-gradient(100deg,#181020,#0e0e14);
+border-color:#251b32;
+color:#fff;
+box-shadow:inset 2px 0 var(--purple);
+}
+.nav-icon{
+width:18px;
+height:18px;
+display:grid;
+place-items:center;
+color:#8e55dc;
+font-size:13px;
+}
+.account{
+position:absolute;
+bottom:17px;
+left:16px;
+right:16px;
+}
+.account-box{
+border:1px solid var(--border);
+background:#0c0c12;
+border-radius:15px;
+padding:10px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+.account-avatar{
+width:38px;
+height:38px;
+border-radius:11px;
+object-fit:cover;
+background:#15151c;
+}
+.account-info{min-width:0;flex:1}
+.account-name{
+font-size:12px;
+font-weight:750;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+.account-email{
+font-size:10px;
+color:var(--muted2);
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+margin-top:2px;
+}
+.account-out{
+width:30px;
+height:30px;
+border:0;
+background:transparent;
+color:#6e6e79;
+border-radius:8px;
+font-size:16px;
+}
+.account-out:hover{background:#17131c;color:#fff}
+.main{
+margin-left:250px;
+width:calc(100% - 250px);
+padding:30px 34px 45px;
+max-width:1600px;
+}
+.topbar{
+height:42px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:28px;
+}
+.mobile-menu{
+display:none;
+border:1px solid var(--border2);
+background:#0d0d13;
+color:#fff;
+border-radius:9px;
+padding:8px 11px;
+}
+.top-actions{display:flex;gap:8px}
+.btn{
+border:1px solid var(--border2);
+background:#0d0d13;
+color:#eee;
+border-radius:10px;
+padding:10px 14px;
+font-size:12px;
+font-weight:650;
+transition:.2s;
+}
+.btn:hover{
+background:#15151c;
+border-color:#353541;
+}
+.btn.primary{
+background:linear-gradient(135deg,#a05cff,#7d3de2);
+border-color:#a05cff;
+box-shadow:0 10px 30px #914cff25;
+}
+.btn.primary:hover{
+transform:translateY(-1px);
+box-shadow:0 13px 35px #914cff35;
+}
+.hero{
+position:relative;
+overflow:hidden;
+border:1px solid var(--border);
+background:
+linear-gradient(135deg,#100b17,#09090e 55%,#0b0910);
+border-radius:22px;
+padding:31px;
+margin-bottom:18px;
+}
+.hero:before{
+content:"";
+position:absolute;
+width:300px;
+height:300px;
+right:-110px;
+top:-160px;
+background:#8d4cff20;
+filter:blur(70px);
+border-radius:50%;
+}
+.hero-content{position:relative;z-index:1}
+.hero-eyebrow{
+font-size:11px;
+color:#9e6de0;
+font-weight:750;
+letter-spacing:1.2px;
+text-transform:uppercase;
+margin-bottom:9px;
+}
+.hero h1{
+margin:0;
+font-size:36px;
+line-height:1.05;
+letter-spacing:-1.7px;
+}
+.hero h1 span{color:#a866ff}
+.hero p{
+color:#777783;
+font-size:13px;
+margin:10px 0 0;
+}
 .page{display:none}
 .page.active{display:block}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px}
-.card{background:#0b0b10;border:1px solid #1b1b24;border-radius:16px;padding:20px;margin-bottom:18px}
-.card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
-.card-title{font-size:16px;font-weight:750}
-.card-sub{font-size:12px;color:#696975;margin-top:4px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.dashboard-grid{
+display:grid;
+grid-template-columns:minmax(0,1fr) 390px;
+gap:18px;
+}
+.card{
+background:linear-gradient(145deg,#0b0b10,#09090d);
+border:1px solid var(--border);
+border-radius:17px;
+padding:20px;
+margin-bottom:18px;
+box-shadow:0 10px 40px #00000012;
+}
+.card-head{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:15px;
+margin-bottom:19px;
+}
+.card-title{
+font-size:14px;
+font-weight:750;
+letter-spacing:-.2px;
+}
+.card-sub{
+font-size:11px;
+color:var(--muted2);
+margin-top:5px;
+line-height:1.5;
+}
+.form-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+}
 .field{margin-bottom:15px}
 .field:last-child{margin-bottom:0}
-label{display:block;color:#a0a0aa;font-size:12px;margin:0 0 7px}
-input,textarea,select{width:100%;background:#07070b;border:1px solid #22222d;border-radius:10px;color:#fff;padding:12px 13px;outline:none;transition:.18s}
-input:focus,textarea:focus,select:focus{border-color:#8d4cff;box-shadow:0 0 0 3px #8d4c0018}
-textarea{resize:vertical;min-height:105px}
-input::placeholder,textarea::placeholder{color:#4e4e58}
-.upload-box{border:1px dashed #292934;border-radius:13px;padding:16px;background:#08080c}
-.upload-row{display:flex;align-items:center;gap:13px}
-.upload-preview{width:58px;height:58px;border-radius:12px;background:#14141b;object-fit:cover;border:1px solid #252531}
+label{
+display:block;
+font-size:11px;
+font-weight:650;
+color:#91919d;
+margin-bottom:7px;
+}
+input,textarea,select{
+width:100%;
+background:#07070b;
+border:1px solid #20202a;
+border-radius:10px;
+padding:11px 12px;
+color:#fff;
+outline:none;
+font-size:12px;
+transition:.2s;
+}
+input:focus,textarea:focus,select:focus{
+border-color:#8749d8;
+box-shadow:0 0 0 3px #914cff0d;
+}
+input::placeholder,textarea::placeholder{color:#494953}
+textarea{
+min-height:110px;
+resize:vertical;
+line-height:1.5;
+}
+input[readonly]{
+color:#696974;
+background:#09090d;
+}
+.profile-upload{
+display:flex;
+align-items:center;
+gap:16px;
+padding:14px;
+border:1px solid #1d1d27;
+background:#08080c;
+border-radius:14px;
+}
+.upload-avatar{
+width:68px;
+height:68px;
+border-radius:17px;
+object-fit:cover;
+background:#15151c;
+border:1px solid #292933;
+}
 .upload-info{flex:1;min-width:0}
-.upload-name{font-size:13px;font-weight:650}
-.upload-desc{font-size:11px;color:#62626d;margin-top:4px}
-.file-btn{display:inline-block;background:#15151d;border:1px solid #292934;padding:8px 11px;border-radius:8px;font-size:12px;margin-top:9px}
+.upload-title{
+font-size:12px;
+font-weight:700;
+}
+.upload-description{
+font-size:10px;
+color:#5f5f6a;
+margin-top:4px;
+line-height:1.4;
+}
+.file-btn{
+display:inline-block;
+margin-top:10px;
+padding:7px 10px;
+border-radius:8px;
+background:#14141b;
+border:1px solid #272731;
+font-size:10px;
+font-weight:650;
+cursor:pointer;
+}
+.file-btn:hover{background:#19191f}
 .file-input{display:none}
-.checklist{display:flex;flex-direction:column;gap:9px}
-.check{display:flex;align-items:center;gap:11px;padding:11px;border:1px solid #1c1c25;border-radius:10px;background:#08080d}
-.check-icon{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#171720;color:#656570;font-size:11px}
-.check.done .check-icon{background:#6f35c9;color:#fff}
-.check-text{font-size:12px;color:#888893}
-.check.done .check-text{color:#e5e5eb}
-.preview{height:540px;border-radius:17px;border:1px solid #1b1b24;overflow:hidden;position:relative;background:#08080b;display:flex;align-items:center;justify-content:center}
-.preview-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 20%,#5c2c9a35,transparent 45%),#07070a;background-size:cover;background-position:center}
-.preview-overlay{position:absolute;inset:0;background:linear-gradient(180deg,#00000010,#0000008c)}
-.preview-content{position:relative;text-align:center;padding:25px;width:100%;z-index:2}
-.preview-avatar{width:86px;height:86px;border-radius:50%;object-fit:cover;border:3px solid #ffffff18;margin-bottom:12px}
-.preview-name{font-size:21px;font-weight:800}
-.preview-bio{font-size:12px;color:#b2b2bc;max-width:270px;margin:8px auto 17px;line-height:1.5}
-.preview-links{display:flex;justify-content:center;gap:7px;flex-wrap:wrap}
-.preview-link{width:35px;height:35px;border-radius:10px;border:1px solid #ffffff16;background:#ffffff0b;display:grid;place-items:center;font-size:11px;color:#ddd}
-.preview-username{font-size:11px;color:#777783;margin-top:17px}
-.setup-progress{height:6px;background:#171720;border-radius:10px;overflow:hidden;margin:13px 0 17px}
-.setup-progress span{display:block;height:100%;background:#8d4cff;border-radius:10px;transition:.3s}
-.social-row{display:grid;grid-template-columns:125px 1fr 38px;gap:9px;margin-bottom:9px}
-.remove-social{border:1px solid #2a2025;background:#100c10;color:#e98191;border-radius:9px}
-.add-link{margin-top:5px}
-.discord-box{border:1px solid #272332;border-radius:13px;background:linear-gradient(135deg,#100b18,#0b0b10);padding:18px}
-.discord-status{display:flex;align-items:center;gap:12px}
-.discord-dot{width:11px;height:11px;border-radius:50%;background:#555}
-.discord-dot.connected{background:#52d98a;box-shadow:0 0 12px #52d98a}
-.discord-title{font-size:14px;font-weight:700}
-.discord-desc{font-size:11px;color:#6f6f7a;margin-top:4px}
-.presence{margin-top:16px;border-top:1px solid #1e1e27;padding-top:14px;display:none}
+.setup{
+border:1px solid #21182e;
+background:linear-gradient(135deg,#100b18,#0a0a0f);
+}
+.setup-top{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px;
+}
+.setup-count{
+font-size:11px;
+color:#a96bff;
+font-weight:700;
+}
+.progress{
+height:5px;
+border-radius:10px;
+background:#19151f;
+overflow:hidden;
+margin:15px 0;
+}
+.progress span{
+display:block;
+height:100%;
+background:linear-gradient(90deg,#7934d8,#ae65ff);
+border-radius:10px;
+transition:.3s;
+}
+.checks{display:flex;flex-direction:column;gap:7px}
+.check{
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px;
+border:1px solid #1b1b24;
+background:#08080c;
+border-radius:10px;
+}
+.check-icon{
+width:20px;
+height:20px;
+display:grid;
+place-items:center;
+border-radius:50%;
+background:#15151c;
+color:#555561;
+font-size:10px;
+}
+.check.done .check-icon{
+background:#743bd0;
+color:#fff;
+}
+.check-text{font-size:11px;color:#777783}
+.check.done .check-text{color:#dddde4}
+.preview-card{position:sticky;top:20px}
+.preview{
+height:590px;
+border:1px solid #20202a;
+border-radius:18px;
+overflow:hidden;
+position:relative;
+background:#07070a;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+.preview-bg{
+position:absolute;
+inset:0;
+background:
+radial-gradient(circle at 50% 15%,#914cff38,transparent 35%),
+linear-gradient(#08080b,#050507);
+background-position:center;
+background-size:cover;
+}
+.preview:after{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(180deg,#00000015,#000000bb);
+}
+.preview-content{
+position:relative;
+z-index:2;
+width:100%;
+text-align:center;
+padding:30px;
+}
+.preview-avatar{
+width:92px;
+height:92px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #ffffff18;
+box-shadow:0 15px 45px #000;
+}
+.preview-name{
+font-size:21px;
+font-weight:800;
+margin-top:13px;
+}
+.preview-bio{
+font-size:11px;
+line-height:1.6;
+color:#a2a2ad;
+max-width:270px;
+margin:8px auto 18px;
+}
+.preview-links{
+display:flex;
+justify-content:center;
+gap:7px;
+flex-wrap:wrap;
+}
+.preview-link{
+width:36px;
+height:36px;
+border-radius:10px;
+background:#ffffff0a;
+border:1px solid #ffffff12;
+display:grid;
+place-items:center;
+font-size:10px;
+font-weight:700;
+color:#ddd;
+backdrop-filter:blur(8px);
+}
+.preview-user{
+font-size:10px;
+color:#62626e;
+margin-top:18px;
+}
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:9px;
+margin-top:12px;
+}
+.stat{
+border:1px solid #1b1b24;
+background:#08080d;
+border-radius:11px;
+padding:12px;
+}
+.stat-value{font-size:15px;font-weight:800}
+.stat-label{font-size:9px;color:#5d5d68;margin-top:3px}
+.social-list{display:flex;flex-direction:column;gap:9px}
+.social-row{
+display:grid;
+grid-template-columns:130px 1fr 38px;
+gap:8px;
+}
+.social-row button{
+border:1px solid #2a2025;
+background:#100b10;
+border-radius:9px;
+color:#dc7185;
+}
+.social-row button:hover{background:#190e13}
+.empty{
+padding:30px;
+text-align:center;
+border:1px dashed #25252f;
+border-radius:13px;
+color:#5e5e69;
+font-size:11px;
+}
+.discord{
+border:1px solid #211a2c;
+background:linear-gradient(145deg,#100b18,#09090e);
+border-radius:15px;
+padding:20px;
+}
+.discord-head{
+display:flex;
+align-items:center;
+gap:13px;
+}
+.discord-avatar{
+width:48px;
+height:48px;
+border-radius:14px;
+object-fit:cover;
+background:#16151d;
+}
+.discord-status-dot{
+width:9px;
+height:9px;
+border-radius:50%;
+background:#555;
+margin-left:auto;
+}
+.discord-status-dot.connected{
+background:#4ade80;
+box-shadow:0 0 14px #4ade80;
+}
+.discord-name{font-size:13px;font-weight:750}
+.discord-description{font-size:10px;color:#686873;margin-top:3px}
+.presence{
+display:none;
+margin-top:16px;
+border-top:1px solid #211d29;
+padding-top:15px;
+}
 .presence-row{display:flex;gap:10px;align-items:center}
-.presence-art{width:45px;height:45px;border-radius:9px;background:#16161e;object-fit:cover}
-.presence-name{font-size:12px;font-weight:700}
-.presence-detail{font-size:11px;color:#74747f;margin-top:3px}
-.link-list{display:flex;flex-direction:column;gap:9px}
-.empty{padding:25px;text-align:center;border:1px dashed #22222c;border-radius:12px;color:#5f5f69;font-size:12px}
-.toast{position:fixed;right:25px;bottom:25px;background:#111118;border:1px solid #292934;border-radius:12px;padding:13px 16px;z-index:100;color:#fff;font-size:13px;box-shadow:0 15px 40px #0008;transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.error{border-color:#51272f}
-.toast.success{border-color:#293f32}
-.save-bar{position:sticky;bottom:18px;z-index:10;display:flex;justify-content:flex-end;margin-top:4px}
-.save-inner{background:#101016ee;backdrop-filter:blur(12px);border:1px solid #24242e;border-radius:12px;padding:8px;display:flex;gap:8px}
-.status-text{font-size:11px;color:#676772;display:flex;align-items:center;padding:0 7px}
-@media(max-width:1050px){
-.grid{grid-template-columns:1fr}
-.preview{height:480px}
+.presence-art{
+width:43px;
+height:43px;
+border-radius:10px;
+object-fit:cover;
+background:#15151c;
+}
+.presence-name{font-size:11px;font-weight:700}
+.presence-detail{font-size:10px;color:#686873;margin-top:3px}
+.savebar{
+position:sticky;
+bottom:18px;
+display:flex;
+justify-content:flex-end;
+z-index:15;
+pointer-events:none;
+}
+.savebar-inner{
+pointer-events:auto;
+display:flex;
+align-items:center;
+gap:10px;
+background:#101016e8;
+border:1px solid #292934;
+backdrop-filter:blur(20px);
+border-radius:13px;
+padding:7px;
+box-shadow:0 20px 50px #0008;
+}
+.save-state{
+font-size:10px;
+color:#676773;
+padding:0 7px;
+}
+.toast{
+position:fixed;
+right:25px;
+bottom:25px;
+z-index:100;
+background:#111117;
+border:1px solid #292934;
+border-radius:12px;
+padding:12px 15px;
+font-size:11px;
+box-shadow:0 15px 50px #0009;
+opacity:0;
+transform:translateY(12px);
+pointer-events:none;
+transition:.25s;
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-color:#21412d}
+.toast.error{border-color:#52252d}
+@media(max-width:1100px){
+.dashboard-grid{grid-template-columns:1fr}
+.preview-card{position:relative;top:auto}
 }
 @media(max-width:760px){
-.sidebar{transform:translateX(-100%);transition:.25s;width:250px}
+.sidebar{
+transform:translateX(-100%);
+transition:.25s;
+box-shadow:20px 0 50px #0008;
+}
 .sidebar.open{transform:translateX(0)}
-.main{margin-left:0;width:100%;padding:18px}
-.mobile-menu{display:block;border:1px solid #24242e;background:#101016;color:#fff;border-radius:9px;padding:9px 12px}
-.topbar{gap:10px}
-.heading h1{font-size:25px}
+.main{
+margin-left:0;
+width:100%;
+padding:18px;
+}
+.mobile-menu{display:block}
+.topbar{margin-bottom:18px}
+.top-actions .btn:first-child{display:none}
+.hero{padding:23px}
+.hero h1{font-size:29px}
 .form-grid{grid-template-columns:1fr}
-.social-row{grid-template-columns:1fr 38px}
+.preview{height:510px}
+.social-row{
+grid-template-columns:1fr 38px;
+}
 .social-row select{grid-column:1}
 .social-row input{grid-column:1}
 }
@@ -123,124 +649,172 @@ input::placeholder,textarea::placeholder{color:#4e4e58}
 </head>
 <body>
 <div class="app">
+
 <aside class="sidebar" id="sidebar">
-<div class="logo">Biofy<span>it</span></div>
-<div class="nav-title">Workspace</div>
+<div class="brand">
+<div class="brand-mark">B</div>
+Biofy<span>it</span>
+</div>
+
+<div class="nav-label">Workspace</div>
 <div class="nav">
 <button class="active" data-page="overview"><span class="nav-icon">⌂</span>Overview</button>
 <button data-page="profile"><span class="nav-icon">◉</span>Profile</button>
-<button data-page="appearance"><span class="nav-icon">◈</span>Appearance</button>
+<button data-page="appearance"><span class="nav-icon">✦</span>Appearance</button>
 <button data-page="socials"><span class="nav-icon">↗</span>Socials</button>
 <button data-page="music"><span class="nav-icon">♫</span>Music</button>
 <button data-page="discord"><span class="nav-icon">●</span>Discord</button>
 </div>
-<div class="nav-title">Account</div>
+
+<div class="nav-label" style="margin-top:24px">Account</div>
 <div class="nav">
-<button id="publicProfile"><span class="nav-icon">↗</span>View Profile</button>
-<button id="logoutBtn"><span class="nav-icon">↪</span>Sign Out</button>
+<button id="viewProfile"><span class="nav-icon">↗</span>View Profile</button>
+<button id="signOut"><span class="nav-icon">↪</span>Sign Out</button>
 </div>
-<div class="sidebar-bottom">
-<div class="user-mini">
-<img class="avatar" id="sideAvatar" src="" alt="">
-<div class="user-mini-text">
-<div class="user-mini-name" id="sideUsername">Loading...</div>
-<div class="user-mini-email" id="sideEmail">Loading...</div>
+
+<div class="account">
+<div class="account-box">
+<img class="account-avatar" id="accountAvatar" src="" alt="">
+<div class="account-info">
+<div class="account-name" id="accountName">Loading...</div>
+<div class="account-email" id="accountEmail">Loading...</div>
 </div>
-<button class="logout" id="sideLogout">×</button>
+<button class="account-out" id="accountLogout">×</button>
 </div>
 </div>
 </aside>
 
 <main class="main">
+
 <div class="topbar">
 <button class="mobile-menu" id="mobileMenu">Menu</button>
+<div></div>
 <div class="top-actions">
-<button class="btn" id="topProfile">View Profile</button>
+<button class="btn" id="topView">View Profile</button>
 <button class="btn primary" id="topSave">Save Changes</button>
 </div>
 </div>
 
-<div class="heading">
-<h1 id="welcome">Welcome @...</h1>
-<p>Manage your Biofyit profile, appearance and connections.</p>
+<div class="hero">
+<div class="hero-content">
+<div class="hero-eyebrow">Creator Dashboard</div>
+<h1 id="welcome">Welcome <span>@username</span></h1>
+<p>Build your personal corner of the internet with Biofyit.</p>
+</div>
 </div>
 
 <section class="page active" id="page-overview">
-<div class="grid">
+<div class="dashboard-grid">
+
 <div>
 <div class="card">
 <div class="card-head">
 <div>
-<div class="card-title">Profile overview</div>
-<div class="card-sub">Your public Biofyit profile at a glance.</div>
+<div class="card-title">Your profile</div>
+<div class="card-sub">The information people see on your Biofyit page.</div>
 </div>
-<button class="btn" data-goto="profile">Edit Profile</button>
+<button class="btn" data-go="profile">Edit</button>
 </div>
+
 <div class="form-grid">
-<div class="field"><label>Username</label><input id="overviewUsername" readonly></div>
-<div class="field"><label>Display Name</label><input id="overviewDisplay" readonly></div>
+<div class="field">
+<label>USERNAME</label>
+<input id="overviewUsername" readonly>
+</div>
+<div class="field">
+<label>DISPLAY NAME</label>
+<input id="overviewDisplay" readonly>
+</div>
 </div>
 </div>
 
-<div class="card" id="setupCard">
-<div class="card-title">Finish your setup</div>
-<div class="card-sub">Complete these steps to finish your Biofyit profile.</div>
-<div class="setup-progress"><span id="progress"></span></div>
-<div class="checklist" id="checklist"></div>
+<div class="card setup" id="setupCard">
+<div class="setup-top">
+<div>
+<div class="card-title">Finish your profile</div>
+<div class="card-sub">Complete your setup to make your page ready.</div>
+</div>
+<div class="setup-count" id="setupCount">0 / 3</div>
+</div>
+<div class="progress"><span id="progress"></span></div>
+<div class="checks" id="checks"></div>
 </div>
 
 <div class="card">
 <div class="card-head">
 <div>
 <div class="card-title">Quick actions</div>
-<div class="card-sub">Jump straight to what you need.</div>
+<div class="card-sub">Manage your page without digging through menus.</div>
 </div>
 </div>
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<button class="btn" data-goto="profile">Edit Profile</button>
-<button class="btn" data-goto="appearance">Change Appearance</button>
-<button class="btn" data-goto="socials">Manage Socials</button>
-<button class="btn" data-goto="discord">Connect Discord</button>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<button class="btn" data-go="profile">Edit Profile</button>
+<button class="btn" data-go="appearance">Appearance</button>
+<button class="btn" data-go="socials">Socials</button>
+<button class="btn" data-go="discord">Connect Discord</button>
 </div>
 </div>
 </div>
-<div>
-<div class="preview" id="previewOverview">
-<div class="preview-bg" id="previewBg1"></div>
-<div class="preview-overlay"></div>
+
+<div class="preview-card">
+<div class="card" style="padding:12px">
+<div class="preview" id="previewMain">
+<div class="preview-bg" id="previewBgMain"></div>
 <div class="preview-content">
-<img class="preview-avatar" id="previewAvatar1" src="" alt="">
-<div class="preview-name" id="previewName1">Your Name</div>
-<div class="preview-bio" id="previewBio1">Your bio will appear here.</div>
-<div class="preview-links" id="previewLinks1"></div>
-<div class="preview-username" id="previewUsername1">@username</div>
+<img class="preview-avatar" id="previewAvatarMain" src="" alt="">
+<div class="preview-name" id="previewNameMain">Your Name</div>
+<div class="preview-bio" id="previewBioMain">Your bio will appear here.</div>
+<div class="preview-links" id="previewLinksMain"></div>
+<div class="preview-user" id="previewUserMain">@username</div>
+</div>
+</div>
+<div class="stats">
+<div class="stat">
+<div class="stat-value" id="socialCount">0</div>
+<div class="stat-label">SOCIAL LINKS</div>
+</div>
+<div class="stat">
+<div class="stat-value" id="discordStat">Not connected</div>
+<div class="stat-label">DISCORD</div>
 </div>
 </div>
 </div>
+</div>
+
 </div>
 </section>
 
 <section class="page" id="page-profile">
 <div class="card">
 <div class="card-head">
-<div><div class="card-title">Profile</div><div class="card-sub">Tell people who you are.</div></div>
+<div>
+<div class="card-title">Profile information</div>
+<div class="card-sub">Choose how people see you.</div>
 </div>
+</div>
+
 <div class="form-grid">
-<div class="field"><label>Username</label><input id="username" readonly></div>
-<div class="field"><label>Display Name</label><input id="displayName" placeholder="Your display name"></div>
+<div class="field">
+<label>USERNAME</label>
+<input id="username" readonly>
 </div>
 <div class="field">
-<label>Bio</label>
-<textarea id="bio" maxlength="300" placeholder="Tell people a little about yourself..."></textarea>
+<label>DISPLAY NAME</label>
+<input id="displayName" placeholder="Your display name">
 </div>
-<div class="upload-box">
-<div class="upload-row">
-<img class="upload-preview" id="profilePreview" src="" alt="">
+</div>
+
+<div class="field">
+<label>BIO</label>
+<textarea id="bio" maxlength="300" placeholder="Tell people something about yourself..."></textarea>
+</div>
+
+<div class="profile-upload">
+<img class="upload-avatar" id="profilePreview" src="" alt="">
 <div class="upload-info">
-<div class="upload-name">Profile Picture</div>
-<div class="upload-desc">PNG, JPG, JPEG, GIF or WEBP. Maximum 2MB.</div>
-<label class="file-btn">Choose Image<input class="file-input" id="profileFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp"></label>
-</div>
+<div class="upload-title">Profile picture</div>
+<div class="upload-description">Your Discord profile picture will automatically be used when you connect Discord. Uploading an image here replaces it.</div>
+<label class="file-btn">Choose image<input class="file-input" id="profileFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp"></label>
 </div>
 </div>
 </div>
@@ -249,31 +823,38 @@ input::placeholder,textarea::placeholder{color:#4e4e58}
 <section class="page" id="page-appearance">
 <div class="card">
 <div class="card-head">
-<div><div class="card-title">Appearance</div><div class="card-sub">Customize the background of your profile.</div></div>
+<div>
+<div class="card-title">Appearance</div>
+<div class="card-sub">Give your public page its own look.</div>
 </div>
-<div class="upload-box">
-<div class="upload-row">
-<div class="upload-preview" id="backgroundPreview" style="background-size:cover;background-position:center"></div>
+</div>
+
+<div class="profile-upload">
+<div class="upload-avatar" id="backgroundPreview" style="background-size:cover;background-position:center"></div>
 <div class="upload-info">
-<div class="upload-name">Background Image</div>
-<div class="upload-desc">PNG, JPG, JPEG, GIF or WEBP. Maximum 2MB.</div>
-<label class="file-btn">Choose Image<input class="file-input" id="backgroundFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp"></label>
+<div class="upload-title">Background image</div>
+<div class="upload-description">Use a high-quality image for the best result. Maximum 2MB.</div>
+<label class="file-btn">Choose image<input class="file-input" id="backgroundFile" type="file" accept="image/png,image/jpeg,image/gif,image/webp"></label>
 </div>
 </div>
 </div>
-</div>
+
 <div class="card">
-<div class="card-title">Live Preview</div>
-<div class="card-sub" style="margin-bottom:14px">This updates while you edit.</div>
+<div class="card-head">
+<div>
+<div class="card-title">Live preview</div>
+<div class="card-sub">Your profile updates here while you edit.</div>
+</div>
+</div>
+
 <div class="preview">
-<div class="preview-bg" id="previewBg2"></div>
-<div class="preview-overlay"></div>
+<div class="preview-bg" id="previewBgAppearance"></div>
 <div class="preview-content">
-<img class="preview-avatar" id="previewAvatar2" src="" alt="">
-<div class="preview-name" id="previewName2">Your Name</div>
-<div class="preview-bio" id="previewBio2">Your bio will appear here.</div>
-<div class="preview-links" id="previewLinks2"></div>
-<div class="preview-username" id="previewUsername2">@username</div>
+<img class="preview-avatar" id="previewAvatarAppearance" src="" alt="">
+<div class="preview-name" id="previewNameAppearance">Your Name</div>
+<div class="preview-bio" id="previewBioAppearance">Your bio will appear here.</div>
+<div class="preview-links" id="previewLinksAppearance"></div>
+<div class="preview-user" id="previewUserAppearance">@username</div>
 </div>
 </div>
 </div>
@@ -282,26 +863,31 @@ input::placeholder,textarea::placeholder{color:#4e4e58}
 <section class="page" id="page-socials">
 <div class="card">
 <div class="card-head">
-<div><div class="card-title">Social links</div><div class="card-sub">Add up to 10 links to your profile.</div></div>
-<button class="btn" id="addSocial">+ Add Link</button>
+<div>
+<div class="card-title">Social links</div>
+<div class="card-sub">Connect your socials and let people find you everywhere.</div>
 </div>
-<div id="socialList" class="link-list"></div>
+<button class="btn" id="addSocial">+ Add social</button>
+</div>
+<div class="social-list" id="socialList"></div>
 </div>
 </section>
 
 <section class="page" id="page-music">
 <div class="card">
 <div class="card-head">
-<div><div class="card-title">Profile music</div><div class="card-sub">Add music that plays on your public profile.</div></div>
+<div>
+<div class="card-title">Profile music</div>
+<div class="card-sub">Add music to your public Biofyit page.</div>
 </div>
-<div class="upload-box">
-<div class="upload-row">
-<div class="upload-preview" style="display:grid;place-items:center;font-size:20px">♫</div>
+</div>
+
+<div class="profile-upload">
+<div class="upload-avatar" style="display:grid;place-items:center;font-size:23px;color:#9b59ff">♫</div>
 <div class="upload-info">
-<div class="upload-name" id="musicName">No music selected</div>
-<div class="upload-desc">MP3, WAV, OGG or M4A. Maximum 4MB.</div>
-<label class="file-btn">Choose Music<input class="file-input" id="musicFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a"></label>
-</div>
+<div class="upload-title" id="musicName">No music selected</div>
+<div class="upload-description">MP3, WAV, OGG or M4A. Maximum 4MB.</div>
+<label class="file-btn">Choose music<input class="file-input" id="musicFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a"></label>
 </div>
 </div>
 </div>
@@ -310,19 +896,26 @@ input::placeholder,textarea::placeholder{color:#4e4e58}
 <section class="page" id="page-discord">
 <div class="card">
 <div class="card-head">
-<div><div class="card-title">Discord</div><div class="card-sub">Connect your Discord account to show live presence.</div></div>
-</div>
-<div class="discord-box">
-<div class="discord-status">
-<div class="discord-dot" id="discordDot"></div>
 <div>
-<div class="discord-title" id="discordTitle">Discord not connected</div>
-<div class="discord-desc" id="discordDescription">Connect your Discord account using OAuth2.</div>
+<div class="card-title">Discord connection</div>
+<div class="card-sub">Connect your Discord to display your account and live presence.</div>
 </div>
 </div>
-<div style="margin-top:16px">
+
+<div class="discord">
+<div class="discord-head">
+<img class="discord-avatar" id="discordAvatar" src="" alt="">
+<div>
+<div class="discord-name" id="discordName">Discord not connected</div>
+<div class="discord-description" id="discordDescription">Connect your Discord account with OAuth2.</div>
+</div>
+<div class="discord-status-dot" id="discordDot"></div>
+</div>
+
+<div style="margin-top:17px">
 <button class="btn primary" id="discordButton">Connect Discord</button>
 </div>
+
 <div class="presence" id="presenceBox">
 <div class="presence-row">
 <img class="presence-art" id="presenceArt" src="" alt="">
@@ -336,12 +929,13 @@ input::placeholder,textarea::placeholder{color:#4e4e58}
 </div>
 </section>
 
-<div class="save-bar">
-<div class="save-inner">
-<div class="status-text" id="saveStatus">Unsaved changes</div>
-<button class="btn primary" id="saveBtn">Save Changes</button>
+<div class="savebar">
+<div class="savebar-inner">
+<div class="save-state" id="saveState">All changes saved</div>
+<button class="btn primary" id="saveButton">Save Changes</button>
 </div>
 </div>
+
 </main>
 </div>
 
@@ -369,328 +963,466 @@ function toast(message,type=""){
 const el=$("toast");
 el.textContent=message;
 el.className="toast show "+type;
-clearTimeout(window.toastTimer);
-window.toastTimer=setTimeout(()=>el.className="toast",3500);
+clearTimeout(window.toastTimeout);
+window.toastTimeout=setTimeout(()=>el.className="toast",3500);
 }
 
-function setDirty(value=true){
-state.dirty=value;
-$("saveStatus").textContent=value?"Unsaved changes":"All changes saved";
+function dirty(){
+state.dirty=true;
+$("saveState").textContent="Unsaved changes";
+}
+
+function clean(){
+state.dirty=false;
+$("saveState").textContent="All changes saved";
 }
 
 function go(page){
 document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
 document.querySelectorAll(".nav button[data-page]").forEach(x=>x.classList.remove("active"));
-$("page-"+page)?.classList.add("active");
+$("page-"+page).classList.add("active");
 document.querySelector(`.nav button[data-page="${page}"]`)?.classList.add("active");
-window.scrollTo({top:0,behavior:"smooth"});
 $("sidebar").classList.remove("open");
+window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function profileUrl(){
-return "/"+encodeURIComponent(state.user.username);
+function avatarFallback(){
+const letter=(state.user?.username||"B").charAt(0).toUpperCase();
+return "data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(
+`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="#15151d"/><text x="50%" y="55%" text-anchor="middle" font-size="80" fill="#9b59ff" font-family="Arial">${letter}</text></svg>`
+);
 }
 
-function defaultAvatar(){
-return "data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="200" height="200" fill="#15151d"/><text x="50%" y="53%" text-anchor="middle" font-size="72" fill="#8d4cff" font-family="Arial">${(state.user?.username||"B").charAt(0).toUpperCase()}</text></svg>`);
-}
-
-function updatePreviews(){
-const name=$("displayName").value||state.user.username;
-const bio=$("bio").value||"Your bio will appear here.";
-const avatar=state.profilePicture||defaultAvatar();
+function updateUI(){
+const name=$("displayName").value.trim()||state.user.username;
+const bio=$("bio").value.trim()||"Your bio will appear here.";
+const avatar=state.profilePicture||avatarFallback();
 const bg=state.background;
-["1","2"].forEach(n=>{
-$("previewName"+n).textContent=name;
-$("previewBio"+n).textContent=bio;
-$("previewUsername"+n).textContent="@"+state.user.username;
-$("previewAvatar"+n).src=avatar;
-$("previewBg"+n).style.backgroundImage=bg?`url("${bg}")`:"radial-gradient(circle at 50% 20%,#5c2c9a35,transparent 45%),linear-gradient(#08080b,#050507)";
+
+$("overviewUsername").value=state.user.username;
+$("overviewDisplay").value=name;
+$("socialCount").textContent=state.links.length;
+$("accountName").textContent="@"+state.user.username;
+$("accountEmail").textContent=state.user.email||"";
+$("accountAvatar").src=avatar;
+$("profilePreview").src=avatar;
+
+if(bg)$("backgroundPreview").style.backgroundImage=`url("${bg}")`;
+else $("backgroundPreview").style.backgroundImage="none";
+
+["Main","Appearance"].forEach(x=>{
+$("previewName"+x).textContent=name;
+$("previewBio"+x).textContent=bio;
+$("previewUser"+x).textContent="@"+state.user.username;
+$("previewAvatar"+x).src=avatar;
+$("previewBg"+x).style.backgroundImage=bg
+?`url("${bg}")`
+:"radial-gradient(circle at 50% 15%,#914cff38,transparent 35%),linear-gradient(#08080b,#050507)";
 });
+
 renderPreviewLinks();
+updateSetup();
+updateDiscord();
 }
 
 function renderPreviewLinks(){
-["previewLinks1","previewLinks2"].forEach(id=>{
+["previewLinksMain","previewLinksAppearance"].forEach(id=>{
 const box=$(id);
 box.innerHTML="";
 state.links.forEach(link=>{
 if(!link.url)return;
-const a=document.createElement("a");
-a.className="preview-link";
-a.href=link.url;
-a.target="_blank";
-a.rel="noopener";
-a.textContent=(platforms.find(p=>p[0]===link.platform)?.[1]||"Link").charAt(0);
-box.appendChild(a);
+const el=document.createElement("a");
+el.className="preview-link";
+el.href=link.url;
+el.target="_blank";
+el.rel="noopener noreferrer";
+el.textContent=(platforms.find(x=>x[0]===link.platform)?.[1]||"Link").charAt(0);
+box.appendChild(el);
 });
 });
 }
 
 function renderSocials(){
-const list=$("socialList");
-list.innerHTML="";
+const box=$("socialList");
+box.innerHTML="";
+
 if(!state.links.length){
-list.innerHTML='<div class="empty">No social links yet. Add your first one.</div>';
+box.innerHTML='<div class="empty">No social links yet.<br>Add your first social above.</div>';
 return;
 }
+
 state.links.forEach((link,index)=>{
 const row=document.createElement("div");
 row.className="social-row";
+
 const select=document.createElement("select");
-platforms.forEach(p=>{
+platforms.forEach(platform=>{
 const option=document.createElement("option");
-option.value=p[0];
-option.textContent=p[1];
-if(p[0]===link.platform)option.selected=true;
+option.value=platform[0];
+option.textContent=platform[1];
+if(platform[0]===link.platform)option.selected=true;
 select.appendChild(option);
 });
-select.onchange=()=>{link.platform=select.value;setDirty();updatePreviews()};
+select.onchange=()=>{
+link.platform=select.value;
+dirty();
+updateUI();
+};
+
 const input=document.createElement("input");
-input.placeholder="https://...";
 input.value=link.url||"";
-input.oninput=()=>{link.url=input.value;setDirty();updatePreviews()};
+input.placeholder="https://...";
+input.oninput=()=>{
+link.url=input.value;
+dirty();
+updateUI();
+};
+
 const remove=document.createElement("button");
-remove.className="remove-social";
 remove.textContent="×";
-remove.onclick=()=>{state.links.splice(index,1);renderSocials();setDirty();updatePreviews()};
+remove.onclick=()=>{
+state.links.splice(index,1);
+renderSocials();
+dirty();
+updateUI();
+};
+
 row.append(select,input,remove);
-list.appendChild(row);
+box.appendChild(row);
 });
 }
 
-function updateChecklist(){
-const checks=[
+function updateSetup(){
+const items=[
 ["Profile picture",!!state.profilePicture],
 ["Background",!!state.background],
 ["Display name",!!$("displayName").value.trim()]
 ];
-const complete=checks.filter(x=>x[1]).length;
-$("progress").style.width=(complete/checks.length*100)+"%";
-$("checklist").innerHTML="";
-checks.forEach(item=>{
-const div=document.createElement("div");
-div.className="check "+(item[1]?"done":"");
-div.innerHTML=`<div class="check-icon">${item[1]?"✓":"○"}</div><div class="check-text">${item[0]}</div>`;
-$("checklist").appendChild(div);
+
+const complete=items.filter(x=>x[1]).length;
+$("setupCount").textContent=complete+" / "+items.length;
+$("progress").style.width=(complete/items.length*100)+"%";
+
+$("checks").innerHTML="";
+items.forEach(item=>{
+const row=document.createElement("div");
+row.className="check "+(item[1]?"done":"");
+row.innerHTML=`<div class="check-icon">${item[1]?"✓":"○"}</div><div class="check-text">${item[0]}</div>`;
+$("checks").appendChild(row);
 });
-$("setupCard").style.display=complete===checks.length?"none":"block";
+
+$("setupCard").style.display=complete===items.length?"none":"block";
 }
 
-async function loadSession(){
+async function session(){
 const response=await fetch("/api/auth?action=session",{cache:"no-store"});
 const data=await response.json().catch(()=>null);
+
 if(!response.ok||!data?.success){
 location.href="/login.html";
 return null;
 }
+
 return data.user;
 }
 
 async function loadProfile(){
 const response=await fetch("/api/profile?username="+encodeURIComponent(state.user.username),{cache:"no-store"});
 const data=await response.json().catch(()=>null);
+
 if(!response.ok||!data?.success){
 throw new Error(data?.error||"Unable to load profile.");
 }
+
 return data.profile;
 }
 
-async function uploadFile(file,type){
+async function upload(file,type){
 if(!file)return null;
+
 const max=type==="music"?4*1024*1024:2*1024*1024;
-if(file.size>max)throw new Error(type==="music"?"Music must be 4MB or smaller.":"Images must be 2MB or smaller.");
+
+if(file.size>max){
+throw new Error(type==="music"?"Music must be 4MB or smaller.":"Images must be 2MB or smaller.");
+}
+
 const dataUrl=await new Promise((resolve,reject)=>{
 const reader=new FileReader();
 reader.onload=()=>resolve(reader.result);
 reader.onerror=()=>reject(new Error("Unable to read file."));
 reader.readAsDataURL(file);
 });
+
 const extension=(file.name.split(".").pop()||"bin").toLowerCase();
+
 const response=await fetch("/api/media",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({type,data:dataUrl,extension})
+body:JSON.stringify({
+type,
+data:dataUrl,
+extension
+})
 });
+
 const data=await response.json().catch(()=>null);
-if(!response.ok||!data?.success)throw new Error(data?.error||"Upload failed.");
+
+if(!response.ok||!data?.success){
+throw new Error(data?.error||"Upload failed.");
+}
+
 return data.url;
 }
 
-async function saveProfile(){
+async function save(){
 if(state.saving)return;
+
 state.saving=true;
-$("saveBtn").disabled=true;
+$("saveButton").disabled=true;
 $("topSave").disabled=true;
-$("saveStatus").textContent="Saving...";
+$("saveState").textContent="Saving...";
+
 try{
-const payload={
+const response=await fetch("/api/profile",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
 displayName:$("displayName").value.trim(),
 bio:$("bio").value.trim(),
 profilePicture:state.profilePicture,
 background:state.background,
 music:state.music,
-lanyard:state.profile.lanyard||{enabled:false,id:null},
+lanyard:state.profile?.lanyard||{enabled:false,id:null},
 links:state.links
-};
-const response=await fetch("/api/profile",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(payload)
+})
 });
+
 const data=await response.json().catch(()=>null);
-if(!response.ok||!data?.success)throw new Error(data?.error||"Unable to save profile.");
-state.profile=data.profile||payload;
-setDirty(false);
-updateChecklist();
-toast("Profile saved successfully.","success");
+
+if(!response.ok||!data?.success){
+throw new Error(data?.error||"Unable to save profile.");
+}
+
+state.profile=data.profile||state.profile;
+clean();
+updateUI();
+toast("Your profile has been saved.","success");
+
 }catch(error){
-$("saveStatus").textContent="Save failed";
+$("saveState").textContent="Save failed";
 toast(error.message||"Unable to save profile.","error");
 }finally{
 state.saving=false;
-$("saveBtn").disabled=false;
+$("saveButton").disabled=false;
 $("topSave").disabled=false;
 }
 }
 
-async function handleProfileImage(file){
+async function uploadProfile(file){
 try{
-const url=await uploadFile(file,"profilePicture");
+const url=await upload(file,"profilePicture");
 state.profilePicture=url;
-$("profilePreview").src=url;
-updatePreviews();
-updateChecklist();
-setDirty();
-toast("Profile picture uploaded.","success");
-}catch(error){toast(error.message,"error")}
+dirty();
+updateUI();
+toast("Profile picture updated.","success");
+}catch(error){
+toast(error.message,"error");
+}
 }
 
-async function handleBackground(file){
+async function uploadBackground(file){
 try{
-const url=await uploadFile(file,"background");
+const url=await upload(file,"background");
 state.background=url;
-$("backgroundPreview").style.backgroundImage=`url("${url}")`;
-updatePreviews();
-updateChecklist();
-setDirty();
-toast("Background uploaded.","success");
-}catch(error){toast(error.message,"error")}
+dirty();
+updateUI();
+toast("Background updated.","success");
+}catch(error){
+toast(error.message,"error");
+}
 }
 
-async function handleMusic(file){
+async function uploadMusic(file){
 try{
-const url=await uploadFile(file,"music");
+const url=await upload(file,"music");
 state.music=url;
 $("musicName").textContent=file.name;
-setDirty();
-toast("Music uploaded.","success");
-}catch(error){toast(error.message,"error")}
+dirty();
+toast("Music updated.","success");
+}catch(error){
+toast(error.message,"error");
+}
+}
+
+function updateDiscord(){
+const connected=!!state.profile?.lanyard?.enabled&&!!state.profile?.lanyard?.id;
+
+$("discordDot").classList.toggle("connected",connected);
+$("discordStat").textContent=connected?"Connected":"Not connected";
+
+if(connected){
+$("discordName").textContent="Discord connected";
+$("discordDescription").textContent="Your Discord account is linked to Biofyit.";
+$("discordButton").textContent="Reconnect Discord";
+$("discordAvatar").src=state.profilePicture||avatarFallback();
+loadPresence();
+}else{
+$("discordName").textContent="Discord not connected";
+$("discordDescription").textContent="Connect your Discord account with OAuth2.";
+$("discordButton").textContent="Connect Discord";
+$("discordAvatar").src=avatarFallback();
+$("presenceBox").style.display="none";
+}
 }
 
 async function loadPresence(){
-if(!state.profile?.lanyard?.enabled||!state.profile?.lanyard?.id)return;
+const id=state.profile?.lanyard?.id;
+if(!id)return;
+
 try{
-const response=await fetch("/api/presence?discordId="+encodeURIComponent(state.profile.lanyard.id),{cache:"no-store"});
+const response=await fetch("/api/presence?discordId="+encodeURIComponent(id),{cache:"no-store"});
 const data=await response.json().catch(()=>null);
+
 if(!response.ok||!data?.success)return;
+
 $("presenceBox").style.display="block";
+
 const activity=data.activities?.[0];
+
 $("presenceActivity").textContent=activity?.name||"Online";
 $("presenceDetail").textContent=activity?.state||activity?.details||data.status||"Discord presence active";
-if(activity?.assets?.large_image)$("presenceArt").src=activity.assets.large_image;
+
+if(activity?.assets?.large_image){
+$("presenceArt").src=activity.assets.large_image;
+}
 }catch{}
 }
 
-function updateDiscordUI(){
-const connected=!!state.profile?.lanyard?.enabled&&!!state.profile?.lanyard?.id;
-$("discordDot").classList.toggle("connected",connected);
-$("discordTitle").textContent=connected?"Discord connected":"Discord not connected";
-$("discordDescription").textContent=connected?"Your Discord account is connected and presence can be displayed.":"Connect your Discord account using OAuth2.";
-$("discordButton").textContent=connected?"Reconnect Discord":"Connect Discord";
-if(connected)loadPresence();
+$("discordButton").onclick=()=>{
+location.href="/api/discord?action=start";
+};
+
+$("displayName").oninput=()=>{
+dirty();
+updateUI();
+};
+
+$("bio").oninput=()=>{
+dirty();
+updateUI();
+};
+
+$("profileFile").onchange=e=>{
+if(e.target.files[0])uploadProfile(e.target.files[0]);
+};
+
+$("backgroundFile").onchange=e=>{
+if(e.target.files[0])uploadBackground(e.target.files[0]);
+};
+
+$("musicFile").onchange=e=>{
+if(e.target.files[0])uploadMusic(e.target.files[0]);
+};
+
+$("addSocial").onclick=()=>{
+if(state.links.length>=10){
+toast("You can only add 10 social links.","error");
+return;
 }
 
-async function connectDiscord(){
-location.href="/api/discord?action=start";
-}
+state.links.push({
+platform:"custom",
+url:""
+});
+
+renderSocials();
+dirty();
+updateUI();
+};
+
+$("saveButton").onclick=save;
+$("topSave").onclick=save;
+
+$("viewProfile").onclick=()=>{
+location.href="/"+encodeURIComponent(state.user.username);
+};
+
+$("topView").onclick=()=>{
+location.href="/"+encodeURIComponent(state.user.username);
+};
+
+$("signOut").onclick=logout;
+$("accountLogout").onclick=logout;
 
 async function logout(){
 await fetch("/api/auth?action=logout",{method:"POST"});
 location.href="/login.html";
 }
 
+$("mobileMenu").onclick=()=>{
+$("sidebar").classList.toggle("open");
+};
+
+document.querySelectorAll(".nav button[data-page]").forEach(button=>{
+button.onclick=()=>go(button.dataset.page);
+});
+
+document.querySelectorAll("[data-go]").forEach(button=>{
+button.onclick=()=>go(button.dataset.go);
+});
+
+window.addEventListener("beforeunload",e=>{
+if(state.dirty){
+e.preventDefault();
+e.returnValue="";
+}
+});
+
 async function init(){
 try{
-state.user=await loadSession();
+state.user=await session();
 if(!state.user)return;
-$("welcome").textContent="Welcome @"+state.user.username;
-$("sideUsername").textContent="@"+state.user.username;
-$("sideEmail").textContent=state.user.email||"";
+
+$("welcome").innerHTML=`Welcome <span>@${state.user.username}</span>`;
 $("username").value=state.user.username;
-$("overviewUsername").value=state.user.username;
-const avatar=defaultAvatar();
-$("sideAvatar").src=avatar;
-const profile=await loadProfile();
-state.profile=profile;
-$("displayName").value=profile.displayName||state.user.username;
-$("bio").value=profile.bio||"";
-state.profilePicture=profile.profilePicture||"";
-state.background=profile.background||"";
-state.music=profile.music||"";
-state.links=Array.isArray(profile.links)?profile.links.map(x=>({...x})):[];
 
-if(state.profilePicture)$("profilePreview").src=state.profilePicture;
-else $("profilePreview").src=avatar;
-if(state.background)$("backgroundPreview").style.backgroundImage=`url("${state.background}")`;
-if(state.music)$("musicName").textContent="Current music uploaded";
+state.profile=await loadProfile();
 
-$("overviewDisplay").value=$("displayName").value;
+$("displayName").value=state.profile.displayName||state.user.username;
+$("bio").value=state.profile.bio||"";
+state.profilePicture=state.profile.profilePicture||"";
+state.background=state.profile.background||"";
+state.music=state.profile.music||"";
+state.links=Array.isArray(state.profile.links)
+?state.profile.links.map(x=>({...x}))
+:[];
+
+$("musicName").textContent=state.music?"Music uploaded":"No music selected";
+
 renderSocials();
-updatePreviews();
-updateChecklist();
-updateDiscordUI();
-setDirty(false);
+updateUI();
+clean();
 
 const params=new URLSearchParams(location.search);
-if(params.get("discord")==="connected")toast("Discord connected successfully.","success");
-if(params.get("discord")==="error")toast(params.get("message")||"Discord connection failed.","error");
-if(params.has("discord"))history.replaceState({},document.title,"/dashboard.html");
+
+if(params.get("discord")==="connected"){
+toast("Discord connected successfully.","success");
+}
+
+if(params.get("discord")==="error"){
+toast(params.get("message")||"Discord connection failed.","error");
+}
+
+if(params.has("discord")){
+history.replaceState({},document.title,"/dashboard.html");
+}
+
 }catch(error){
-toast(error.message||"Dashboard failed to load.","error");
 console.error(error);
+toast(error.message||"Dashboard failed to load.","error");
 }
 }
 
-document.querySelectorAll(".nav button[data-page]").forEach(button=>button.addEventListener("click",()=>go(button.dataset.page)));
-document.querySelectorAll("[data-goto]").forEach(button=>button.addEventListener("click",()=>go(button.dataset.goto)));
-$("mobileMenu").onclick=()=>$("sidebar").classList.toggle("open");
-$("saveBtn").onclick=saveProfile;
-$("topSave").onclick=saveProfile;
-$("profileFile").onchange=e=>handleProfileImage(e.target.files[0]);
-$("backgroundFile").onchange=e=>handleBackground(e.target.files[0]);
-$("musicFile").onchange=e=>handleMusic(e.target.files[0]);
-$("displayName").oninput=()=>{
-$("overviewDisplay").value=$("displayName").value;
-setDirty();
-updatePreviews();
-updateChecklist();
-};
-$("bio").oninput=()=>{setDirty();updatePreviews()};
-$("addSocial").onclick=()=>{
-if(state.links.length>=10){toast("You can only have 10 social links.","error");return}
-state.links.push({platform:"custom",url:""});
-renderSocials();
-setDirty();
-};
-$("discordButton").onclick=connectDiscord;
-$("publicProfile").onclick=()=>location.href=profileUrl();
-$("topProfile").onclick=()=>location.href=profileUrl();
-$("logoutBtn").onclick=logout;
-$("sideLogout").onclick=logout;
-window.addEventListener("beforeunload",e=>{
-if(state.dirty){e.preventDefault();e.returnValue=""}
-});
 init();
 </script>
 </body>
