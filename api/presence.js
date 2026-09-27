@@ -1,73 +1,83 @@
 const PRESENCE_API_URL = process.env.PRESENCE_API_URL;
 const PRESENCE_API_KEY = process.env.PRESENCE_API_KEY;
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "https://biofyit.com");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
   if (req.method !== "GET") {
     return res.status(405).json({
       success: false,
-      error: "Method not allowed."
+      error: "Method not allowed"
     });
   }
 
-  const discordId = String(req.query?.discordId || "").trim();
+  const discordId = String(req.query.discordId || "").trim();
 
-  if (!/^\d{17,20}$/.test(discordId)) {
+  if (!discordId || !/^\d+$/.test(discordId)) {
     return res.status(400).json({
       success: false,
-      error: "Invalid Discord ID."
+      error: "Invalid Discord ID"
     });
   }
 
   if (!PRESENCE_API_URL || !PRESENCE_API_KEY) {
     return res.status(500).json({
       success: false,
-      error: "Presence service is not configured."
+      error: "Presence service is not configured"
     });
   }
 
   try {
-    const base = PRESENCE_API_URL.replace(/\/+$/, "");
-
     const response = await fetch(
-      `${base}/v1/users/${discordId}`,
+      `${PRESENCE_API_URL}/v1/users/${discordId}`,
       {
-        method: "GET",
         headers: {
           "X-API-Key": PRESENCE_API_KEY,
           "Accept": "application/json"
-        },
-        cache: "no-store"
+        }
       }
     );
 
-    const raw = await response.text();
+    const text = await response.text();
 
-    let data = null;
+    let data;
 
     try {
-      data = JSON.parse(raw);
-    } catch {}
-
-    if (!response.ok) {
-      console.error("PRESENCE SERVER ERROR:", response.status, raw);
-
-      return res.status(response.status).json({
+      data = JSON.parse(text);
+    } catch {
+      return res.status(502).json({
         success: false,
-        error: data?.error || `Presence server returned HTTP ${response.status}.`
+        error: "Presence service returned invalid JSON"
       });
     }
 
+    if (!response.ok) {
+      return res.status(response.status).json({
+        success: false,
+        error: data.error || "Presence service request failed"
+      });
+    }
+
+    const source = data.presence || data;
+
     return res.status(200).json({
       success: true,
-      discordId,
-      presence: data
+      discordId: source.id || discordId,
+      username: source.username || "",
+      display_name: source.display_name || source.global_name || "",
+      global_name: source.global_name || "",
+      avatar: source.avatar || source.avatar_url || "",
+      status: source.status || "offline",
+      activities: Array.isArray(source.activities) ? source.activities : [],
+      spotify: source.spotify || null
     });
   } catch (error) {
-    console.error("PRESENCE FETCH ERROR:", error);
+    console.error("Presence API error:", error);
 
-    return res.status(502).json({
+    return res.status(500).json({
       success: false,
-      error: "Unable to reach presence service."
+      error: "Unable to connect to presence service"
     });
   }
-};
+}
