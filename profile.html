@@ -6,36 +6,44 @@
 <title>Biofyit</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:Inter,Arial,sans-serif;background:#050308;color:#fff}
 body{min-height:100vh;overflow-x:hidden}
 #background{position:fixed;inset:0;background:#050308 center/cover no-repeat;z-index:-3}
-#overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 30%,rgba(126,43,255,.2),transparent 45%),linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.82));z-index:-2}
-#noise{position:fixed;inset:0;opacity:.035;pointer-events:none;z-index:-1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E")}
-.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 18px}
-.card{width:min(650px,100%);padding:42px 30px;border:1px solid rgba(255,255,255,.12);background:rgba(8,6,14,.62);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-radius:30px;box-shadow:0 30px 100px rgba(0,0,0,.5),0 0 80px rgba(125,35,255,.12);text-align:center}
-.pfp{width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.18);box-shadow:0 0 40px rgba(139,63,255,.35);margin:0 auto 20px;display:block;background:#120d1c}
-.name{font-size:34px;font-weight:800;line-height:1.1;margin:0}
-.name.gradient{background:linear-gradient(90deg,#fff,#c993ff,#8b3dff,#fff);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradient 5s linear infinite}
-.name.uppercase{text-transform:uppercase}
-.name.wide{letter-spacing:.12em}
-.glow{text-shadow:0 0 10px rgba(158,85,255,.7),0 0 35px rgba(119,39,255,.45)}
-.bio{margin:14px auto 25px;max-width:510px;color:rgba(255,255,255,.68);font-size:15px;line-height:1.7;white-space:pre-wrap}
-.bio.glow{text-shadow:0 0 12px rgba(163,89,255,.45)}
-.links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:20px}
-.link{display:flex;align-items:center;gap:9px;padding:11px 15px;border-radius:14px;text-decoration:none;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);transition:.2s ease;font-size:14px}
-.link:hover{transform:translateY(-3px);background:rgba(143,65,255,.18);border-color:rgba(173,115,255,.4);box-shadow:0 10px 30px rgba(103,35,190,.2)}
-.icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.music{margin:28px auto 0;max-width:460px}
+#overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 20%,rgba(126,43,255,.2),transparent 45%),linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.86));z-index:-2}
+#noise{position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:-1}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px 16px}
+.card{width:min(680px,100%);padding:42px 30px;border:1px solid rgba(255,255,255,.1);background:rgba(7,5,12,.64);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border-radius:30px;box-shadow:0 35px 100px rgba(0,0,0,.55),0 0 80px rgba(128,40,255,.12);text-align:center}
+.pfp{width:112px;height:112px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.16);box-shadow:0 0 45px rgba(128,54,255,.35);margin:0 auto 20px;display:block;background:#110c1b}
+.name{font-size:35px;font-weight:800;line-height:1.1;margin:0}
+.gradient{background:linear-gradient(90deg,#fff,#d1a4ff,#883fff,#fff);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradient 5s linear infinite}
+.uppercase{text-transform:uppercase}
+.wide{letter-spacing:.12em}
+.glow{text-shadow:0 0 10px rgba(169,92,255,.75),0 0 35px rgba(121,38,255,.5)}
+.bio{max-width:520px;margin:14px auto 24px;color:rgba(255,255,255,.68);font-size:15px;line-height:1.7;white-space:pre-wrap}
+.presence{max-width:430px;margin:25px auto 0;padding:15px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);border-radius:18px;text-align:left}
+.presenceTop{display:flex;align-items:center;gap:10px}
+.presenceDot{width:10px;height:10px;border-radius:50%;background:#777}
+.presenceDot.online{background:#43e17b;box-shadow:0 0 15px rgba(67,225,123,.7)}
+.presenceDot.idle{background:#f1b94c;box-shadow:0 0 15px rgba(241,185,76,.6)}
+.presenceDot.dnd{background:#f05252;box-shadow:0 0 15px rgba(240,82,82,.6)}
+.presenceStatus{font-size:13px;font-weight:700}
+.presenceActivity{margin-top:9px;color:rgba(255,255,255,.55);font-size:12px;line-height:1.6}
+.presenceSpotify{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(255,255,255,.6)}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px}
+.link{display:flex;align-items:center;gap:8px;padding:11px 15px;border-radius:14px;color:#fff;text-decoration:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);transition:.2s}
+.link:hover{transform:translateY(-3px);background:rgba(139,62,255,.16);border-color:rgba(177,123,255,.4)}
+.icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.music{margin:27px auto 0;max-width:460px}
 audio{width:100%;height:40px}
-.loading{font-size:14px;color:rgba(255,255,255,.5)}
-.error{font-size:15px;color:#ff8caa}
-.footer{margin-top:28px;font-size:11px;color:rgba(255,255,255,.3)}
+.footer{margin-top:27px;color:rgba(255,255,255,.28);font-size:11px}
+.loading{color:rgba(255,255,255,.45);font-size:14px}
+.error{color:#ff91ad;font-size:14px}
 @keyframes gradient{to{background-position:250% center}}
 @media(max-width:500px){
-.card{padding:34px 20px;border-radius:24px}
+.card{padding:34px 19px;border-radius:24px}
 .name{font-size:28px}
 .pfp{width:96px;height:96px}
 }
@@ -43,7 +51,6 @@ audio{width:100%;height:40px}
 </head>
 <body>
 <div id="background"></div>
-<div id="overlay"></div>
 <div id="noise"></div>
 
 <main class="page">
@@ -53,167 +60,218 @@ audio{width:100%;height:40px}
 </main>
 
 <script>
+const pathParts=location.pathname.split("/").filter(Boolean);
 const params=new URLSearchParams(location.search);
-const usernameFromQuery=params.get("username")||location.pathname.split("/").filter(Boolean).pop();
+const username=params.get("username")||pathParts[0]||"";
 
-const platformNames={
-discord:"Discord",
-instagram:"Instagram",
-tiktok:"TikTok",
-youtube:"YouTube",
-x:"X",
-facebook:"Facebook",
-snapchat:"Snapchat",
-twitch:"Twitch",
-kick:"Kick",
-github:"GitHub",
-reddit:"Reddit",
-spotify:"Spotify",
-soundcloud:"SoundCloud",
-steam:"Steam",
-roblox:"Roblox",
-xbox:"Xbox",
-playstation:"PlayStation",
-linkedin:"LinkedIn",
-threads:"Threads",
-bluesky:"Bluesky",
-telegram:"Telegram",
-pinterest:"Pinterest",
-tumblr:"Tumblr",
-gitlab:"GitLab",
-codepen:"CodePen",
-patreon:"Patreon",
-kofi:"Ko-fi",
-cashapp:"Cash App",
-venmo:"Venmo",
-paypal:"PayPal",
-custom:"Link"
-};
-
-const fonts={
-Inter:"Inter",
-"DM Sans":"DM Sans",
-Manrope:"Manrope",
-Montserrat:"Montserrat",
-Outfit:"Outfit",
-Poppins:"Poppins",
-"Space Grotesk":"Space Grotesk"
+const names={
+discord:"Discord",instagram:"Instagram",tiktok:"TikTok",youtube:"YouTube",
+x:"X",facebook:"Facebook",snapchat:"Snapchat",twitch:"Twitch",kick:"Kick",
+github:"GitHub",reddit:"Reddit",spotify:"Spotify",soundcloud:"SoundCloud",
+steam:"Steam",roblox:"Roblox",xbox:"Xbox",playstation:"PlayStation",
+linkedin:"LinkedIn",threads:"Threads",bluesky:"Bluesky",telegram:"Telegram",
+pinterest:"Pinterest",tumblr:"Tumblr",gitlab:"GitLab",codepen:"CodePen",
+patreon:"Patreon",kofi:"Ko-fi",cashapp:"Cash App",venmo:"Venmo",
+paypal:"PayPal",custom:"Link"
 };
 
 const icons={
-discord:"DC",
-instagram:"IG",
-tiktok:"TT",
-youtube:"YT",
-x:"X",
-facebook:"F",
-snapchat:"SC",
-twitch:"TW",
-kick:"K",
-github:"GH",
-reddit:"R",
-spotify:"SP",
-soundcloud:"S",
-steam:"ST",
-roblox:"RB",
-xbox:"XB",
-playstation:"PS",
-linkedin:"IN",
-threads:"TH",
-bluesky:"BS",
-telegram:"TG",
-pinterest:"PI",
-tumblr:"TU",
-gitlab:"GL",
-codepen:"CP",
-patreon:"PA",
-kofi:"KO",
-cashapp:"CA",
-venmo:"VE",
-paypal:"PP",
-custom:"↗"
+discord:"DC",instagram:"IG",tiktok:"TT",youtube:"YT",x:"X",facebook:"F",
+snapchat:"SC",twitch:"TW",kick:"K",github:"GH",reddit:"R",spotify:"SP",
+soundcloud:"S",steam:"ST",roblox:"RB",xbox:"XB",playstation:"PS",
+linkedin:"IN",threads:"TH",bluesky:"BS",telegram:"TG",pinterest:"PI",
+tumblr:"TU",gitlab:"GL",codepen:"CP",patreon:"PA",kofi:"KO",cashapp:"CA",
+venmo:"VE",paypal:"PP",custom:"↗"
 };
 
 function escapeHtml(value){
-return String(value??"")
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 }
 
-async function loadProfile(){
-if(!usernameFromQuery){
+function safeUrl(value){
+try{
+const u=new URL(value);
+if(u.protocol!=="http:"&&u.protocol!=="https:")return "";
+return u.toString();
+}catch{return ""}
+}
+
+async function load(){
+if(!username){
 document.getElementById("content").innerHTML='<div class="error">Profile not found.</div>';
 return;
 }
 
 try{
-const response=await fetch("/api/profile?username="+encodeURIComponent(usernameFromQuery),{cache:"no-store"});
+const response=await fetch("/api/profile?username="+encodeURIComponent(username),{cache:"no-store"});
 const result=await response.json();
 
-if(!response.ok||!result.success){
-throw new Error(result.error||"Profile not found.");
-}
+if(!response.ok||!result.success)throw new Error(result.error||"Profile not found.");
 
-renderProfile(result.profile);
+render(result.profile);
+loadPresence(result.profile);
 }catch(error){
 document.getElementById("content").innerHTML='<div class="error">'+escapeHtml(error.message)+'</div>';
 }
 }
 
-function renderProfile(profile){
+function render(profile){
 const customization=profile.customization||{};
-const font=fonts[customization.font]||"Inter";
-const nameStyle=customization.nameStyle||"normal";
+const font=customization.font||"Inter";
 
 document.body.style.fontFamily="'"+font+"',Arial,sans-serif";
 
 if(profile.background){
-document.getElementById("background").style.backgroundImage="url('"+profile.background.replace(/'/g,"%27")+"')";
+document.getElementById("background").style.backgroundImage="url('"+safeUrl(profile.background)+"')";
 }
 
-const nameClasses=[
-"name",
-nameStyle==="gradient"?"gradient":"",
-nameStyle==="uppercase"?"uppercase":"",
-nameStyle==="wide"?"wide":"",
-customization.nameGlow?"glow":""
-].filter(Boolean).join(" ");
+let nameClass="name";
 
-const bioClasses=[
-"bio",
-customization.bioGlow?"glow":""
-].filter(Boolean).join(" ");
+if(customization.nameStyle==="gradient")nameClass+=" gradient";
+if(customization.nameStyle==="uppercase")nameClass+=" uppercase";
+if(customization.nameStyle==="wide")nameClass+=" wide";
+if(customization.nameGlow)nameClass+=" glow";
+
+let bioClass="bio";
+
+if(customization.bioGlow)bioClass+=" glow";
 
 const links=Array.isArray(profile.links)?profile.links:[];
 
 const linksHtml=links.map(link=>{
 const platform=String(link.platform||"custom").toLowerCase();
-const title=escapeHtml(link.title||platformNames[platform]||"Link");
-const url=escapeHtml(link.url||"#");
-const icon=escapeHtml(icons[platform]||"↗");
-return '<a class="link" href="'+url+'" target="_blank" rel="noopener noreferrer"><span class="icon">'+icon+'</span><span>'+title+'</span></a>';
+const url=safeUrl(link.url);
+
+if(!url)return "";
+
+return '<a class="link" href="'+escapeHtml(url)+'" target="_blank" rel="noopener noreferrer"><span class="icon">'+escapeHtml(icons[platform]||"↗")+'</span><span>'+escapeHtml(link.title||names[platform]||"Link")+'</span></a>';
 }).join("");
 
-const music=profile.music
-?'<div class="music"><audio controls preload="none" src="'+escapeHtml(profile.music)+'"></audio></div>'
-:"";
+const presence=profile.lanyard?.enabled&&profile.lanyard?.id?`
+<div class="presence" id="presence">
+<div class="presenceTop">
+<span class="presenceDot" id="presenceDot"></span>
+<span class="presenceStatus" id="presenceStatus">Loading Discord...</span>
+</div>
+<div class="presenceActivity" id="presenceActivity"></div>
+<div class="presenceSpotify" id="presenceSpotify" style="display:none"></div>
+</div>`:"";
 
-document.title=(profile.displayName||profile.username||"Biofyit")+" | Biofyit";
+const music=profile.music?`
+<div class="music">
+<audio controls preload="none" src="${escapeHtml(profile.music)}"></audio>
+</div>`:"";
+
+document.title=(profile.displayName||profile.username)+" | Biofyit";
 
 document.getElementById("content").innerHTML=`
-${profile.profilePicture?'<img class="pfp" src="'+escapeHtml(profile.profilePicture)+'" alt="">':""}
-<h1 class="${nameClasses}">${escapeHtml(profile.displayName||profile.username)}</h1>
-${profile.bio?'<div class="'+bioClasses+'">'+escapeHtml(profile.bio)+'</div>':""}
-${links.length?'<div class="links">'+linksHtml+"</div>":""}
+${profile.profilePicture?`<img class="pfp" src="${escapeHtml(profile.profilePicture)}" alt="">`:""}
+<h1 class="${nameClass}">${escapeHtml(profile.displayName||profile.username)}</h1>
+${profile.bio?`<div class="${bioClass}">${escapeHtml(profile.bio)}</div>`:""}
+${presence}
+${links.length?`<div class="links">${linksHtml}</div>`:""}
 ${music}
-<div class="footer">biofyit.com/${escapeHtml(profile.username||usernameFromQuery)}</div>
+<div class="footer">biofyit.com/${escapeHtml(profile.username||username)}</div>
 `;
 }
 
-loadProfile();
+async function loadPresence(profile){
+if(!profile?.lanyard?.enabled||!profile?.lanyard?.id)return;
+
+const box=document.getElementById("presence");
+
+if(!box)return;
+
+try{
+const response=await fetch(
+"/api/presence?discordId="+encodeURIComponent(profile.lanyard.id),
+{cache:"no-store"}
+);
+
+const result=await response.json();
+
+if(!response.ok||!result.success){
+return;
+}
+
+const data=result.presence||result;
+
+const status=String(
+data.status||
+data.discord_status||
+"offline"
+).toLowerCase();
+
+const dot=document.getElementById("presenceDot");
+const statusText=document.getElementById("presenceStatus");
+const activity=document.getElementById("presenceActivity");
+const spotify=document.getElementById("presenceSpotify");
+
+dot.className="presenceDot";
+
+if(["online","idle","dnd"].includes(status)){
+dot.classList.add(status);
+}
+
+const statusNames={
+online:"Online",
+idle:"Idle",
+dnd:"Do Not Disturb",
+offline:"Offline"
+};
+
+statusText.textContent=statusNames[status]||"Offline";
+
+const activities=Array.isArray(data.activities)
+?data.activities:[];
+
+const text=activities
+.map(item=>{
+if(!item?.name)return "";
+
+if(item.type===2){
+return item.details
+?`Listening to ${item.name} - ${item.details}`
+:`Listening to ${item.name}`;
+}
+
+if(item.details){
+return `${item.name} - ${item.details}`;
+}
+
+if(item.state){
+return `${item.name} - ${item.state}`;
+}
+
+return item.name;
+})
+.filter(Boolean);
+
+activity.innerHTML=text
+.map(item=>`<div>${escapeHtml(item)}</div>`)
+.join("");
+
+const spotifyData=data.spotify;
+
+if(spotifyData){
+const song=spotifyData.song||spotifyData.title||"";
+const artist=spotifyData.artist||"";
+
+if(song||artist){
+spotify.style.display="block";
+spotify.textContent=
+"Spotify: "+
+[song,artist].filter(Boolean).join(" - ");
+}
+}
+
+box.style.display="block";
+}catch(error){
+console.error("Presence error:",error);
+}
+}
+
+load();
 </script>
 </body>
 </html>
