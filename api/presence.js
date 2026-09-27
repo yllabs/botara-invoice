@@ -1,5 +1,8 @@
-const PRESENCE_API_URL = process.env.PRESENCE_API_URL;
-const PRESENCE_API_KEY = process.env.PRESENCE_API_KEY;
+const PRESENCE_API_URL =
+  process.env.PRESENCE_API_URL;
+
+const PRESENCE_API_KEY =
+  process.env.PRESENCE_API_KEY;
 
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") {
@@ -9,7 +12,10 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  if (!PRESENCE_API_URL || !PRESENCE_API_KEY) {
+  if (
+    !PRESENCE_API_URL ||
+    !PRESENCE_API_KEY
+  ) {
     return res.status(500).json({
       success: false,
       error: "Presence service is not configured."
@@ -28,35 +34,34 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const url =
-      PRESENCE_API_URL.replace(/\/+$/, "") +
-      "/v1/users/" +
-      encodeURIComponent(discordId);
+    const base =
+      PRESENCE_API_URL.replace(/\/+$/, "");
 
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "X-API-Key": PRESENCE_API_KEY,
-        "Accept": "application/json"
-      },
-      cache: "no-store"
-    });
+    const response = await fetch(
+      `${base}/v1/users/${discordId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "X-API-Key": PRESENCE_API_KEY
+        },
+        cache: "no-store"
+      }
+    );
 
-    const text = await response.text();
+    const raw = await response.text();
 
-    let data;
+    let data = null;
 
     try {
-      data = JSON.parse(text);
-    } catch {
-      data = null;
-    }
+      data = JSON.parse(raw);
+    } catch {}
 
     if (!response.ok) {
       console.error(
-        "PRESENCE SERVER:",
+        "PRESENCE ERROR:",
         response.status,
-        text
+        raw
       );
 
       return res.status(response.status).json({
@@ -72,11 +77,15 @@ module.exports = async function handler(req, res) {
       presence: data
     });
   } catch (error) {
-    console.error("PRESENCE BRIDGE ERROR:", error);
+    console.error(
+      "PRESENCE CONNECTION ERROR:",
+      error
+    );
 
     return res.status(502).json({
       success: false,
-      error: "Unable to reach the presence service."
+      error:
+        "Unable to reach the presence service."
     });
   }
 };
