@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6d28d9">
+<style>
+:root{color-scheme:light}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+</style>
+<title>Noteit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=DM+Sans:wght@400;500;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* Layout: two-pane notebook (list left, editor right) that collapses to one pane on phones.
+   Palette: violet accent on lavender-tinted neutrals. Type: Bricolage Grotesque headings, DM Sans text. */
+:root {
+  --bg: #f5f1fc;
+  --surface: #ffffff;
+  --surface-2: #ede6fa;
+  --fg: #1e1534;
+  --muted: #6a5d85;
+  --line: #dcd2ef;
+  --accent: #6d28d9;
+  --accent-hover: #5b21b6;
+  --accent-fg: #ffffff;
+  --accent-soft: #e8dcfb;
+  --danger: #b42340;
+  --danger-soft: #fbe3e8;
+  --ok: #1d7a4b;
+  --shadow: 0 10px 30px rgba(60, 20, 120, .14);
+  --font-display: 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #130e1f; --surface: #1d1630; --surface-2: #271e3e; --fg: #efe9fb; --muted: #a99dc6;
+    --line: #35294f; --accent: #a78bfa; --accent-hover: #bda5fb; --accent-fg: #1a1030; --accent-soft: #33274f;
+    --danger: #f27a92; --danger-soft: #3d1c28; --ok: #5fd29a; --shadow: 0 10px 30px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #130e1f; --surface: #1d1630; --surface-2: #271e3e; --fg: #efe9fb; --muted: #a99dc6;
+  --line: #35294f; --accent: #a78bfa; --accent-hover: #bda5fb; --accent-fg: #1a1030; --accent-soft: #33274f;
+  --danger: #f27a92; --danger-soft: #3d1c28; --ok: #5fd29a; --shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 15px/1.5 var(--font-body);
+  padding-block: 14px 28px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font: 700 24px/1 var(--font-display); letter-spacing: -.02em; }
+.mark { width: 34px; height: 34px; border-radius: 9px; background: var(--accent); color: var(--accent-fg); display: grid; place-items: center; }
+.actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; }
+.btn:hover { border-color: var(--accent); }
+.btn.solid { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.btn.solid:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn.icon { padding: 8px 10px; }
+.btn.danger { color: var(--danger); }
+.btn.danger.armed { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.menu-wrap { position: relative; }
+.menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: min(290px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 8px; box-shadow: var(--shadow); }
+.menu h3 { margin: 8px 8px 4px; font: 700 11px/1.2 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.menu .row { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 6px 8px; }
+.chipbtn { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 6px 12px; font-weight: 500; font-size: 13px; }
+.chipbtn:hover { border-color: var(--accent); color: var(--accent); }
+.menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
+.menu .import { width: 100%; text-align: left; border: 0; background: none; padding: 8px; border-radius: 8px; font-weight: 500; }
+.menu .import:hover { background: var(--surface-2); }
+.menu small { display: block; padding: 2px 8px 6px; color: var(--muted); font-size: 12px; }
+
+.banner { background: var(--danger-soft); color: var(--danger); border-radius: 12px; padding: 10px 14px; font-size: 14px; }
+
+/* panes */
+.shell { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 14px; align-items: start; }
+.listpane, .editpane { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; min-width: 0; }
+.listpane { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.editpane { padding: 18px; display: flex; flex-direction: column; gap: 12px; min-height: 62vh; }
+
+.search { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 12px; min-height: 40px; }
+.search::placeholder { color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tagchip { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 3px 10px; font-size: 13px; }
+.tagchip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.count { color: var(--muted); font-size: 13px; }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; max-height: 64vh; overflow-y: auto; }
+.item { width: 100%; text-align: left; border: 1px solid transparent; background: transparent; border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.item:hover { background: var(--surface-2); }
+.item[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.item .t { font-weight: 700; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.item .t span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item .d { color: var(--muted); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.item .s { color: var(--muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
+.pin { color: var(--accent); }
+.none { color: var(--muted); padding: 14px 6px; text-align: center; }
+
+/* editor */
+.etools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.etools .grow { flex: 1; }
+.back { display: none; }
+.title { width: 100%; border: 0; background: transparent; font: 700 28px/1.2 var(--font-display); letter-spacing: -.02em; padding: 4px 0; }
+.title::placeholder, .body::placeholder, .tagsin::placeholder { color: var(--muted); opacity: .7; }
+.tagsin { width: 100%; border: 0; border-bottom: 1px dashed var(--line); background: transparent; padding: 6px 0; color: var(--accent); }
+.body { width: 100%; flex: 1; min-height: 340px; border: 0; background: transparent; resize: vertical; line-height: 1.65; padding: 6px 0; font-size: 16px; }
+.title:focus-visible, .body:focus-visible, .tagsin:focus-visible { outline: none; }
+.title:focus-visible { box-shadow: 0 2px 0 var(--accent); }
+.estatus { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 10px; }
+.empty { margin: auto; text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; color: var(--muted); padding: 30px 10px; }
+.empty h2 { margin: 0; color: var(--fg); font: 700 22px/1.2 var(--font-display); }
+
+/* modal */
+.scrim { position: fixed; inset: 0; z-index: 50; background: rgba(20, 8, 45, .55); display: grid; place-items: center; padding: 16px; }
+.dlg { width: min(420px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; max-height: 92vh; overflow-y: auto; }
+.dlg h2 { margin: 0; font: 700 22px/1.2 var(--font-display); letter-spacing: -.02em; }
+.dlg p { margin: 0; color: var(--muted); font-size: 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 13px; font-weight: 500; }
+.field input[type="text"], .field input[type="password"] { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 12px; min-height: 42px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14px; }
+.msg { min-height: 20px; font-size: 13px; color: var(--danger); }
+.msg.ok { color: var(--ok); }
+.btnrow { display: flex; gap: 8px; flex-wrap: wrap; }
+.btnrow .btn { flex: 1; justify-content: center; }
+
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; z-index: 60; max-width: calc(100vw - 32px); opacity: 0; pointer-events: none; transition: opacity .2s; }
+#toast.show { opacity: 1; }
+
+@media (max-width: 759px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .shell[data-view="list"] .editpane { display: none; }
+  .shell[data-view="edit"] .listpane { display: none; }
+  .back { display: inline-flex; }
+  .list { max-height: none; }
+  .title { font-size: 24px; }
+  .editpane { min-height: 70vh; }
+}
+@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M9 13h7M9 17h5"/></svg>
+      </span>
+      <span>Noteit</span>
+    </div>
+    <div class="actions">
+      <div class="menu-wrap">
+        <button id="exportBtn" class="btn" aria-haspopup="true" aria-expanded="false" aria-controls="exportMenu">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Save / Export
+        </button>
+        <div id="exportMenu" class="menu" hidden>
+          <h3>This note</h3>
+          <div class="row">
+            <button class="chipbtn" data-exp="note:pdf">PDF</button>
+            <button class="chipbtn" data-exp="note:txt">TXT</button>
+            <button class="chipbtn" data-exp="note:md">Markdown</button>
+          </div>
+          <h3 id="allLabel">All notes</h3>
+          <div class="row">
+            <button class="chipbtn" data-exp="all:pdf">PDF</button>
+            <button class="chipbtn" data-exp="all:txt">TXT</button>
+            <button class="chipbtn" data-exp="all:md">Markdown</button>
+            <button class="chipbtn" data-exp="all:json">Backup (JSON)</button>
+          </div>
+          <hr>
+          <button id="importBtn" class="import">Import notes (.json, .txt, .md)</button>
+          <small>PDFs support Latin text. Emoji and other scripts are best saved as TXT or Markdown.</small>
+        </div>
+      </div>
+      <button id="themeBtn" class="btn icon" aria-label="Switch theme" title="Switch theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button id="acctBtn" class="btn solid">Sign in</button>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <div class="shell" id="shell" data-view="list">
+    <aside class="listpane" aria-label="Notes">
+      <button id="newBtn" class="btn solid" style="justify-content:center">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        New note
+      </button>
+      <label class="sr" for="search" style="position:absolute;left:-9999px">Search notes</label>
+      <input id="search" class="search" type="search" placeholder="Search notes and tags" autocomplete="off">
+      <div id="tagrow" class="tags"></div>
+      <div id="count" class="count"></div>
+      <ul id="list" class="list"></ul>
+    </aside>
+
+    <section class="editpane" aria-label="Editor">
+      <div id="editor" style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:0">
+        <div class="etools">
+          <button id="backBtn" class="btn back">&larr; Notes</button>
+          <span class="grow"></span>
+          <button id="pinBtn" class="btn" aria-pressed="false">Pin</button>
+          <button id="delBtn" class="btn danger">Delete</button>
+        </div>
+        <input id="title" class="title" type="text" placeholder="Untitled note" aria-label="Note title" autocomplete="off">
+        <input id="tagsin" class="tagsin" type="text" placeholder="Tags, separated by commas" aria-label="Tags" autocomplete="off">
+        <textarea id="body" class="body" placeholder="Write something useful..." aria-label="Note body"></textarea>
+        <div class="estatus"><span id="status">Saved on this device</span><span id="words"></span></div>
+      </div>
+      <div id="emptyState" class="empty" hidden>
+        <h2>No notes yet</h2>
+        <div>Start with one useful thing you want to remember.</div>
+        <button id="emptyNew" class="btn solid">Write a note</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<input id="fileIn" type="file" accept=".json,.txt,.md,text/plain,application/json" hidden>
+
+<div id="modal" class="scrim" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <h2 id="dlgTitle">Your notebook</h2>
+    <div id="dlgGuest">
+      <p>You are using Noteit as a guest. Your notes save automatically in this browser, no account needed. A free profile gives you a separate, passcode-protected notebook on this device.</p>
+      <div class="field" style="margin-top:12px"><label for="acctName">Profile name</label><input id="acctName" type="text" maxlength="24" autocomplete="username"></div>
+      <div class="field" style="margin-top:10px"><label for="acctPass">Passcode (4+ characters)</label><input id="acctPass" type="password" autocomplete="current-password"></div>
+      <label class="check" style="margin-top:10px"><input id="bringGuest" type="checkbox" checked> Bring my guest notes into a new profile</label>
+      <div id="acctMsg" class="msg" role="alert"></div>
+      <div class="btnrow">
+        <button id="signInBtn" class="btn solid">Sign in</button>
+        <button id="createBtn" class="btn">Create profile</button>
+      </div>
+      <p style="margin-top:12px">Profiles live in this browser only. To move notes to another device, use Save / Export, then Backup (JSON), and import it there.</p>
+    </div>
+    <div id="dlgUser" hidden>
+      <p id="userLine"></p>
+      <div class="btnrow" style="margin-top:12px"><button id="signOutBtn" class="btn">Sign out to guest notebook</button></div>
+    </div>
+    <div class="btnrow"><button id="closeModal" class="btn">Close</button></div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+
+  /* ---------- storage (works without login) ---------- */
+  var store = (function () {
+    try {
+      localStorage.setItem('__noteit_t', '1'); localStorage.removeItem('__noteit_t');
+      return { ok: true,
+        get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+        set: function (k, v) { localStorage.setItem(k, v); },
+        del: function (k) { try { localStorage.removeItem(k); } catch (e) {} } };
+    } catch (e) {
+      var m = {};
+      return { ok: false,
+        get: function (k) { return Object.prototype.hasOwnProperty.call(m, k) ? m[k] : null; },
+        set: function (k, v) { m[k] = v; },
+        del: function (k) { delete m[k]; } };
+    }
+  })();
+  var K_USERS = 'noteit:users', K_SESSION = 'noteit:session', K_THEME = 'noteit:theme';
+
+  function readJSON(k, fallback) { try { var v = store.get(k); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+
+  var users = readJSON(K_USERS, {});
+  var session = readJSON(K_SESSION, { mode: 'guest' });
+  if (session.mode === 'user' && !users[(session.name || '').toLowerCase()]) session = { mode: 'guest' };
+
+  function notesKey(s) { return s.mode === 'user' ? 'noteit:notes:u:' + s.name.toLowerCase() : 'noteit:notes:guest'; }
+
+  var notes = [];
+  var selectedId = null;
+  var query = '', activeTag = '';
+
+  function uid() { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36); }
+
+  function seed() {
+    var now = Date.now();
+    return [
+      { id: uid(), title: 'Welcome to Noteit', tags: ['start'], pinned: true, created: now, updated: now,
+        body: 'Everything you write here saves automatically in this browser. No account needed.\n\nTo keep a note outside Noteit, open Save / Export and pick PDF, TXT or Markdown.\n\nTo keep everything safe, download a Backup (JSON). You can import it later on any device.\n\nThis is a sample note. Edit it or delete it.' },
+      { id: uid(), title: 'Sample: quick reference', tags: ['example', 'reference'], pinned: false, created: now - 1000, updated: now - 1000,
+        body: 'Good notes are short and findable.\n\n- Give it a clear title\n- Add tags so search finds it fast\n- Pin the ones you open every day\n\nThis is a sample note too.' }
+    ];
+  }
+
+  function loadNotes() {
+    var raw = store.get(notesKey(session));
+    if (raw === null) { notes = session.mode === 'guest' ? seed() : []; persist(true); return; }
+    try { notes = JSON.parse(raw); if (!Array.isArray(notes)) notes = []; } catch (e) { notes = []; }
+  }
+
+  var saveTimer = null;
+  function persist(immediate) {
+    clearTimeout(saveTimer);
+    var run = function () {
+      try { store.set(notesKey(session), JSON.stringify(notes)); setStatus(store.ok ? 'Saved on this device' : 'Not saved: storage is off in this view'); }
+      catch (e) { setStatus("Couldn't save. Export a backup to be safe."); }
+    };
+    if (immediate) run(); else { setStatus('Saving...'); saveTimer = setTimeout(run, 350); }
+  }
+  function flush() { if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; try { store.set(notesKey(session), JSON.stringify(notes)); } catch (e) {} } }
+
+  function setStatus(t) { $('#status').textContent = t; }
+
+  /* ---------- helpers ---------- */
+  function fmtShort(ts) {
+    var d = new Date(ts), n = new Date();
+    if (d.toDateString() === n.toDateString()) return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    var o = { month: 'short', day: 'numeric' };
+    if (d.getFullYear() !== n.getFullYear()) o.year = 'numeric';
+    return d.toLocaleDateString([], o);
+  }
+  function fmtFull(ts) { return new Date(ts).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }); }
+  function slug(s) { return (s || 'note').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'note'; }
+  function today() { return new Date().toISOString().slice(0, 10); }
+  function byId(id) { for (var i = 0; i < notes.length; i++) if (notes[i].id === id) return notes[i]; return null; }
+  function parseTags(s) {
+    var out = [];
+    s.split(',').forEach(function (t) { t = t.trim().replace(/^#/, '').toLowerCase(); if (t && out.indexOf(t) < 0) out.push(t); });
+    return out;
+  }
+  var toastTimer;
+  function toast(msg) {
+    var t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2800);
+  }
+
+  /* ---------- list ---------- */
+  function visible() {
+    var q = query.trim().toLowerCase();
+    return notes.filter(function (n) {
+      if (activeTag && (n.tags || []).indexOf(activeTag) < 0) return false;
+      if (!q) return true;
+      return (n.title || '').toLowerCase().indexOf(q) >= 0 || (n.body || '').toLowerCase().indexOf(q) >= 0 || (n.tags || []).join(' ').indexOf(q) >= 0;
+    }).sort(function (a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.updated - a.updated; });
+  }
+
+  function renderTags() {
+    var row = $('#tagrow'); row.textContent = '';
+    var all = [];
+    notes.forEach(function (n) { (n.tags || []).forEach(function (t) { if (all.indexOf(t) < 0) all.push(t); }); });
+    if (activeTag && all.indexOf(activeTag) < 0) activeTag = '';
+    all.sort().forEach(function (t) {
+      var b = document.createElement('button'); b.className = 'tagchip'; b.textContent = '#' + t;
+      b.setAttribute('aria-pressed', activeTag === t ? 'true' : 'false');
+      b.addEventListener('click', function () { activeTag = activeTag === t ? '' : t; renderList(); renderTags(); });
+      row.appendChild(b);
+    });
+  }
+
+  function renderList() {
+    var ul = $('#list'); ul.textContent = '';
+    var vis = visible();
+    $('#count').textContent = notes.length + (notes.length === 1 ? ' note' : ' notes') + (vis.length !== notes.length ? ' · ' + vis.length + ' shown' : '');
+    $('#allLabel').textContent = 'All notes (' + notes.length + ')';
+    if (!vis.length) {
+      var li = document.createElement('li'); li.className = 'none';
+      li.textContent = notes.length ? 'Nothing matches that search.' : 'Your notes will show up here.';
+      ul.appendChild(li); return;
+    }
+    vis.forEach(function (n) {
+      var li = document.createElement('li');
+      var b = document.createElement('button'); b.className = 'item';
+      b.setAttribute('aria-current', n.id === selectedId ? 'true' : 'false');
+      var t = document.createElement('div'); t.className = 't';
+      var ts = document.createElement('span'); ts.textContent = (n.pinned ? '★ ' : '') + (n.title || 'Untitled note');
+      if (n.pinned) ts.className = 'pin';
+      var d = document.createElement('span'); d.className = 'd'; d.textContent = fmtShort(n.updated);
+      t.appendChild(ts); t.appendChild(d);
+      var s = document.createElement('div'); s.className = 's'; s.textContent = (n.body || '').replace(/\s+/g, ' ').trim() || 'No text yet';
+      b.appendChild(t); b.appendChild(s);
+      b.addEventListener('click', function () { select(n.id, true); });
+      li.appendChild(b); ul.appendChild(li);
+    });
+  }
+
+  /* ---------- editor ---------- */
+  function updateWords() {
+    var txt = $('#body').value.trim();
+    var w = txt ? txt.split(/\s+/).length : 0;
+    $('#words').textContent = w + (w === 1 ? ' word' : ' words') + ' · ' + $('#body').value.length + ' characters';
+  }
+
+  function select(id, openEdit) {
+    selectedId = id;
+    var n = byId(id);
+    var has = !!n;
+    $('#editor').hidden = !has; $('#emptyState').hidden = has;
+    if (n) {
+      $('#title').value = n.title || ''; $('#tagsin').value = (n.tags || []).join(', '); $('#body').value = n.body || '';
+      $('#pinBtn').setAttribute('aria-pressed', n.pinned ? 'true' : 'false');
+      $('#pinBtn').textContent = n.pinned ? 'Unpin' : 'Pin';
+      updateWords();
+    }
+    resetDel();
+    if (openEdit) $('#shell').dataset.view = 'edit';
+    renderList();
+  }
+
+  function newNote() {
+    var now = Date.now();
+    var n = { id: uid(), title: '', body: '', tags: activeTag ? [activeTag] : [], pinned: false, created: now, updated: now };
+    notes.unshift(n); persist(false);
+    renderTags(); select(n.id, true);
+    $('#title').focus();
+  }
+
+  function onEdit() {
+    var n = byId(selectedId); if (!n) return;
+    n.title = $('#title').value; n.body = $('#body').value; n.tags = parseTags($('#tagsin').value); n.updated = Date.now();
+    updateWords(); persist(false); renderList();
+  }
+  function onTagsDone() { renderTags(); }
+
+  var delTimer = null;
+  function resetDel() { clearTimeout(delTimer); var b = $('#delBtn'); b.classList.remove('armed'); b.textContent = 'Delete'; }
+  function onDelete() {
+    var b = $('#delBtn');
+    if (!b.classList.contains('armed')) {
+      b.classList.add('armed'); b.textContent = 'Tap again to delete';
+      clearTimeout(delTimer); delTimer = setTimeout(resetDel, 3000); return;
+    }
+    notes = notes.filter(function (n) { return n.id !== selectedId; });
+    persist(true); renderTags();
+    var vis = visible();
+    select(vis.length ? vis[0].id : (notes[0] ? notes[0].id : null), false);
+    $('#shell').dataset.view = 'list';
+    toast('Note deleted');
+  }
+
+  function onPin() {
+    var n = byId(selectedId); if (!n) return;
+    n.pinned = !n.pinned; persist(true); select(n.id, false);
+  }
+
+  /* ---------- export ---------- */
+  var dlPromise = null;
+  function getDl() {
+    if (dlPromise) return dlPromise;
+    try { dlPromise = (window.claude && window.claude.use) ? window.claude.use('downloads').catch(function () { return null; }) : Promise.resolve(null); }
+    catch (e) { dlPromise = Promise.resolve(null); }
+    return dlPromise;
+  }
+
+  function noteText(n) {
+    var tags = (n.tags || []).length ? '\nTags: ' + n.tags.map(function (t) { return '#' + t; }).join(' ') : '';
+    return (n.title || 'Untitled note') + '\n' + new Array(Math.max(3, (n.title || 'Untitled note').length) + 1).join('=') + tags + '\nUpdated: ' + fmtFull(n.updated) + '\n\n' + (n.body || '');
+  }
+  function noteMd(n) {
+    var tags = (n.tags || []).length ? '\n' + n.tags.map(function (t) { return '`#' + t + '`'; }).join(' ') + '\n' : '';
+    return '# ' + (n.title || 'Untitled note') + '\n' + tags + '\n' + (n.body || '') + '\n';
+  }
+
+  function buildPdf(list) {
+    var J = window.jspdf && window.jspdf.jsPDF; if (!J) return null;
+    var doc = new J({ unit: 'pt', format: 'letter' });
+    var W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 56, maxW = W - 2 * M, y = M;
+    function ensure(h) { if (y + h > H - M) { doc.addPage(); y = M; } }
+    list.forEach(function (n, i) {
+      if (i > 0) { doc.addPage(); y = M; }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(76, 29, 149);
+      doc.splitTextToSize(n.title || 'Untitled note', maxW).forEach(function (l) { ensure(26); doc.text(l, M, y + 14); y += 26; });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(120, 110, 145);
+      var meta = [(n.tags || []).map(function (t) { return '#' + t; }).join('  '), 'Updated ' + fmtFull(n.updated)].filter(Boolean).join('   |   ');
+      ensure(18); doc.text(meta, M, y + 6); y += 14;
+      doc.setDrawColor(196, 181, 253); doc.line(M, y, W - M, y); y += 20;
+      doc.setFontSize(11); doc.setTextColor(30, 22, 53);
+      (n.body || '').split('\n').forEach(function (par) {
+        if (!par.trim()) { y += 8; return; }
+        doc.splitTextToSize(par, maxW).forEach(function (l) { ensure(16); doc.text(l, M, y + 11); y += 15; });
+      });
+    });
+    var pages = doc.getNumberOfPages();
+    for (var p = 1; p <= pages; p++) {
+      doc.setPage(p); doc.setFontSize(8); doc.setTextColor(150, 140, 175);
+      doc.text('Noteit  -  page ' + p + ' of ' + pages, W / 2, H - 28, { align: 'center' });
+    }
+    return doc.output('arraybuffer');
+  }
+
+  function deliver(filename, data) {
+    return getDl().then(function (dl) {
+      if (!dl) {
+        try {
+          var type = /\.pdf$/i.test(filename) ? 'application/pdf' : /\.json$/i.test(filename) ? 'application/json' : 'text/plain;charset=utf-8';
+          var url = URL.createObjectURL(new Blob([data], { type: type })), a = document.createElement('a');
+          a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+          toast('Saved ' + filename);
+        } catch (e) { toast("Couldn't save the file in this browser"); }
+        return;
+      }
+      return dl.save({ filename: filename, data: data }).then(function () { toast('Saved ' + filename); }, function (e) {
+        if (e && e.code === 'declined') return;
+        toast("Couldn't save the file" + (e && e.message ? ': ' + e.message : ''));
+      });
+    });
+  }
+
+  function doExport(spec) {
+    var parts = spec.split(':'), scope = parts[0], fmt = parts[1];
+    var list = scope === 'note' ? [byId(selectedId)].filter(Boolean) : notes.slice().sort(function (a, b) { return b.updated - a.updated; });
+    if (!list.length) { toast('Nothing to save yet'); return; }
+    var base = scope === 'note' ? slug(list[0].title) : 'noteit-all-' + today();
+    if (fmt === 'txt') {
+      return deliver(base + '.txt', list.map(noteText).join('\n\n----------------------------------------\n\n'));
+    }
+    if (fmt === 'md') {
+      return deliver(base + '.md', list.map(noteMd).join('\n---\n\n'));
+    }
+    if (fmt === 'json') {
+      return deliver('noteit-backup-' + today() + '.json', JSON.stringify({ app: 'noteit', version: 1, exported: new Date().toISOString(), notes: list }, null, 2));
+    }
+    if (fmt === 'pdf') {
+      var buf; try { buf = buildPdf(list); } catch (e) { buf = null; }
+      if (!buf) { toast("PDF maker didn't load. Check your connection and try again."); return; }
+      return deliver(base + '.pdf', buf);
+    }
+  }
+
+  function importFile(file) {
+    var r = new FileReader();
+    r.onload = function () {
+      var text = String(r.result || ''), added = 0, now = Date.now();
+      try {
+        if (/\.json$/i.test(file.name)) {
+          var data = JSON.parse(text);
+          var arr = Array.isArray(data) ? data : (data && Array.isArray(data.notes) ? data.notes : []);
+          arr.forEach(function (n) {
+            if (!n || typeof n !== 'object') return;
+            var id = n.id && !byId(n.id) ? String(n.id) : uid();
+            notes.push({ id: id, title: String(n.title || ''), body: String(n.body || ''), tags: Array.isArray(n.tags) ? n.tags.map(String) : [],
+              pinned: !!n.pinned, created: +n.created || now, updated: +n.updated || now });
+            added++;
+          });
+        } else {
+          var lines = text.split('\n'), title = file.name.replace(/\.[^.]+$/, ''), body = text;
+          if (/^#\s+/.test(lines[0])) { title = lines[0].replace(/^#\s+/, '').trim(); body = lines.slice(1).join('\n').replace(/^\n+/, ''); }
+          notes.push({ id: uid(), title: title, body: body, tags: ['imported'], pinned: false, created: now, updated: now }); added = 1;
+        }
+      } catch (e) { toast("That file couldn't be read as notes"); return; }
+      if (!added) { toast('No notes found in that file'); return; }
+      persist(true); renderTags(); select(notes[notes.length - 1].id, false); toast('Imported ' + added + (added === 1 ? ' note' : ' notes'));
+    };
+    r.readAsText(file);
+  }
+
+  /* ---------- accounts (profiles stored on this device) ---------- */
+  function hashPass(pass, salt) {
+    var enc = new TextEncoder().encode(salt + ':' + pass);
+    if (window.crypto && crypto.subtle) {
+      return crypto.subtle.digest('SHA-256', enc).then(function (b) {
+        return Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+      });
+    }
+    var h = 5381, s = salt + ':' + pass; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+    return Promise.resolve('x' + (h >>> 0).toString(16));
+  }
+
+  function setAcctMsg(t, ok) { var m = $('#acctMsg'); m.textContent = t; m.className = 'msg' + (ok ? ' ok' : ''); }
+
+  function switchTo(s) {
+    flush();
+    session = s;
+    try { store.set(K_SESSION, JSON.stringify(s)); } catch (e) {}
+    loadNotes(); activeTag = ''; query = ''; $('#search').value = '';
+    renderTags(); var vis = visible(); select(vis.length ? vis[0].id : null, false);
+    $('#shell').dataset.view = 'list';
+    renderAcctBtn();
+  }
+
+  function renderAcctBtn() {
+    var b = $('#acctBtn');
+    if (session.mode === 'user') { b.textContent = session.name; b.className = 'btn'; } else { b.textContent = 'Sign in'; b.className = 'btn solid'; }
+  }
+
+  function openModal() {
+    var user = session.mode === 'user';
+    $('#dlgGuest').hidden = user; $('#dlgUser').hidden = !user;
+    $('#dlgTitle').textContent = user ? 'Your profile' : 'Your notebook';
+    if (user) $('#userLine').textContent = 'Signed in as ' + session.name + '. These notes are separate from your guest notes and stay on this device.';
+    setAcctMsg('', false); $('#acctPass').value = '';
+    $('#modal').hidden = false;
+    setTimeout(function () { (user ? $('#signOutBtn') : $('#acctName')).focus(); }, 0);
+  }
+  function closeModal() { $('#modal').hidden = true; }
+
+  function signIn() {
+    var name = $('#acctName').value.trim(), pass = $('#acctPass').value, key = name.toLowerCase();
+    if (!name || !pass) { setAcctMsg('Enter your profile name and passcode.', false); return; }
+    var u = users[key];
+    if (!u) { setAcctMsg('No profile with that name on this device. Use Create profile.', false); return; }
+    hashPass(pass, u.salt).then(function (h) {
+      if (h !== u.hash) { setAcctMsg('That passcode does not match.', false); return; }
+      closeModal(); switchTo({ mode: 'user', name: u.name }); toast('Signed in as ' + u.name);
+    });
+  }
+
+  function createProfile() {
+    var name = $('#acctName').value.trim(), pass = $('#acctPass').value, key = name.toLowerCase();
+    if (name.length < 2) { setAcctMsg('Pick a profile name with at least 2 characters.', false); return; }
+    if (pass.length < 4) { setAcctMsg('Use a passcode with at least 4 characters.', false); return; }
+    if (users[key]) { setAcctMsg('That name is taken on this device. Try signing in.', false); return; }
+    var bring = $('#bringGuest').checked, guestNotes = bring ? notes.slice() : [];
+    var salt = uid();
+    hashPass(pass, salt).then(function (h) {
+      users[key] = { name: name, salt: salt, hash: h };
+      try { store.set(K_USERS, JSON.stringify(users)); store.set('noteit:notes:u:' + key, JSON.stringify(guestNotes)); }
+      catch (e) { setAcctMsg("Couldn't save the profile. Storage is off in this view.", false); delete users[key]; return; }
+      closeModal(); switchTo({ mode: 'user', name: name }); toast('Profile created. Welcome, ' + name);
+    });
+  }
+
+  /* ---------- theme ---------- */
+  function applyTheme(t) { if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme'); }
+  function themeToggle() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var sysDark = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+    var isDark = cur ? cur === 'dark' : sysDark;
+    var next = isDark ? 'light' : 'dark';
+    applyTheme(next); try { store.set(K_THEME, next); } catch (e) {}
+  }
+
+  /* ---------- wire up ---------- */
+  function wire() {
+    $('#newBtn').addEventListener('click', newNote);
+    $('#emptyNew').addEventListener('click', newNote);
+    $('#title').addEventListener('input', onEdit);
+    $('#body').addEventListener('input', onEdit);
+    $('#tagsin').addEventListener('input', onEdit);
+    $('#tagsin').addEventListener('blur', onTagsDone);
+    $('#pinBtn').addEventListener('click', onPin);
+    $('#delBtn').addEventListener('click', onDelete);
+    $('#backBtn').addEventListener('click', function () { renderTags(); $('#shell').dataset.view = 'list'; });
+    $('#search').addEventListener('input', function (e) { query = e.target.value; renderList(); });
+
+    var em = $('#exportMenu'), eb = $('#exportBtn');
+    function menu(open) { em.hidden = !open; eb.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+    eb.addEventListener('click', function (e) { e.stopPropagation(); menu(em.hidden); });
+    em.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-exp]');
+      if (b) { menu(false); doExport(b.getAttribute('data-exp')); }
+    });
+    document.addEventListener('click', function (e) { if (!em.hidden && !em.contains(e.target)) menu(false); });
+    $('#importBtn').addEventListener('click', function () { menu(false); $('#fileIn').click(); });
+    $('#fileIn').addEventListener('change', function (e) { var f = e.target.files && e.target.files[0]; if (f) importFile(f); e.target.value = ''; });
+
+    $('#themeBtn').addEventListener('click', themeToggle);
+    $('#acctBtn').addEventListener('click', openModal);
+    $('#closeModal').addEventListener('click', closeModal);
+    $('#modal').addEventListener('click', function (e) { if (e.target === $('#modal')) closeModal(); });
+    $('#signInBtn').addEventListener('click', signIn);
+    $('#createBtn').addEventListener('click', createProfile);
+    $('#acctPass').addEventListener('keydown', function (e) { if (e.key === 'Enter') signIn(); });
+    $('#signOutBtn').addEventListener('click', function () { closeModal(); switchTo({ mode: 'guest' }); toast('Back to your guest notebook'); });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { if (!$('#modal').hidden) closeModal(); menu(false); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); flush(); setStatus('Saved on this device'); toast('Saved'); }
+    });
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) flush(); });
+  }
+
+  /* ---------- start ---------- */
+  var savedTheme = store.get(K_THEME); if (savedTheme) applyTheme(savedTheme);
+  if (!store.ok) { var bn = $('#banner'); bn.hidden = false; bn.textContent = 'Saving to this browser is switched off here, so notes will be lost when you close the page. Use Save / Export to keep them.'; }
+  loadNotes(); wire(); renderAcctBtn(); renderTags();
+  var first = visible()[0];
+  var narrow = window.matchMedia && matchMedia('(max-width: 759px)').matches;
+  select(first ? first.id : null, false);
+  if (narrow) $('#shell').dataset.view = 'list';
+})();
+</script>
+
+</body>
+</html>
